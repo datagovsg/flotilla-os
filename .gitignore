@@ -20,3 +20,6 @@ vendor/**
 *.iml
 
 flotilla-os
+
+# Node Modules
+node_modules
