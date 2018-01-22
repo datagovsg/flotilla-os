@@ -23,3 +23,10 @@ flotilla-os
 
 # Node Modules
 node_modules
+
+# gh-pages-specific files to ignore.
+.cache/
+# Build directory
+public/
+.DS_Store
+yarn-error.log
