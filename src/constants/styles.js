@@ -2,7 +2,7 @@ import colors from "./colors"
 
 const shared = {
   maxWidth: 1200,
-  color: colors.light_gray_0,
+  color: colors.light_gray_1,
   spacing: 12,
   fontFamily: `"MaisonNeue-Book"`,
   primaryColor: colors.blue_0,

@@ -36,7 +36,7 @@ const TemplateWrapper = (props) => {
   return (
     <AppContainerDiv>
       <Helmet
-        title="Flotilla | Stitch Fix Open-Source"
+        title="Flotilla | Stitch Fix"
         meta={[
           { name: "description", content: "Sample" },
           { name: "keywords", content: "sample, something" },
