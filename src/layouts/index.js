@@ -4,12 +4,11 @@ import Helmet from "react-helmet"
 import styled from "styled-components"
 import Header from "../components/Header"
 import DocsSidebar from "../components/DocsSidebar"
+import Page from "../components/Page"
 import styles from "../constants/styles"
 import "./index.css"
 
-const AppContainerDiv = styled.div`
-  ${styles.mixins.containerComponentSharedStyles()}
-  ${styles.mixins.flex("row", "nowrap", "center", "flex-start")}
+const AppDiv = styled.div`
   font-family: ${styles.shared.fontFamily};
   background: ${styles.app.background};
   width: 100vw;
@@ -25,16 +24,15 @@ const AppContainerDiv = styled.div`
 `
 const AppInnerDiv = styled.div`
   ${styles.mixins.flex("row", "nowrap", "flex-start", "flex-start")}
-  ${styles.mixins.innerComponentSharedStyles()}
-  margin-top: ${styles.header.height}px;
 `
 
 const TemplateWrapper = (props) => {
   const { children, location } = props
   const shouldRenderSidebar = location.pathname.startsWith("/docs")
+  const isLanding = location.pathname === "/"
 
   return (
-    <AppContainerDiv>
+    <AppDiv>
       <Helmet
         title="Flotilla | Stitch Fix"
         meta={[
@@ -43,11 +41,11 @@ const TemplateWrapper = (props) => {
         ]}
       />
       <Header />
-      <AppInnerDiv>
+      <Page isLanding={isLanding}>
         {shouldRenderSidebar && <DocsSidebar posts={props.data} />}
         {children()}
-      </AppInnerDiv>
-    </AppContainerDiv>
+      </Page>
+    </AppDiv>
   )
 }
 
