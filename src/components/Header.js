@@ -40,7 +40,7 @@ const Header = () => (
       <HeaderLinksDiv>
         <Link to="/docs/philosophy">Documentation</Link>
         <Link to="/">Releases</Link>
-        <a href="#">Github</a>
+        <a href="https://github.com/stitchfix/flotilla-os">Github</a>
       </HeaderLinksDiv>
     </HeaderInnerDiv>
   </HeaderContainerDiv>
