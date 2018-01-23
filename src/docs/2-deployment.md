@@ -2,6 +2,7 @@
 path: "/docs/deploying"
 title: "Deploying"
 group: "deploying"
+index: 2
 ---
 In a production deployment you'll want multiple instances of the flotilla service running and postgres running elsewhere (eg. Amazon RDS). In this case the most salient detail configuration detail is the `DATABASE_URL`.
 

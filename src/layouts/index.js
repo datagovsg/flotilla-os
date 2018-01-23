@@ -57,7 +57,7 @@ export default TemplateWrapper
 
 export const query = graphql`
   query DocsQuery {
-    allMarkdownRemark {
+    allMarkdownRemark(sort: { order: ASC, fields: [frontmatter___index] }) {
       edges {
         node {
           id
@@ -66,6 +66,7 @@ export const query = graphql`
             path
             title
             group
+            index
           }
         }
       }

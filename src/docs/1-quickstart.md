@@ -2,6 +2,7 @@
 path: "/docs/quickstart"
 title: "Quickstart"
 group: "quickstart"
+index: 1
 ---
 ### Minimal Assumptions
 

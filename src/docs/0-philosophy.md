@@ -2,6 +2,7 @@
 path: "/docs/philosophy"
 title: "Philosophy"
 group: "philosophy"
+index: 0
 ---
 
 Flotilla is strongly opinionated about self-service for data science.
