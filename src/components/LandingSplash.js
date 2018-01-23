@@ -1,9 +1,6 @@
 import React from "react"
 import Link from "gatsby-link"
 import styled from "styled-components"
-import { TransitionGroup } from "react-transition-group"
-import { MotionValue } from "popmotion-react"
-import { tween, transform } from "popmotion"
 import styles from "../constants/styles"
 import colors from "../constants/colors"
 
@@ -20,7 +17,6 @@ const LandingSplashInnerDiv = styled.div`
 `
 const LandingSplashTagline = styled.div`
   font-size: 20px;
-  // margin-bottom: ${styles.shared.spacing * 1.5}px;
 `
 const LandingSplashLargeText = styled.div`
   font-size: 52px;
@@ -42,41 +38,21 @@ const LandingSplashButton = styled(Link)`
   line-height: 1;
 `
 
-// Motion
-const stateChangeHandlers = {
-  componentWillAppear: ({ value, complete }) => tween({
-    from: value.get(),
-    to: 1,
-  }).start({
-    update: value,
-    complete,
-  })
-}
-
 const LandingSplash = () => (
-  <TransitionGroup>
-    <MotionValue key="landing-motion" onStateChange={stateChangeHandlers}>
-      {(popmotionState) => {
-        console.log(popmotionState)
-        return (
-          <LandingSplashContainerDiv>
-            <LandingSplashInnerDiv>
-              <LandingSplashTagline>
-                You don't need data engineers. You need Flotilla.
-              </LandingSplashTagline>
-              <LandingSplashLargeText>
-                Some words about running containers and data science and stuff.
-              </LandingSplashLargeText>
-              <LandingSplashButtonGroup>
-                <LandingSplashButton to="/docs/quickstart">Documentation</LandingSplashButton>
-                <LandingSplashButton>Github</LandingSplashButton>
-              </LandingSplashButtonGroup>
-            </LandingSplashInnerDiv>
-          </LandingSplashContainerDiv>
-        )
-      }}
-    </MotionValue>
-  </TransitionGroup>
+  <LandingSplashContainerDiv>
+    <LandingSplashInnerDiv>
+      <LandingSplashTagline>
+        You don't need data engineers. You need Flotilla.
+      </LandingSplashTagline>
+      <LandingSplashLargeText>
+        Some words about running containers and data science and stuff.
+      </LandingSplashLargeText>
+      <LandingSplashButtonGroup>
+        <LandingSplashButton to="/docs/quickstart">Documentation</LandingSplashButton>
+        <LandingSplashButton to="/">Github</LandingSplashButton>
+      </LandingSplashButtonGroup>
+    </LandingSplashInnerDiv>
+  </LandingSplashContainerDiv>
 )
 
 export default LandingSplash
