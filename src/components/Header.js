@@ -17,7 +17,8 @@ const HeaderContainerDiv = styled.div`
   a {
     color: ${styles.shared.color} !important;
     border-bottom: 2px solid transparent;
-    &:hover {
+    &:hover,
+    &.active {
       color: ${styles.link.hoverColor} !important;
       border-bottom-color: ${styles.shared.primaryColor};
     }
@@ -38,9 +39,8 @@ const Header = () => (
         <Link to="/">Flotilla</Link>
       </div>
       <HeaderLinksDiv>
-        <Link to="/docs/philosophy">Documentation</Link>
-        <Link to="/">Releases</Link>
-        <a href="https://github.com/stitchfix/flotilla-os">Github</a>
+        <Link activeClassName="active" to="/docs/philosophy">Documentation</Link>
+        <a target="_blank" href="https://github.com/stitchfix/flotilla-os">Github</a>
       </HeaderLinksDiv>
     </HeaderInnerDiv>
   </HeaderContainerDiv>
