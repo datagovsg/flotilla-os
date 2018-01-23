@@ -8,9 +8,8 @@ import LandingFeatures from "../components/LandingFeatures"
 
 const IndexPage = () => (
   <div>
-    {/*<LandingSplash />*/}
-    <LandingFeatures />
     <LandingSplash />
+    <LandingFeatures />
   </div>
 )
 

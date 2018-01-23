@@ -5,6 +5,7 @@ import { tween, styler, easing, stagger, timeline } from "popmotion"
 import styles from "../constants/styles"
 import colors from "../constants/colors"
 import LandingPageSection from "./LandingPageSection"
+import withScrollAnimation from "./withScrollAnimation"
 
 // Styles
 const LandingSplashTagline = styled.div.attrs({
@@ -65,78 +66,13 @@ const animate = () => {
   })
 }
 
-const withScrollAnimation = opts => (Unwrapped) => {
-  const {
-    // <String> The ref for the element whose distance from the viewport top we
-    // listen to.
-    elRef,
-
-    // <Func> Function that contains the animation code.
-    animate,
-
-    // <Number> How much distance is allowed before the animation starts.
-    heightRenderedBeforeAnimationStarts,
-  } = opts
-
-  return class Wrapped extends Component {
-    static displayName = `withScrollAnimation(${Unwrapped.displayName || "UnwrappedComponent"})`
-    constructor(props) {
-      super(props)
-      this.scrollListener = this.scrollListener.bind(this)
-    }
-    state = {
-      hasAnimated: false,
-    }
-    componentDidMount() {
-      if (this.shouldAnimate()) {
-        this.setState({ hasAnimated: true }, () => {
-          this.animate()
-        })
-      } else {
-        console.info("Adding scrollListener")
-        window.addEventListener("scroll", this.scrollListener)
-      }
-    }
-    componentDidUpdate(prevProps, prevState) {
-      if (!prevState.hasAnimated && !!this.state.hasAnimated) {
-        console.info("Removing scrollListener")
-        window.removeEventListener("scroll", this.scrollListener)
-      }
-    }
-    scrollListener() {
-      if (this.shouldAnimate()) {
-        this.setState({ hasAnimated: true }, () => {
-          animate()
-        })
-      }
-    }
-    shouldAnimate() {
-      if (this.state.hasAnimated) return false
-
-      const viewportHeight = window.innerHeight
-      const elTop = Unwrapped[elRef].getBoundingClientRect().top
-
-      if ((viewportHeight - elTop) >= heightRenderedBeforeAnimationStarts) {
-        return true
-      }
-
-      return false
-    }
-    render() {
-      return (
-        <Unwrapped {...this.props} />
-      )
-    }
-  }
-}
-
 class LandingSplash extends Component {
   render() {
     return (
       <LandingPageSection
         height={600}
         background={colors.gray_4}
-        innerRef={(x) => { this.x = x }}
+        innerRef={this.props.innerRef}
       >
         <LandingSplashTagline>
           You don't need data engineers. You need Flotilla.
