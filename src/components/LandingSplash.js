@@ -4,18 +4,9 @@ import styled from "styled-components"
 import { tween, styler, easing, stagger, timeline } from "popmotion"
 import styles from "../constants/styles"
 import colors from "../constants/colors"
+import LandingPageSection from "./LandingPageSection"
 
 // Styles
-const LandingSplashContainerDiv = styled.div`
-  ${styles.mixins.containerComponentSharedStyles()}
-  ${styles.mixins.flex("row", "nowrap", "center", "flex-start")}
-  background: ${colors.gray_4};
-`
-const LandingSplashInnerDiv = styled.div`
-  ${styles.mixins.innerComponentSharedStyles()}
-  ${styles.mixins.flex("column", "nowrap", "center", "flex-start", true, styles.shared.spacing * 2)}
-  height: 600px;
-`
 const LandingSplashTagline = styled.div.attrs({
   id: "landingSplashTagline",
 })`
@@ -45,55 +36,124 @@ const LandingSplashButton = styled(Link)`
   line-height: 1;
 `
 
-// Animations
+const animate = () => {
+  const landingSplashTagline = styler(document.querySelector("#landingSplashTagline"))
+  const landingSplashLargeText = styler(document.querySelector("#landingSplashLargeText"))
+  const landingSplashButtonGroup = styler(document.querySelector("#landingSplashButtonGroup"))
+
+  const staggerDuration = -350
+  const motionDuration = 500
+  const initialYPos = 120
+
+  const sharedMotion = {
+    from: { opacity: 0, y: initialYPos },
+    to: { opacity: 1, y: 0 },
+    ease: easing.ease,
+    duration: motionDuration,
+  }
+
+  timeline([
+    { ...sharedMotion, track: "tagline", },
+    `${staggerDuration}`,
+    { ...sharedMotion, track: "largeText", },
+    `${staggerDuration}`,
+    { ...sharedMotion, track: "buttonGroup", },
+  ]).start(({ tagline, largeText, buttonGroup }) => {
+    landingSplashTagline.set(tagline)
+    landingSplashLargeText.set(largeText)
+    landingSplashButtonGroup.set(buttonGroup)
+  })
+}
+
+const withScrollAnimation = opts => (Unwrapped) => {
+  const {
+    // <String> The ref for the element whose distance from the viewport top we
+    // listen to.
+    elRef,
+
+    // <Func> Function that contains the animation code.
+    animate,
+
+    // <Number> How much distance is allowed before the animation starts.
+    heightRenderedBeforeAnimationStarts,
+  } = opts
+
+  return class Wrapped extends Component {
+    static displayName = `withScrollAnimation(${Unwrapped.displayName || "UnwrappedComponent"})`
+    constructor(props) {
+      super(props)
+      this.scrollListener = this.scrollListener.bind(this)
+    }
+    state = {
+      hasAnimated: false,
+    }
+    componentDidMount() {
+      if (this.shouldAnimate()) {
+        this.setState({ hasAnimated: true }, () => {
+          this.animate()
+        })
+      } else {
+        console.info("Adding scrollListener")
+        window.addEventListener("scroll", this.scrollListener)
+      }
+    }
+    componentDidUpdate(prevProps, prevState) {
+      if (!prevState.hasAnimated && !!this.state.hasAnimated) {
+        console.info("Removing scrollListener")
+        window.removeEventListener("scroll", this.scrollListener)
+      }
+    }
+    scrollListener() {
+      if (this.shouldAnimate()) {
+        this.setState({ hasAnimated: true }, () => {
+          animate()
+        })
+      }
+    }
+    shouldAnimate() {
+      if (this.state.hasAnimated) return false
+
+      const viewportHeight = window.innerHeight
+      const elTop = Unwrapped[elRef].getBoundingClientRect().top
+
+      if ((viewportHeight - elTop) >= heightRenderedBeforeAnimationStarts) {
+        return true
+      }
+
+      return false
+    }
+    render() {
+      return (
+        <Unwrapped {...this.props} />
+      )
+    }
+  }
+}
 
 class LandingSplash extends Component {
-  componentDidMount() {
-    const landingSplashTagline = styler(document.querySelector("#landingSplashTagline"))
-    const landingSplashLargeText = styler(document.querySelector("#landingSplashLargeText"))
-    const landingSplashButtonGroup = styler(document.querySelector("#landingSplashButtonGroup"))
-
-    const staggerDuration = -300
-    const motionDuration = 500
-    const initialYPos = 80
-
-    const sharedMotion = {
-      from: { opacity: 0, y: initialYPos },
-      to: { opacity: 1, y: 0 },
-      ease: easing.ease,
-      duration: motionDuration,
-    }
-
-    timeline([
-      { ...sharedMotion, track: "tagline", },
-      `${staggerDuration}`,
-      { ...sharedMotion, track: "largeText", },
-      `${staggerDuration}`,
-      { ...sharedMotion, track: "buttonGroup", },
-    ]).start(({ tagline, largeText, buttonGroup }) => {
-      landingSplashTagline.set(tagline)
-      landingSplashLargeText.set(largeText)
-      landingSplashButtonGroup.set(buttonGroup)
-    })
-  }
   render() {
     return (
-      <LandingSplashContainerDiv>
-        <LandingSplashInnerDiv>
-          <LandingSplashTagline>
-            You don't need data engineers. You need Flotilla.
-          </LandingSplashTagline>
-          <LandingSplashLargeText>
-            Some words about running containers and data science and stuff.
-          </LandingSplashLargeText>
-          <LandingSplashButtonGroup>
-            <LandingSplashButton to="/docs/quickstart">Documentation</LandingSplashButton>
-            <LandingSplashButton to="/">Github</LandingSplashButton>
-          </LandingSplashButtonGroup>
-        </LandingSplashInnerDiv>
-      </LandingSplashContainerDiv>
+      <LandingPageSection
+        height={600}
+        background={colors.gray_4}
+        innerRef={(x) => { this.x = x }}
+      >
+        <LandingSplashTagline>
+          You don't need data engineers. You need Flotilla.
+        </LandingSplashTagline>
+        <LandingSplashLargeText>
+          Some words about running containers and data science and stuff.
+        </LandingSplashLargeText>
+        <LandingSplashButtonGroup>
+          <LandingSplashButton to="/docs/quickstart">Get Started</LandingSplashButton>
+        </LandingSplashButtonGroup>
+      </LandingPageSection>
     )
   }
 }
 
-export default LandingSplash
+export default withScrollAnimation({
+  elRef: "x",
+  animate,
+  heightRenderedBeforeAnimationStarts: 100
+})(LandingSplash)
