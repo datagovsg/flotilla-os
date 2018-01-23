@@ -10,10 +10,8 @@
     "gatsby-source-filesystem": "1.5.14",
     "gatsby-transformer-remark": "1.7.28",
     "lodash": "4.17.4",
-    "popmotion": "8.1.8",
-    "popmotion-react": "2.1.0",
+    "popmotion": "8.1.9",
     "react-helmet": "^5.2.0",
-    "react-transition-group": "2.2.1",
     "styled-components": "2.4.0"
   },
   "keywords": [
