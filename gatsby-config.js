@@ -12,5 +12,14 @@ module.exports = {
       },
     },
     `gatsby-transformer-remark`,
+    `gatsby-plugin-sharp`,
+    {
+      resolve: `gatsby-remark-images`,
+      options: {
+        maxWidth: 590,
+        linkImagesToOriginal: true,
+        sizeByPixelDensity: false,
+      },
+    },
   ],
 };
