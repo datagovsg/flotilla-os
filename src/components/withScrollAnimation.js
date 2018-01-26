@@ -12,7 +12,7 @@ const printErr = (key, type) => {
 
 const validateOpts = (opts) => {
   const keysToCheck = [
-    { key: "elRef", type: "number" },
+    { key: "elRef", type: "string" },
     { key: "animate", type: "function" },
     { key: "heightRenderedBeforeAnimationStarts", type: "number" },
   ]

@@ -1,3 +1,4 @@
+import { css } from "styled-components"
 import colors from "./colors"
 
 const shared = {
@@ -6,6 +7,12 @@ const shared = {
   spacing: 12,
   fontFamily: `"MaisonNeue-Book"`,
   primaryColor: colors.blue_0,
+}
+
+const breakpoints = {
+  small: 480,
+  medium: 800,
+  large: 1200,
 }
 
 const link = {
@@ -53,8 +60,19 @@ const flex = (direction, wrap, justify, align, withChildMargin = false, childMar
   return `display: flex; flex-flow: ${direction} ${wrap}; justify-content: ${justify}; ${alignKey}: ${align}; ${childMarginStr}`
 }
 
+const mediaQuery = ({
+  min = 0,
+  max = 1000000,
+  styles = ""
+} = {}) => `
+  @media (min-width: ${min}px) and (max-width: ${max}px) {
+    ${styles}
+  }
+`
+
 export default {
   shared,
+  breakpoints,
   header,
   app,
   link,
@@ -63,5 +81,6 @@ export default {
     containerComponentSharedStyles,
     innerComponentSharedStyles,
     flex,
+    mediaQuery,
   }
 }
