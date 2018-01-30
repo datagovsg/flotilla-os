@@ -11,7 +11,6 @@ const LandingPageSectionContainerDiv = styled.div`
 `
 const LandingPageSectionInnerDiv = styled.div`
   ${styles.mixins.innerComponentSharedStyles()}
-  ${styles.mixins.flex("column", "nowrap", "center", "flex-start", true, styles.shared.spacing * 2)}
   height: 100%;
 `
 

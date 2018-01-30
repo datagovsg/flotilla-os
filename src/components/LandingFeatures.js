@@ -17,17 +17,18 @@ const LandingFeaturesDiv = styled.div`
   })}
 `
 
-console.log(styles.mixins.mediaQuery({
-    max: styles.breakpoints.small,
-    styles: `
-      ${styles.mixins.flex("column", "nowrap", "flex-start", "stretch")}
-    `
-  }))
-
 const LandingFeatureDiv = styled.div`
   ${styles.mixins.flex("column", "nowrap", "center", "center", true)}
   color: ${colors.light_gray_4};
   flex: 1;
+`
+
+const LandingFeatureTitle = styled.div`
+
+`
+
+const LandingFeatureText = styled.div`
+
 `
 
 class LandingFeatures extends Component {
@@ -37,9 +38,18 @@ class LandingFeatures extends Component {
         background={colors.gray_3}
       >
         <LandingFeaturesDiv>
-          <LandingFeatureDiv>Feature 1</LandingFeatureDiv>
-          <LandingFeatureDiv>Feature 2</LandingFeatureDiv>
-          <LandingFeatureDiv>Feature 3</LandingFeatureDiv>
+          <LandingFeatureDiv>
+            <LandingFeatureTitle></LandingFeatureTitle>
+            <LandingFeatureText></LandingFeatureText>
+          </LandingFeatureDiv>
+          <LandingFeatureDiv>
+            <LandingFeatureTitle></LandingFeatureTitle>
+            <LandingFeatureText></LandingFeatureText>
+          </LandingFeatureDiv>
+          <LandingFeatureDiv>
+            <LandingFeatureTitle></LandingFeatureTitle>
+            <LandingFeatureText></LandingFeatureText>
+          </LandingFeatureDiv>
         </LandingFeaturesDiv>
       </LandingPageSection>
     )
