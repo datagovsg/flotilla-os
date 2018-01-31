@@ -5,8 +5,13 @@ const shared = {
   maxWidth: 1200,
   color: colors.light_gray_1,
   spacing: 12,
-  fontFamily: `"MaisonNeue-Book"`,
+  fontFamily: `-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif`,
   primaryColor: colors.blue_0,
+}
+
+const zIndex = {
+  header: 2000,
 }
 
 const breakpoints = {
@@ -77,6 +82,7 @@ export default {
   app,
   link,
   sidebar,
+  zIndex,
   mixins: {
     containerComponentSharedStyles,
     innerComponentSharedStyles,
