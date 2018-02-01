@@ -16,15 +16,11 @@ const LandingPageSectionInnerDiv = styled.div`
 
 const LandingPageSection = (props) => {
   return (
-    <LandingPageSectionContainerDiv
-      height={props.height}
-      background={props.background}
-      innerRef={props.innerRef}
-    >
-      <LandingPageSectionInnerDiv>
+    <div className="fl-landing-section-container" id={props.id} ref={props.innerRef}>
+      <div className="fl-landing-section-inner">
         {props.children}
-      </LandingPageSectionInnerDiv>
-    </LandingPageSectionContainerDiv>
+      </div>
+    </div>
   )
 }
 

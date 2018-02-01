@@ -5,7 +5,6 @@ html {
 }
 body {
   margin: 0;
-  font-size: 16px;
 }
 article,
 aside,
@@ -411,7 +410,6 @@ pre {
   overflow: auto;
   word-wrap: normal;
   padding: 1.45rem;
-  white-space: pre-wrap;
 }
 table {
   margin-left: 0;
@@ -514,7 +512,6 @@ th {
 }
 li {
   margin-bottom: calc(1.45rem / 2);
-  word-break: normal;
 }
 ol li {
   padding-left: 0;

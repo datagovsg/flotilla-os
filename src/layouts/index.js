@@ -1,30 +1,10 @@
 import React from "react"
 import PropTypes from "prop-types"
 import Helmet from "react-helmet"
-import styled from "styled-components"
 import Header from "../components/Header"
 import DocsSidebar from "../components/DocsSidebar"
 import Page from "../components/Page"
-import styles from "../constants/styles"
-import "./index.css"
-
-const AppDiv = styled.div`
-  font-family: ${styles.shared.fontFamily};
-  background: ${styles.app.background};
-  width: 100vw;
-  min-height: 100vh;
-
-  a {
-    color: ${styles.link.color};
-    text-decoration: none;
-    &:hover {
-      color: ${styles.link.hoverColor};
-    }
-  }
-`
-const AppInnerDiv = styled.div`
-  ${styles.mixins.flex("row", "nowrap", "flex-start", "flex-start")}
-`
+import "./index.scss"
 
 const TemplateWrapper = (props) => {
   const { children, location } = props
@@ -32,7 +12,7 @@ const TemplateWrapper = (props) => {
   const isLanding = location.pathname === "/"
 
   return (
-    <AppDiv>
+    <div>
       <Helmet
         title="Flotilla | Stitch Fix"
         meta={[
@@ -45,7 +25,7 @@ const TemplateWrapper = (props) => {
         {shouldRenderSidebar && <DocsSidebar posts={props.data} />}
         {children()}
       </Page>
-    </AppDiv>
+    </div>
   )
 }
 

@@ -1,0 +1,212 @@
+// @import "./index.css";
+@import "../../node_modules/aa-ui-components/lib/colors.scss";
+@import "../../node_modules/aa-ui-components/lib/variables.scss";
+@import "../../node_modules/aa-ui-components/lib/mixins.scss";
+
+// Note: prefix all variables with `.fl-` to avoid any duplicates.
+// Side note: fl stands for flotilla landing.
+$fl-app-max-width: 1080px;
+$fl-body-background: $light_gray_3;
+$fl-color: $black_2;
+$fl-header-height: 80px;
+$fl-header-background: $black_0;
+$fl-header-color: $light_gray_1;
+$fl-header-link-color: $fl-header-color;
+$fl-code-font-family: "SFMono-Regular", "Source Code Pro", "Roboto Mono", monospace;
+$fl-code-color: $black_0;
+$fl-code-font-size: 16px;
+$fl-z-header: 1000;
+$fl-z-page: 500;
+
+//
+// Base
+//
+html {
+  font-size: 16px;
+  font-family: $default-font-family;
+}
+body {
+  background: $fl-body-background;
+  color: $fl-color;
+  line-height: 1.75;
+}
+
+//
+// Typography
+//
+h1,h2,h3,h4,h5,h6 {
+  font-weight: normal;
+  line-height: 2;
+}
+
+a {
+  cursor: pointer;
+  &:hover,
+  &.active {
+    color: $color-primary;
+  }
+}
+
+%code {
+  font-family: $fl-code-font-family;
+  font-size: $fl-code-font-size;
+  color: $fl-code-color;
+}
+pre {
+  @extend %code;
+  white-space: pre-wrap;
+  background: $light_gray_1;
+  padding: $spacing * 1.5;
+  margin: $spacing 0;
+}
+code {
+  @extend %code;
+}
+
+//
+// App
+//
+.fl-app-container {
+  @include flex(column, nowrap, flex-start, stretch);
+  width: 100vw;
+  min-height: 100vh;
+}
+
+//
+// Page
+//
+.fl-page-container {
+  @include layout-component-container();
+  margin-top: $fl-header-height;
+  z-index: $fl-z-page;
+
+  .fl-page-inner {
+    @include flex(row, nowrap, space-between, flex-start);
+    width: 100%;
+    max-width: $fl-app-max-width;
+    padding-top: $spacing * 2;
+
+    &.is-landing {
+      max-width: 100vw;
+      padding-top: 0;
+    }
+  }
+}
+
+//
+// Header
+//
+.fl-header-container {
+  @include layout-component-container();
+  height: $fl-header-height;
+  background: $fl-header-background;
+  color: $fl-header-color;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: $fl-z-header;
+  .fl-header-inner {
+    @include layout-component-inner();
+    max-width: $fl-app-max-width;
+  }
+  .fl-header-section {
+    @include flex(row, nowrap, flex-start, center);
+  }
+  .fl-header-link {
+    @include flex(row, nowrap, flex-start, center);
+    color: $fl-header-link-color;
+  }
+  img.fl-header-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    margin-right: $spacing;
+  }
+}
+
+//
+// Landing
+//
+.fl-landing-section-container {
+  @include layout-component-container();
+
+  &#splash {
+    height: 600px;
+    background: $gray_4;
+  }
+  &#features {}
+
+  .fl-landing-section-inner {
+    @include layout-component-inner();
+    max-width: $fl-app-max-width;
+  }
+
+  // The styles for the various sections in the landing page will be configured
+  // here.
+  .fl-landing-section-content {
+    &.fl-splash {
+      max-width: 600px;
+      .fl-splash-tagline {
+        font-size: 1.2rem; // should be 20px
+      }
+      .fl-splash-large-text {
+        font-size: 2.5rem; // 52px
+        line-height: 1.5;
+      }
+    }
+    &.fl-features {
+
+    }
+  }
+}
+
+//
+// Docs
+//
+$fl-docs-width: 720px;
+.fl-docs-container {
+  max-width: $fl-docs-width;
+  .blog-post-content {
+  }
+}
+
+$fl-docs-sidebar-width: 240px;
+$fl-docs-sidebar-background: $gray_2;
+$fl-docs-sidebar-margin-right: $spacing * 4;
+
+.fl-docs-sidebar {
+  @include flex(column, nowrap, flex-start, stretch);
+  width: $fl-docs-sidebar-width;
+  min-width: $fl-docs-sidebar-width;
+  margin-right: $fl-docs-sidebar-margin-right;
+  background: $fl-docs-sidebar-background;
+  .fl-docs-sidebar-link {
+    padding: ($spacing / 2) $spacing;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,12 +1,10 @@
-import { css } from "styled-components"
 import colors from "./colors"
 
 const shared = {
   maxWidth: 1200,
   color: colors.light_gray_1,
   spacing: 12,
-  fontFamily: `-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif`,
+  fontFamily: ``,
   primaryColor: colors.blue_0,
 }
 
