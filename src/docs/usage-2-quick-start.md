@@ -1,22 +1,24 @@
 ---
-path: "/docs/quickstart"
-title: "Quickstart"
-group: "quickstart"
-index: 1
+path: "/usage/quick-start"
+title: "Quick Start"
+group: "usage"
+index: "2"
 ---
+## Quick Start
+
 ### Minimal Assumptions
 
-Before we can doing _anything_ there's some *prerequistes* that must be met.
+Before we can do _anything_ there's some *prerequistes* that must be met.
 
 1. Flotilla by default uses AWS. You must have an AWS account and the credentials available to you in a way that standard AWS tools can access. That is, the standard credential provider chain. This means one of:
-  1. Environment variables
-  2. A shared credentials file
-  3. IAM role
-2. Flotilla does not manage ECS clusters. There must be at least one cluster defined in AWS's ECS service available to you and it must have at least one task node. Most typically this is the `default` cluster and examples will assume this going forward.
+	1. Environment variables
+	2. A shared credentials file
+	3. IAM role
+2. Flotilla uses AWS's Elastic Continer Service (ECS) as the execution backend. However, Flotilla does not manage ECS clusters. There must be at least one cluster defined in AWS's ECS service available to you and it must have at least one task node. Most typically this is the `default` cluster and examples will assume this going forward.
 
 ### Starting the service locally
 
-You can run the service locally using the [docker-compose](https://docs.docker.com/compose/) tool. From inside the repo run:
+You can run the service locally (which will still leverage AWS resources) using the [docker-compose](https://docs.docker.com/compose/) tool. From inside the repo run:
 
 ```
 docker-compose up -d
@@ -30,16 +32,35 @@ Verify the service is running by making a `GET` request with cURL (or navigating
 
 ### Using the UI
 
-#### Launch built in task with UI
-TODO - images
+Flotilla has a simple, easy to use UI. Here's some example images for basic usage.
 
-#### View logs with UI
+#### Define a task with the UI
 
-TODO - images
+The UI allows you to quickly create new tasks.
 
-#### Define a task in the UI
+![Define Task](https://user-images.githubusercontent.com/166823/35579884-999e0b04-059c-11e8-8ec7-65a14f7ae647.png "Create New Task")
 
-TODO - images
+
+#### Launch a task with UI
+You can run tasks you've created with the UI as well. Once you've ran a task the run will transition from `Queued` to `Pending` to `Running` before it finishes and shows `Success` or `Failed` (see [Task Life Cycle](#definitions-and-task-life-cycle)). Once a task is in the `Running` state the logs should be visible.
+
+
+
+1. Launch
+
+   ![Run Task](https://user-images.githubusercontent.com/166823/35579954-cc158d8c-059c-11e8-857c-0c0c7e8cd7b9.png "Run Task")
+
+2. Queued --> Pending
+
+   ![Queued Task](https://user-images.githubusercontent.com/166823/35579975-e1e3bb20-059c-11e8-87d5-5c78f8aa96f4.png "Queued Task")
+
+   ![Pending Task](https://user-images.githubusercontent.com/166823/35579998-eff41368-059c-11e8-8fb7-d5c217998a5d.png "Pending Task")
+3. View logs
+
+   ![Running Task](https://user-images.githubusercontent.com/166823/35580026-038ae348-059d-11e8-95e4-f0150400a1a8.png "Running Task")
+
+   ![Finished Task](https://user-images.githubusercontent.com/166823/35580037-1455ea10-059d-11e8-92da-dd1249dcf40d.png "Finished Task")
+
 
 ### Basic API Usage
 
@@ -140,3 +161,4 @@ curl -XGET localhost:3000/api/v1/<run_id>/logs
   "log":"+ set -e\n+ echo 'hello yourusername'\nhello yourusername"
 }
 ```
+
