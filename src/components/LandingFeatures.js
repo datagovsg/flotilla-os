@@ -43,7 +43,7 @@ class LandingFeatures extends Component {
             <li>Run jobs and view execution history and logs within the UI.</li>
             <li>Use the complete REST API for definitions, jobs, and logs to build your own custom workflows.</li>
           </FeaturesList>
-          <LinkButton to="/docs/quickstart">View Quickstart Guide</LinkButton>
+          <LinkButton to="/usage/quick-start">View Quickstart Guide</LinkButton>
         </Features>
       </LandingPageSection>
     )

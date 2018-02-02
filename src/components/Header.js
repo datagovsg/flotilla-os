@@ -10,7 +10,7 @@ const Header = () => (
         <Link className="fl-header-link" to="/">Flotilla</Link>
       </div>
       <div className="fl-header-section with-horizontal-child-margin">
-        <Link className="fl-header-link" activeClassName="active" to="/docs/philosophy">
+        <Link className="fl-header-link" activeClassName="active" to="/usage/philosophy">
           Documentation
         </Link>
         <a className="fl-header-link" target="_blank" href="https://github.com/stitchfix/flotilla-os">

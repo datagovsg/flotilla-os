@@ -24,6 +24,7 @@ export const pageQuery = graphql`
         path
         title
         group
+        index
       }
     }
   }

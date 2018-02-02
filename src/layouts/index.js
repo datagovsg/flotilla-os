@@ -4,11 +4,11 @@ import Helmet from "react-helmet"
 import Header from "../components/Header"
 import DocsSidebar from "../components/DocsSidebar"
 import Page from "../components/Page"
-import "./index.scss"
+import "./index.css"
 
 const TemplateWrapper = (props) => {
   const { children, location } = props
-  const shouldRenderSidebar = location.pathname.startsWith("/docs")
+  const shouldRenderSidebar = location.pathname.startsWith("/usage") || location.pathname.startsWith("/api")
   const isLanding = location.pathname === "/"
 
   return (

@@ -17,7 +17,7 @@ class LandingSplash extends Component {
             Some words about running containers and data science and stuff.
           </div>
           <div id="landingSplashButtonGroup">
-            <LinkButton to="/docs/quickstart">Get Started</LinkButton>
+            <LinkButton to="/usage/quick-start">Get Started</LinkButton>
           </div>
         </div>
       </LandingPageSection>
