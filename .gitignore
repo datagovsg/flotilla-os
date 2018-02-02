@@ -31,3 +31,4 @@ public/
 .DS_Store
 yarn-error.log
 ui/coverage/
+docs/swagger-spec.md

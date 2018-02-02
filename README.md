@@ -3,7 +3,7 @@
 [![Circle CI](https://circleci.com/gh/stitchfix/flotilla-os.svg?style=shield)](https://circleci.com/gh/stitchfix/flotilla-os)
 [![Go Report Card](https://goreportcard.com/badge/github.com/stitchfix/flotilla-os)](https://goreportcard.com/report/github.com/stitchfix/flotilla-os)
 
-
+## Introduction
 Flotilla is a self-service framework that dramatically simplifies the process of defining and executing containerized jobs. This means you get to focus on the work you're doing rather than _how_ to do it.
 
 Once deployed, Flotilla allows you to:
@@ -39,12 +39,12 @@ Before we can do _anything_ there's some *prerequistes* that must be met.
 2. Flotilla uses AWS's Elastic Continer Service (ECS) as the execution backend. However, Flotilla does not manage ECS clusters. There must be at least one cluster defined in AWS's ECS service available to you and it must have at least one task node. Most typically this is the `default` cluster and examples will assume this going forward.
 
 ### Starting the service locally
- 
+
 You can run the service locally (which will still leverage AWS resources) using the [docker-compose](https://docs.docker.com/compose/) tool. From inside the repo run:
 
 ```
 docker-compose up -d
-```	
+```
 
 You'll notice it builds the code in the repo and starts the flotilla service as well as the default postgres backend.
 
@@ -75,12 +75,12 @@ You can run tasks you've created with the UI as well. Once you've ran a task the
 2. Queued --> Pending
 
    ![Queued Task](https://user-images.githubusercontent.com/166823/35579975-e1e3bb20-059c-11e8-87d5-5c78f8aa96f4.png "Queued Task")
-   
+
    ![Pending Task](https://user-images.githubusercontent.com/166823/35579998-eff41368-059c-11e8-8fb7-d5c217998a5d.png "Pending Task")
 3. View logs
 
    ![Running Task](https://user-images.githubusercontent.com/166823/35580026-038ae348-059d-11e8-95e4-f0150400a1a8.png "Running Task")
-   
+
    ![Finished Task](https://user-images.githubusercontent.com/166823/35580037-1455ea10-059d-11e8-92da-dd1249dcf40d.png "Finished Task")
 
 
@@ -107,7 +107,7 @@ Before you can run a task you first need to define it. We'll use the example hel
 }
 ```
 
-It's a simple task that runs in the default ubuntu image, prints your username to the logs, and exits. 
+It's a simple task that runs in the default ubuntu image, prints your username to the logs, and exits.
 
 > Note: While you can use non-public images and images in your own registries with flotilla, credentials for accessing those images must exist on the ECS hosts. This is outside the scope of this doc. See the AWS [documentation](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/private-auth.html).
 
@@ -127,10 +127,10 @@ This is the fun part. You'll make a `PUT` request to the execution endpoint for 
 
 ```
 curl -XPUT localhost:3000/api/v1/task/alias/hello-flotilla/execute -d '{
-  "cluster":"default", 
+  "cluster":"default",
   "env":[
     {"name":"USERNAME","value":"yourusername"}
-  ], 
+  ],
   "run_tags":{"owner_id":"youruser"}
 }'
 ```
@@ -219,24 +219,24 @@ In a production deployment you'll want multiple instances of the flotilla servic
 The simplest way to deploy for very light usage is to avoid a reverse proxy and deploy directly with docker.
 
 1. Build and tag an image for flotilla using the `Dockerfile` provided in this repo:
-	 
+
 	```
 	docker build -t <your repo name>/flotilla:<version tag>
-	``` 
+	```
 2. Run this image wherever you deploy your services:
 
 	```
 	docker run -e DATABASE_URL=<your db url> -e FLOTILLA_MODE=prod -p 3000:3000 ...<other standard docker run args>
 	```
-	
+
 	> Notes:
-	> ----- 
+	> -----
 	> * Flotilla uses [viper](https://github.com/spf13/viper) for configuration so you can override any of the default configuration under `conf/` using run time environment variables passed to `docker run`
 	> * In most realistic deploys you'll likely want to configure a reverse proxy to sit in front of the flotilla container. See the docs [here](https://hub.docker.com/_/nginx/)
-	
-	
+
+
 	See [docker run](https://docs.docker.com/engine/reference/run/) for more details
-	
+
 ### Configuration In Detail
 
 The variables in `conf/config.yml` are sensible defaults. Most should be left alone unless you're developing flotilla itself. However, there are a few you may want to change in a production environment.

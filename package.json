@@ -31,9 +31,11 @@
     "develop": "gatsby develop",
     "format": "prettier --trailing-comma es5 --no-semi --write \"src/**/*.js\"",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "write-docs": "rimraf src/docs/* && node scripts/parse-readme.js"
+    "write-docs": "rimraf src/docs/* && node scripts/parse-readme.js && node scripts/parse-swagger.js",
+    "swagger-to-md": "swagger-markdown -i docs/swagger-spec.json"
   },
   "devDependencies": {
-    "prettier": "^1.10.2"
+    "prettier": "^1.10.2",
+    "swagger-markdown": "1.1.2"
   }
 }

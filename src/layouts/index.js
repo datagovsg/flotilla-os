@@ -4,7 +4,7 @@ import Helmet from "react-helmet"
 import Header from "../components/Header"
 import DocsSidebar from "../components/DocsSidebar"
 import Page from "../components/Page"
-import "./index.css"
+import "./index.scss"
 
 const TemplateWrapper = (props) => {
   const { children, location } = props
