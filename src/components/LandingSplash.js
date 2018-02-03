@@ -1,6 +1,5 @@
 import React, { Component } from "react"
 import Link from "gatsby-link"
-import LinkButton from "./LinkButton"
 import LandingPageSection from "./LandingPageSection"
 import withScrollAnimation from "./withScrollAnimation"
 import splashMotion from "../motion/splash"
@@ -14,10 +13,10 @@ class LandingSplash extends Component {
             You don't need data engineers. You need Flotilla.
           </div>
           <div className="fl-splash-large-text" id="landingSplashLargeText">
-            Some words about running containers and data science and stuff.
+            Run ETL, model training jobs and productions jobs with Flotilla.
           </div>
           <div id="landingSplashButtonGroup">
-            <LinkButton to="/usage/quick-start">Get Started</LinkButton>
+            <Link className="pl-button pl-intent-primary" to="/usage/quick-start">Get Started</Link>
           </div>
         </div>
       </LandingPageSection>

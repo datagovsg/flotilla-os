@@ -1,8 +1,8 @@
 {
-  "name": "gatsby-starter-default",
-  "description": "Gatsby default starter",
+  "name": "flotilla-landing-page",
+  "description": "Landing page for Flotilla",
   "version": "1.0.0",
-  "author": "Kyle Mathews <mathews.kyle@gmail.com>",
+  "author": "Stitch Fix",
   "dependencies": {
     "aa-ui-components": "github:stitchfix/aa-ui-components#0.6.4",
     "classnames": "2.2.5",
@@ -18,21 +18,15 @@
     "lodash": "4.17.4",
     "popmotion": "8.1.9",
     "react-feather": "1.0.8",
-    "react-helmet": "^5.2.0",
-    "styled-components": "2.4.0"
+    "react-helmet": "^5.2.0"
   },
-  "keywords": [
-    "gatsby"
-  ],
   "license": "MIT",
-  "main": "n/a",
   "scripts": {
     "build": "gatsby build",
     "develop": "gatsby develop",
     "format": "prettier --trailing-comma es5 --no-semi --write \"src/**/*.js\"",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "write-docs": "rimraf src/docs/* && node scripts/parse-readme.js && node scripts/parse-swagger.js",
-    "swagger-to-md": "swagger-markdown -i docs/swagger-spec.json"
+    "write-docs": "rimraf src/docs/* && node scripts/parse-readme.js"
   },
   "devDependencies": {
     "prettier": "^1.10.2",

@@ -2,6 +2,7 @@
 @import "../../node_modules/aa-ui-components/lib/colors.scss";
 @import "../../node_modules/aa-ui-components/lib/variables.scss";
 @import "../../node_modules/aa-ui-components/lib/mixins.scss";
+@import "../../node_modules/aa-ui-components/lib/index.css";
 
 // Note: prefix all variables with `.fl-` to avoid any duplicates.
 // Side note: fl stands for flotilla landing.
@@ -42,10 +43,10 @@ h1,h2,h3,h4,h5,h6 {
 a {
   cursor: pointer;
   text-decoration: none;
-  color: $default-font-color;
+  color: $green_0;
   &:hover,
   &.active {
-    color: $color-primary;
+    color: $green_2;
   }
 }
 
@@ -83,7 +84,7 @@ code {
   z-index: $fl-z-page;
 
   .fl-page-inner {
-    @include flex(row, nowrap, space-between, flex-start);
+    @include flex(row, nowrap, flex-start, flex-start);
     width: 100%;
     max-width: $fl-app-max-width;
     padding-top: $spacing * 2;
@@ -134,7 +135,7 @@ code {
   @include layout-component-container();
 
   &#splash {
-    height: 600px;
+    height: 500px;
     background: $gray_4;
   }
   &#features {}
@@ -148,13 +149,15 @@ code {
   // here.
   .fl-landing-section-content {
     &.fl-splash {
+      @include flex(column, nowrap, flex-start, flex-start);
       max-width: 600px;
       .fl-splash-tagline {
         font-size: 1.2rem; // should be 20px
       }
       .fl-splash-large-text {
-        font-size: 2.5rem; // 52px
+        font-size: 2.75rem; // 52px
         line-height: 1.5;
+        font-weight: 300;
       }
     }
     &.fl-features {
@@ -168,13 +171,17 @@ code {
 //
 $fl-docs-width: 720px;
 .fl-docs-container {
-  // max-width: $fl-docs-width;
+  width: 100%;
+  max-width: 100%;
+  img {
+    max-width: 100%;
+  }
   .blog-post-content {
   }
 }
 
 $fl-docs-sidebar-width: 240px;
-$fl-docs-sidebar-background: $gray_2;
+$fl-docs-sidebar-background: $gray_4;
 $fl-docs-sidebar-margin-right: $spacing * 4;
 
 .fl-docs-sidebar {
@@ -184,6 +191,11 @@ $fl-docs-sidebar-margin-right: $spacing * 4;
   margin-right: $fl-docs-sidebar-margin-right;
   background: $fl-docs-sidebar-background;
   .fl-docs-sidebar-link {
+    color: $black_4;
     padding: ($spacing / 2) $spacing;
+    &:hover,
+    &.active {
+      color: $color-primary;
+    }
   }
 }
