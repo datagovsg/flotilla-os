@@ -1,4 +1,4 @@
-@import "./index.css";
+// @import "./index.css";
 @import "../../node_modules/aa-ui-components/lib/colors.scss";
 @import "../../node_modules/aa-ui-components/lib/variables.scss";
 @import "../../node_modules/aa-ui-components/lib/mixins.scss";
@@ -41,6 +41,8 @@ h1,h2,h3,h4,h5,h6 {
 
 a {
   cursor: pointer;
+  text-decoration: none;
+  color: $default-font-color;
   &:hover,
   &.active {
     color: $color-primary;
@@ -166,7 +168,7 @@ code {
 //
 $fl-docs-width: 720px;
 .fl-docs-container {
-  max-width: $fl-docs-width;
+  // max-width: $fl-docs-width;
   .blog-post-content {
   }
 }
@@ -185,28 +187,3 @@ $fl-docs-sidebar-margin-right: $spacing * 4;
     padding: ($spacing / 2) $spacing;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

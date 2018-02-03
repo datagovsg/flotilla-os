@@ -4,7 +4,6 @@ title: "Development"
 group: "usage"
 index: "5"
 ---
-## Development
 
 ### API Documentation
 

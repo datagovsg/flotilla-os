@@ -4,7 +4,6 @@ title: "Quick Start"
 group: "usage"
 index: "2"
 ---
-## Quick Start
 
 ### Minimal Assumptions
 

@@ -4,7 +4,6 @@ title: "Deploying"
 group: "usage"
 index: "4"
 ---
-## Deploying
 
 In a production deployment you'll want multiple instances of the flotilla service running and postgres running elsewhere (eg. Amazon RDS). In this case the most salient detail configuration detail is the `DATABASE_URL`.
 

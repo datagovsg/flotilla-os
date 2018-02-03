@@ -4,7 +4,6 @@ title: "Philosophy"
 group: "usage"
 index: "1"
 ---
-## Philosophy
 
 Flotilla is strongly opinionated about self-service for data science.
 

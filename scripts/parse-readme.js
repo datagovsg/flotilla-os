@@ -17,7 +17,7 @@ const withFrontmatter = (line, i, group) => {
   const path = `/${group}/${getPath(getCleanTitle(line))}`
   const title = getCleanTitle(line)
 
-  return `---\npath: "${path}"\ntitle: "${title}"\ngroup: "${group}"\nindex: "${i}"\n---\n${line}\n`
+  return `---\npath: "${path}"\ntitle: "${title}"\ngroup: "${group}"\nindex: "${i}"\n---\n`
 }
 
 // The filename.

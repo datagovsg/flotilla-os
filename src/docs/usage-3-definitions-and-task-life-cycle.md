@@ -4,7 +4,6 @@ title: "Definitions and Task Life Cycle"
 group: "usage"
 index: "3"
 ---
-## Definitions and Task Life Cycle
 
 ### Definitions
 | Name | Definition |
