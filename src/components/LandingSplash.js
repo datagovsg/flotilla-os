@@ -3,21 +3,19 @@ import Link from "gatsby-link"
 import LandingPageSection from "./LandingPageSection"
 import withScrollAnimation from "./withScrollAnimation"
 import splashMotion from "../motion/splash"
+import SplashImage from "../assets/flot-img-1.png"
 
 class LandingSplash extends Component {
   render() {
     return (
       <LandingPageSection id="splash" innerRef={this.props.innerRef}>
         <div className="fl-landing-section-content fl-splash">
-          <div className="fl-splash-tagline" id="landingSplashTagline">
-            You don't need data engineers. You need Flotilla.
+          <h1 className="fl-splash-text fl-splash-header" id="splashHeader">Self-service data science.</h1>
+          <p className="fl-splash-text" id="splashParagraph">Flotilla is a self-service framework that dramatically simplifies the process of defining and executing containerized jobs. This means you get to focus on the work you're doing rather than how to do it.</p>
+          <div className="fl-splash-buttons" id="splashButtons">
+            <Link className="pl-button pl-intent-primary" to="/usage/introduction">Get Started</Link>
           </div>
-          <div className="fl-splash-large-text" id="landingSplashLargeText">
-            Run ETL, model training jobs and productions jobs with Flotilla.
-          </div>
-          <div id="landingSplashButtonGroup">
-            <Link className="pl-button pl-intent-primary" to="/usage/quick-start">Get Started</Link>
-          </div>
+          <img src={SplashImage} alt="flotilla-ui-image" id="splashImage" />
         </div>
       </LandingPageSection>
     )

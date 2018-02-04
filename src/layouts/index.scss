@@ -1,4 +1,4 @@
-// @import "./index.css";
+@import "./index.css";
 @import "../../node_modules/aa-ui-components/lib/colors.scss";
 @import "../../node_modules/aa-ui-components/lib/variables.scss";
 @import "../../node_modules/aa-ui-components/lib/mixins.scss";
@@ -10,8 +10,8 @@ $fl-app-max-width: 1080px;
 $fl-body-background: $light_gray_3;
 $fl-color: $black_2;
 $fl-header-height: 80px;
-$fl-header-background: $black_0;
-$fl-header-color: $light_gray_1;
+$fl-header-background: transparentize($light_gray_3, 0.1);
+$fl-header-color: $black_2;
 $fl-header-link-color: $fl-header-color;
 $fl-code-font-family: "SFMono-Regular", "Source Code Pro", "Roboto Mono", monospace;
 $fl-code-color: $black_0;
@@ -28,6 +28,7 @@ html {
 }
 body {
   background: $fl-body-background;
+  font-family: $default-font-family;
   color: $fl-color;
   line-height: 1.75;
 }
@@ -36,17 +37,17 @@ body {
 // Typography
 //
 h1,h2,h3,h4,h5,h6 {
-  font-weight: normal;
-  line-height: 2;
+  font-weight: normal !important;
+  font-family: $default-font-family;
 }
 
 a {
   cursor: pointer;
   text-decoration: none;
-  color: $green_0;
+  color: $blue_1;
   &:hover,
   &.active {
-    color: $green_2;
+    color: $blue_0;
   }
 }
 
@@ -115,6 +116,13 @@ code {
   }
   .fl-header-section {
     @include flex(row, nowrap, flex-start, center);
+    & > * {
+      margin-right: $spacing * 2;
+    }
+    a:hover,
+    a.active {
+      color: $color-primary;
+    }
   }
   .fl-header-link {
     @include flex(row, nowrap, flex-start, center);
@@ -135,8 +143,8 @@ code {
   @include layout-component-container();
 
   &#splash {
-    height: 500px;
-    background: $gray_4;
+    // height: 500px;
+    // background: $gray_4;
   }
   &#features {}
 
@@ -149,15 +157,15 @@ code {
   // here.
   .fl-landing-section-content {
     &.fl-splash {
-      @include flex(column, nowrap, flex-start, flex-start);
-      max-width: 600px;
-      .fl-splash-tagline {
-        font-size: 1.2rem; // should be 20px
+      @include flex(column, nowrap, flex-start, center);
+      padding-top: $spacing * 6;
+      .fl-splash-text {
+        max-width: 520px;
+        text-align: center;
       }
-      .fl-splash-large-text {
-        font-size: 2.75rem; // 52px
-        line-height: 1.5;
-        font-weight: 300;
+      .fl-splash-buttons {
+        @include flex(row, nowrap, center, center);
+        margin-bottom: $spacing * 2;
       }
     }
     &.fl-features {
@@ -181,7 +189,7 @@ $fl-docs-width: 720px;
 }
 
 $fl-docs-sidebar-width: 240px;
-$fl-docs-sidebar-background: $gray_4;
+$fl-docs-sidebar-background: $light_gray_1;
 $fl-docs-sidebar-margin-right: $spacing * 4;
 
 .fl-docs-sidebar {

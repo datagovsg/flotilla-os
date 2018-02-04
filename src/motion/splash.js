@@ -1,9 +1,10 @@
 import { tween, styler, easing, stagger, timeline } from "popmotion"
 
 const splash = () => {
-  const landingSplashTagline = styler(document.querySelector("#landingSplashTagline"))
-  const landingSplashLargeText = styler(document.querySelector("#landingSplashLargeText"))
-  const landingSplashButtonGroup = styler(document.querySelector("#landingSplashButtonGroup"))
+  const splashHeader = styler(document.querySelector("#splashHeader"))
+  const splashParagraph = styler(document.querySelector("#splashParagraph"))
+  const splashButtons = styler(document.querySelector("#splashButtons"))
+  const splashImage = styler(document.querySelector("#splashImage"))
 
   const staggerDuration = -350
   const motionDuration = 500
@@ -17,16 +18,18 @@ const splash = () => {
   }
 
   timeline([
-    { ...sharedMotion, track: "tagline", },
+    { ...sharedMotion, track: "splashHeaderTrack", },
     `${staggerDuration}`,
-    { ...sharedMotion, track: "largeText", },
+    { ...sharedMotion, track: "splashParagraphTrack", },
     `${staggerDuration}`,
-    { ...sharedMotion, track: "buttonGroup", },
-    `${-500}`,
-  ]).start(({ tagline, largeText, buttonGroup }) => {
-    landingSplashTagline.set(tagline)
-    landingSplashLargeText.set(largeText)
-    landingSplashButtonGroup.set(buttonGroup)
+    { ...sharedMotion, track: "splashButtonsTrack", },
+    `${staggerDuration}`,
+    { ...sharedMotion, track: "splashImageTrack", },
+  ]).start(({ splashHeaderTrack, splashParagraphTrack, splashButtonsTrack, splashImageTrack }) => {
+    splashHeader.set(splashHeaderTrack)
+    splashParagraph.set(splashParagraphTrack)
+    splashButtons.set(splashButtonsTrack)
+    splashImage.set(splashImageTrack)
   })
 }
 
