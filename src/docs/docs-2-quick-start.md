@@ -1,7 +1,7 @@
 ---
-path: "/usage/quick-start"
+path: "/docs/quick-start"
 title: "Quick Start"
-group: "usage"
+group: "docs"
 index: "2"
 ---
 

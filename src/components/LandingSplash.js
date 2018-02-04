@@ -10,7 +10,7 @@ class LandingSplash extends Component {
     return (
       <LandingPageSection id="splash" innerRef={this.props.innerRef}>
         <div className="fl-landing-section-content fl-splash">
-          <h1 className="fl-splash-text fl-splash-header" id="splashHeader">Self-service data science.</h1>
+          <h1 className="fl-splash-text fl-splash-header" id="splashHeader">Self-service data science 🚤</h1>
           <div className="fl-splash-text" id="splashParagraph">
             <p>Flotilla is a self-service framework that dramatically simplifies the process of defining and executing containerized jobs. This means you get to focus on the work you're doing rather than how to do it.</p>
             <pre>

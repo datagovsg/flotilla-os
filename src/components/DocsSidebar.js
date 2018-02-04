@@ -1,13 +1,12 @@
 import React, { Component } from "react"
 import Link from "gatsby-link"
-
-const mapPostsToTitles = (posts) => posts.allMarkdownRemark.edges.map(p => p.node.frontmatter)
+import mapDocsToLinks from "../utils/mapDocsToLinks"
 
 const DocsSidebar = (props) => {
-  const posts = mapPostsToTitles(props.posts)
+  const docs = mapDocsToLinks(props.docs)
   return (
     <div className="fl-docs-sidebar">
-      {!!posts && posts.map(p => (
+      {!!docs && docs.map(p => (
         <Link
           className="fl-docs-sidebar-link"
           activeClassName="active"

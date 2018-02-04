@@ -2,13 +2,14 @@ import React from "react"
 import PropTypes from "prop-types"
 import Helmet from "react-helmet"
 import Header from "../components/Header"
+import Footer from "../components/Footer"
 import DocsSidebar from "../components/DocsSidebar"
 import Page from "../components/Page"
 import "./index.scss"
 
 const TemplateWrapper = (props) => {
   const { children, location } = props
-  const shouldRenderSidebar = location.pathname.startsWith("/usage") || location.pathname.startsWith("/api")
+  const shouldRenderSidebar = location.pathname.startsWith("/docs")
   const isLanding = location.pathname === "/"
 
   return (
@@ -22,9 +23,10 @@ const TemplateWrapper = (props) => {
       />
       <Header />
       <Page isLanding={isLanding}>
-        {shouldRenderSidebar && <DocsSidebar posts={props.data} />}
+        {shouldRenderSidebar && <DocsSidebar docs={props.data} />}
         {children()}
       </Page>
+      <Footer docs={props.data} />
     </div>
   )
 }

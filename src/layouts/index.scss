@@ -20,6 +20,16 @@ $fl-z-header: 1000;
 $fl-z-page: 500;
 
 //
+// Extends
+//
+%with-active-color {
+  &:hover,
+  &.active {
+    color: $color-primary !important;
+  }
+}
+
+//
 // Base
 //
 html {
@@ -45,10 +55,7 @@ a {
   cursor: pointer;
   text-decoration: none;
   color: $blue_1;
-  &:hover,
-  &.active {
-    color: $blue_0;
-  }
+  @extend %with-active-color;
 }
 
 %code {
@@ -81,6 +88,7 @@ code {
 //
 .fl-page-container {
   @include layout-component-container();
+  @include flex(row, nowrap, center, flex-start);
   margin-top: $fl-header-height;
   z-index: $fl-z-page;
 
@@ -119,9 +127,8 @@ code {
     & > * {
       margin-right: $spacing * 2;
     }
-    a:hover,
-    a.active {
-      color: $color-primary;
+    a {
+      @extend %with-active-color;
     }
   }
   .fl-header-link {
@@ -133,6 +140,35 @@ code {
     height: 40px;
     border-radius: 6px;
     margin-right: $spacing;
+  }
+}
+
+//
+// Footer
+//
+$fl-footer-background: $light_gray_3;
+$fl-footer-color: $black_2;
+$fl-footer-border-top: 1px solid $light_gray_0;
+.fl-footer-container {
+  @include layout-component-container();
+  background: $fl-footer-background;
+  color: $fl-footer-color;
+  border-top: $fl-footer-border-top;
+  margin-top: $spacing * 2;
+  .fl-footer-inner {
+    @include layout-component-inner();
+    @include flex(row, nowrap, space-between, flex-start);
+    max-width: $fl-app-max-width;
+    padding-top: $spacing * 2;
+    padding-bottom: $spacing * 2;
+    .fl-footer-col {
+      @include flex(column, nowrap, flex-start, flex-start);
+      flex: 1;
+    }
+    .fl-footer-link {
+      color: $gray_1;
+
+    }
   }
 }
 
@@ -209,9 +245,6 @@ $fl-docs-sidebar-margin-right: $spacing * 4;
   .fl-docs-sidebar-link {
     color: $black_4;
     padding: ($spacing / 2) $spacing;
-    &:hover,
-    &.active {
-      color: $color-primary;
-    }
+    @extend %with-active-color;
   }
 }

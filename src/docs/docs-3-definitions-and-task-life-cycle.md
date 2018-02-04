@@ -1,7 +1,7 @@
 ---
-path: "/usage/definitions-and-task-life-cycle"
+path: "/docs/definitions-and-task-life-cycle"
 title: "Definitions and Task Life Cycle"
-group: "usage"
+group: "docs"
 index: "3"
 ---
 

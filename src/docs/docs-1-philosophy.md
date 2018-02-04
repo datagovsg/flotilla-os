@@ -1,7 +1,7 @@
 ---
-path: "/usage/philosophy"
+path: "/docs/philosophy"
 title: "Philosophy"
-group: "usage"
+group: "docs"
 index: "1"
 ---
 

@@ -39,8 +39,8 @@ Promise.resolve()
         acc = [
           ...acc,
           {
-            filename: getFileName(line, acc.length, "usage"),
-            text: withFrontmatter(line, acc.length, "usage")
+            filename: getFileName(line, acc.length, "docs"),
+            text: withFrontmatter(line, acc.length, "docs")
           }
         ]
       } else if (acc.length > 0) {

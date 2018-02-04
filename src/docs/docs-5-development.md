@@ -1,7 +1,7 @@
 ---
-path: "/usage/development"
+path: "/docs/development"
 title: "Development"
-group: "usage"
+group: "docs"
 index: "5"
 ---
 
