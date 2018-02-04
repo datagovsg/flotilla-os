@@ -17,19 +17,21 @@ const splash = () => {
     duration: motionDuration,
   }
 
-  timeline([
-    { ...sharedMotion, track: "splashHeaderTrack", },
-    `${staggerDuration}`,
-    { ...sharedMotion, track: "splashParagraphTrack", },
-    `${staggerDuration}`,
-    { ...sharedMotion, track: "splashButtonsTrack", },
-    `${staggerDuration}`,
-    { ...sharedMotion, track: "splashImageTrack", },
-  ]).start(({ splashHeaderTrack, splashParagraphTrack, splashButtonsTrack, splashImageTrack }) => {
-    splashHeader.set(splashHeaderTrack)
-    splashParagraph.set(splashParagraphTrack)
-    splashButtons.set(splashButtonsTrack)
-    splashImage.set(splashImageTrack)
+  window.addEventListener("DOMContentLoaded", () => {
+    timeline([
+      { ...sharedMotion, track: "splashHeaderTrack", },
+      `${staggerDuration}`,
+      { ...sharedMotion, track: "splashParagraphTrack", },
+      `${staggerDuration}`,
+      { ...sharedMotion, track: "splashButtonsTrack", },
+      `${staggerDuration}`,
+      { ...sharedMotion, track: "splashImageTrack", },
+    ]).start(({ splashHeaderTrack, splashParagraphTrack, splashButtonsTrack, splashImageTrack }) => {
+      splashHeader.set(splashHeaderTrack)
+      splashParagraph.set(splashParagraphTrack)
+      splashButtons.set(splashButtonsTrack)
+      splashImage.set(splashImageTrack)
+    })
   })
 }
 
