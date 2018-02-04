@@ -1,5 +1,6 @@
 import React, { Component } from "react"
 import Link from "gatsby-link"
+import { ExternalLink } from "react-feather"
 import mapDocsToLinks from "../utils/mapDocsToLinks"
 
 const DocsSidebar = (props) => {
@@ -16,6 +17,14 @@ const DocsSidebar = (props) => {
           {p.title}
         </Link>
       ))}
+      <a
+        className="fl-docs-sidebar-link"
+        href="https://github.com/stitchfix/flotilla-os/blob/documentation/docs/api.md"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        API <ExternalLink size={16} />
+      </a>
     </div>
   )
 }

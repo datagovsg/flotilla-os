@@ -15,7 +15,7 @@ const Header = () => (
           Docs
         </Link>
         <a className="fl-header-link" target="_blank" rel="noopener noreferrer" href="https://github.com/stitchfix/flotilla-os">
-          Github <ExternalLink size={16} />
+          Github&nbsp;<ExternalLink size={16} />
         </a>
       </div>
     </div>

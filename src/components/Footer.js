@@ -23,15 +23,25 @@ const Footer = props => {
               {p.title}
             </Link>
           ))}
+          <a
+            className="fl-footer-link"
+            href="https://github.com/stitchfix/flotilla-os/blob/documentation/docs/api.md"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            API <ExternalLink size={16} />
+          </a>
           <hr/>
-          <a className="fl-footer-link" target="_blank" href="https://github.com/stitchfix/flotilla-os" rel="noopener noreferrer">
+          <a
+            className="fl-footer-link"
+            target="_blank"
+            href="https://github.com/stitchfix/flotilla-os"
+            rel="noopener noreferrer"
+          >
             Github <ExternalLink size={16} />
           </a>
         </div>
-        <div className="fl-footer-col">
-
-
-        </div>
+        <div className="fl-footer-col" />
       </div>
     </div>
   )
