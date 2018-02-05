@@ -4,11 +4,11 @@ import LandingPageSection from "./LandingPageSection"
 import withScrollAnimation from "./withScrollAnimation"
 import splashMotion from "../motion/splash"
 
-const defaultText = "Flotilla is a self-service framework that dramatically simplifies the process of defining and executing containerized jobs for data science. Focus on the work you're doing rather than how to do it."
+const defaultText = "Flotilla is a self-service framework that dramatically simplifies the process of defining and executing containerized jobs for data science."
 const textOptions = [
   {
     header: "You don't need data engineers 😉",
-    text: "You need Flotilla, a self-service framework that dramatically simplifies the process of defining and executing containerized jobs for data science. Focus on the work you're doing rather than how to do it.",
+    text: "You need Flotilla, a self-service framework that dramatically simplifies the process of defining and executing containerized jobs for data science.",
   },
   {
     header: "Self-service data science.",
