@@ -9,7 +9,7 @@ const Footer = props => {
     <div className="fl-footer-container">
       <div className="fl-footer-inner">
         <div className="fl-footer-col">
-          <h4>Stitch Fix</h4>
+          <h4>Copyright &copy; 2018 Stitch Fix</h4>
         </div>
         <div className="fl-footer-col">
           <h4>Docs</h4>

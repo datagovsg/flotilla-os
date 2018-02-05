@@ -6,6 +6,7 @@
 
 // Note: prefix all variables with `.fl-` to avoid any duplicates.
 // Side note: fl stands for flotilla landing.
+$fl-font-size: 15px;
 $fl-app-max-width: 1080px;
 $fl-body-background: $light_gray_3;
 $fl-color: $black_2;
@@ -15,9 +16,16 @@ $fl-header-color: $black_2;
 $fl-header-link-color: $fl-header-color;
 $fl-code-font-family: "SFMono-Regular", "Source Code Pro", "Roboto Mono", monospace;
 $fl-code-color: $black_0;
-$fl-code-font-size: 16px;
+$fl-code-font-size: $fl-font-size;
 $fl-z-header: 1000;
 $fl-z-page: 500;
+$fl-footer-background: $light_gray_3;
+$fl-footer-color: $black_2;
+$fl-footer-border-top: 1px solid $light_gray_0;
+$fl-docs-sidebar-width: 240px;
+$fl-docs-sidebar-background: $light_gray_1;
+$fl-docs-sidebar-margin-right: $spacing * 4;
+$fl-mobile-breakpoint: 640px;
 
 //
 // Extends
@@ -25,15 +33,19 @@ $fl-z-page: 500;
 %with-active-color {
   &:hover,
   &.active {
-    color: $color-primary !important;
+    color: $color-primary;
   }
+}
+a.pl-button:hover,
+a.pl-button.active {
+  color: white !important;
 }
 
 //
 // Base
 //
 html {
-  font-size: 16px;
+  font-size: $fl-font-size;
   font-family: $default-font-family;
 }
 body {
@@ -146,9 +158,6 @@ code {
 //
 // Footer
 //
-$fl-footer-background: $light_gray_3;
-$fl-footer-color: $black_2;
-$fl-footer-border-top: 1px solid $light_gray_0;
 .fl-footer-container {
   @include layout-component-container();
   background: $fl-footer-background;
@@ -167,7 +176,6 @@ $fl-footer-border-top: 1px solid $light_gray_0;
     }
     .fl-footer-link {
       color: $gray_1;
-
     }
   }
 }
@@ -177,12 +185,6 @@ $fl-footer-border-top: 1px solid $light_gray_0;
 //
 .fl-landing-section-container {
   @include layout-component-container();
-
-  &#splash {
-    // height: 500px;
-    // background: $gray_4;
-  }
-  &#features {}
 
   .fl-landing-section-inner {
     @include layout-component-inner();
@@ -212,29 +214,19 @@ $fl-footer-border-top: 1px solid $light_gray_0;
         @include flex(row, nowrap, center, center);
       }
     }
-    &.fl-features {
-
-    }
   }
 }
 
 //
 // Docs
 //
-$fl-docs-width: 720px;
 .fl-docs-container {
   width: 100%;
   max-width: 100%;
   img {
     max-width: 100%;
   }
-  .blog-post-content {
-  }
 }
-
-$fl-docs-sidebar-width: 240px;
-$fl-docs-sidebar-background: $light_gray_1;
-$fl-docs-sidebar-margin-right: $spacing * 4;
 
 .fl-docs-sidebar {
   @include flex(column, nowrap, flex-start, stretch);
@@ -246,5 +238,17 @@ $fl-docs-sidebar-margin-right: $spacing * 4;
     color: $black_4;
     padding: ($spacing / 2) $spacing;
     @extend %with-active-color;
+  }
+}
+
+@media screen AND (max-width: $fl-mobile-breakpoint) {
+  .fl-page-container > .fl-page-inner {
+    @include flex(column, nowrap, flex-start, stretch);
+  }
+  .fl-docs-sidebar {
+    margin-bottom: $spacing * 2;
+  }
+  .fl-footer-container > .fl-footer-inner {
+    @include flex(column, nowrap, flex-start, stretch);
   }
 }
