@@ -33,7 +33,7 @@ const splash = () => {
       { ...sharedMotion, track: "splashButtonsTrack", },
       `${staggerDuration}`,
       { ...sharedMotion, track: "splashImageTrack", },
-      `${staggerDuration}`,
+      `${staggerDuration - 150}`,
       {
         from: { opacity: 0, y: -80 },
         to: { opacity: 1, y: 0 },
