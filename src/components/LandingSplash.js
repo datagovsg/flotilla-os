@@ -19,7 +19,7 @@ class LandingSplash extends Component {
             </pre>
           </div>
           <div className="fl-splash-buttons" id="splashButtons">
-            <Link className="pl-button pl-intent-primary" to="/usage/introduction">Get Started</Link>
+            <Link className="pl-button pl-intent-primary" to="/docs/introduction">Get Started</Link>
           </div>
           <img className="fl-splash-image" src={SplashImage} alt="flotilla-ui-image" id="splashImage" />
         </div>

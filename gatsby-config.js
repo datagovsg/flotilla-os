@@ -1,6 +1,7 @@
 module.exports = {
+  pathPrefix: "/flotilla-os",
   siteMetadata: {
-    title: 'Gatsby Default Starter',
+    title: 'Flotilla | Stitch Fix',
   },
   plugins: [
     'gatsby-plugin-react-helmet',

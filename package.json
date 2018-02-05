@@ -25,10 +25,12 @@
     "build": "gatsby build",
     "develop": "gatsby develop",
     "format": "prettier --trailing-comma es5 --no-semi --write \"src/**/*.js\"",
+    "deploy": "gatsby build --prefix-paths && gh-pages -d public",
     "test": "echo \"Error: no test specified\" && exit 1",
     "write-docs": "rimraf src/docs/* && node scripts/parse-readme.js"
   },
   "devDependencies": {
+    "gh-pages": "1.1.0",
     "prettier": "^1.10.2",
     "swagger-markdown": "1.1.2"
   }
