@@ -1,6 +1,10 @@
-import { tween, styler, easing, stagger, timeline } from "popmotion"
+// Note: while most of the components animated by the `splash()` function are
+// located at src/components/LandingSplash.js, we're also animating some of the
+// elements in the <Header> component (src/components/Header.js)
+import { tween, styler, easing, stagger, timeline, keyframes } from "popmotion"
 
 const splash = () => {
+  const header = styler(document.querySelector("#header"))
   const splashHeader = styler(document.querySelector("#splashHeader"))
   const splashParagraph = styler(document.querySelector("#splashParagraph"))
   const splashButtons = styler(document.querySelector("#splashButtons"))
@@ -17,6 +21,8 @@ const splash = () => {
     duration: motionDuration,
   }
 
+  console.log(Object.keys(easing))
+
   window.addEventListener("DOMContentLoaded", () => {
     timeline([
       { ...sharedMotion, track: "splashHeaderTrack", },
@@ -26,11 +32,20 @@ const splash = () => {
       { ...sharedMotion, track: "splashButtonsTrack", },
       `${staggerDuration}`,
       { ...sharedMotion, track: "splashImageTrack", },
-    ]).start(({ splashHeaderTrack, splashParagraphTrack, splashButtonsTrack, splashImageTrack }) => {
+      600,
+      {
+        from: { y: -80 },
+        to: { y: 0 },
+        ease: easing.backInOut,
+        duration: 1200,
+        track: "headerTrack"
+      },
+    ]).start(({ headerTrack, splashHeaderTrack, splashParagraphTrack, splashButtonsTrack, splashImageTrack }) => {
       splashHeader.set(splashHeaderTrack)
       splashParagraph.set(splashParagraphTrack)
       splashButtons.set(splashButtonsTrack)
       splashImage.set(splashImageTrack)
+      header.set(headerTrack)
     })
   })
 }

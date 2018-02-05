@@ -14,7 +14,12 @@ const Header = () => (
   <div className="fl-header-container" id="header">
     <div className="fl-header-inner">
       <div className="fl-header-section">
-        <img className="fl-header-logo" src={Logo} alt="stitchfix-logo" />
+        <img
+          className="fl-header-logo"
+          src={Logo}
+          alt="stitchfix-logo"
+          id="headerLogo"
+        />
         <Title />
       </div>
       <div className="fl-header-section">
