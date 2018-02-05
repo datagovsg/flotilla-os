@@ -28,11 +28,24 @@
     "format": "prettier --trailing-comma es5 --no-semi --write \"src/**/*.js\"",
     "deploy": "gatsby build --prefix-paths && gh-pages -d public",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "write-docs": "rimraf src/docs/* && node scripts/parse-readme.js"
+    "write-docs": "rimraf src/docs/* && node scripts/parse-readme.js",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,scss}": [
+      "prettier --no-semi --trailing-comma es5 --write",
+      "git add"
+    ]
   },
   "devDependencies": {
+    "eslint": "4.17.0",
+    "eslint-config-prettier": "2.9.0",
+    "eslint-plugin-prettier": "2.6.0",
+    "eslint-plugin-react": "7.6.1",
     "gh-pages": "1.1.0",
-    "prettier": "^1.10.2",
+    "husky": "0.14.3",
+    "lint-staged": "6.1.0",
+    "prettier": "1.10.2",
     "swagger-markdown": "1.1.2"
   }
 }

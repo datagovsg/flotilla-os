@@ -14,11 +14,13 @@ $fl-header-height: 80px;
 $fl-header-background: transparentize($light_gray_3, 0.033);
 $fl-header-color: $black_2;
 $fl-header-link-color: $fl-header-color;
-$fl-code-font-family: "SFMono-Regular", "Source Code Pro", "Roboto Mono", monospace;
+$fl-code-font-family: "SFMono-Regular", "Source Code Pro", "Roboto Mono",
+  monospace;
 $fl-code-color: $black_0;
 $fl-code-font-size: $fl-font-size;
 $fl-z-header: 1000;
 $fl-z-page: 500;
+$fl-z-footer: 900;
 $fl-footer-background: $light_gray_3;
 $fl-footer-color: $black_2;
 $fl-footer-border-top: 1px solid $light_gray_0;
@@ -58,7 +60,12 @@ body {
 //
 // Typography
 //
-h1,h2,h3,h4,h5,h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: normal !important;
   font-family: $default-font-family;
 }
@@ -175,6 +182,7 @@ code {
   color: $fl-footer-color;
   border-top: $fl-footer-border-top;
   margin-top: $spacing * 2;
+  z-index: $fl-z-footer;
   .fl-footer-inner {
     @include layout-component-inner();
     @include flex(row, nowrap, space-between, flex-start);
