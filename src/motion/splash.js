@@ -21,8 +21,6 @@ const splash = () => {
     duration: motionDuration,
   }
 
-  console.log(Object.keys(easing))
-
   window.addEventListener("DOMContentLoaded", () => {
     timeline([
       { ...sharedMotion, track: "splashHeaderTrack", },
@@ -32,12 +30,12 @@ const splash = () => {
       { ...sharedMotion, track: "splashButtonsTrack", },
       `${staggerDuration}`,
       { ...sharedMotion, track: "splashImageTrack", },
-      600,
+      `${staggerDuration}`,
       {
-        from: { y: -80 },
-        to: { y: 0 },
+        from: { opacity: 0, y: -80 },
+        to: { opacity: 1, y: 0 },
         ease: easing.backInOut,
-        duration: 1200,
+        duration: 1000,
         track: "headerTrack"
       },
     ]).start(({ headerTrack, splashHeaderTrack, splashParagraphTrack, splashButtonsTrack, splashImageTrack }) => {
