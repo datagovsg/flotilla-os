@@ -6,11 +6,11 @@ const validateExistenceAndType = (object, key, type) =>
 const printErr = (key, type) => {
   console.error(
     `The opts object passed to the initial call of withScrollAnimation() ` +
-    `must have a [${key}] property of type [${type}].`
+      `must have a [${key}] property of type [${type}].`
   )
 }
 
-const validateOpts = (opts) => {
+const validateOpts = opts => {
   const keysToCheck = [
     { key: "elRef", type: "string" },
     { key: "animate", type: "function" },
@@ -24,17 +24,14 @@ const validateOpts = (opts) => {
   })
 }
 
-const withScrollAnimation = (opts = {}) => (Unwrapped) => {
+const withScrollAnimation = (opts = {}) => Unwrapped => {
   validateOpts(opts)
 
-  const {
-    elRef,
-    animate,
-    heightRenderedBeforeAnimationStarts,
-  } = opts
+  const { elRef, animate, heightRenderedBeforeAnimationStarts } = opts
 
   return class Wrapped extends Component {
-    static displayName = `withScrollAnimation(${Unwrapped.displayName || "UnwrappedComponent"})`
+    static displayName = `withScrollAnimation(${Unwrapped.displayName ||
+      "UnwrappedComponent"})`
     constructor(props) {
       super(props)
       this.scrollListener = this.scrollListener.bind(this)
@@ -44,7 +41,9 @@ const withScrollAnimation = (opts = {}) => (Unwrapped) => {
     }
     componentDidMount() {
       if (this.shouldAnimate()) {
-        this.setState({ hasAnimated: true }, () => { animate() })
+        this.setState({ hasAnimated: true }, () => {
+          animate()
+        })
       } else {
         window.addEventListener("scroll", this.scrollListener)
       }
@@ -56,7 +55,9 @@ const withScrollAnimation = (opts = {}) => (Unwrapped) => {
     }
     scrollListener() {
       if (this.shouldAnimate()) {
-        this.setState({ hasAnimated: true }, () => { animate() })
+        this.setState({ hasAnimated: true }, () => {
+          animate()
+        })
       }
     }
     shouldAnimate() {
@@ -65,7 +66,7 @@ const withScrollAnimation = (opts = {}) => (Unwrapped) => {
       const viewportHeight = window.innerHeight
       const elTop = this[elRef].getBoundingClientRect().top
 
-      if ((viewportHeight - elTop) >= heightRenderedBeforeAnimationStarts) {
+      if (viewportHeight - elTop >= heightRenderedBeforeAnimationStarts) {
         return true
       }
 
@@ -75,7 +76,9 @@ const withScrollAnimation = (opts = {}) => (Unwrapped) => {
       return (
         <Unwrapped
           {...this.props}
-          innerRef={(r) => { this[elRef] = r }}
+          innerRef={r => {
+            this[elRef] = r
+          }}
         />
       )
     }

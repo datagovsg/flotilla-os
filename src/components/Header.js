@@ -23,10 +23,19 @@ const Header = () => (
         <Title />
       </div>
       <div className="fl-header-section fl-header-section-right">
-        <Link className="fl-header-link" activeClassName="active" to="/docs/introduction">
+        <Link
+          className="fl-header-link"
+          activeClassName="active"
+          to="/docs/introduction"
+        >
           Docs
         </Link>
-        <a className="fl-header-link" target="_blank" rel="noopener noreferrer" href="https://github.com/stitchfix/flotilla-os">
+        <a
+          className="fl-header-link"
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://github.com/stitchfix/flotilla-os"
+        >
           Github&nbsp;<ExternalLink size={16} />
         </a>
       </div>

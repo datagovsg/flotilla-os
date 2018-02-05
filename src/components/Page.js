@@ -10,9 +10,7 @@ const Page = ({ children, isLanding }) => {
 
   return (
     <div className="fl-page-container">
-      <div className={innerclass}>
-        {children}
-      </div>
+      <div className={innerclass}>{children}</div>
     </div>
   )
 }

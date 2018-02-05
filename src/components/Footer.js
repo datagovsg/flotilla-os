@@ -13,16 +13,17 @@ const Footer = props => {
         </div>
         <div className="fl-footer-col">
           <h4>Docs</h4>
-          {!!docs && docs.map(p => (
-            <Link
-              className="fl-footer-link"
-              activeClassName="active"
-              key={p.path}
-              to={p.path}
-            >
-              {p.title}
-            </Link>
-          ))}
+          {!!docs &&
+            docs.map(p => (
+              <Link
+                className="fl-footer-link"
+                activeClassName="active"
+                key={p.path}
+                to={p.path}
+              >
+                {p.title}
+              </Link>
+            ))}
           <a
             className="fl-footer-link"
             href="https://github.com/stitchfix/flotilla-os/blob/documentation/docs/api.md"
@@ -31,7 +32,7 @@ const Footer = props => {
           >
             API <ExternalLink size={16} />
           </a>
-          <hr/>
+          <hr />
           <a
             className="fl-footer-link"
             target="_blank"
