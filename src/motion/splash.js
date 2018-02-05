@@ -7,6 +7,7 @@ const splash = () => {
   const header = styler(document.querySelector("#header"))
   const splashHeader = styler(document.querySelector("#splashHeader"))
   const splashParagraph = styler(document.querySelector("#splashParagraph"))
+  const splashCode = styler(document.querySelector("#splashCode"))
   const splashButtons = styler(document.querySelector("#splashButtons"))
   const splashImage = styler(document.querySelector("#splashImage"))
 
@@ -27,6 +28,8 @@ const splash = () => {
       `${staggerDuration}`,
       { ...sharedMotion, track: "splashParagraphTrack", },
       `${staggerDuration}`,
+      { ...sharedMotion, track: "splashCodeTrack", },
+      `${staggerDuration}`,
       { ...sharedMotion, track: "splashButtonsTrack", },
       `${staggerDuration}`,
       { ...sharedMotion, track: "splashImageTrack", },
@@ -38,9 +41,10 @@ const splash = () => {
         duration: 1000,
         track: "headerTrack"
       },
-    ]).start(({ headerTrack, splashHeaderTrack, splashParagraphTrack, splashButtonsTrack, splashImageTrack }) => {
+    ]).start(({ headerTrack, splashHeaderTrack, splashParagraphTrack, splashCodeTrack, splashButtonsTrack, splashImageTrack }) => {
       splashHeader.set(splashHeaderTrack)
       splashParagraph.set(splashParagraphTrack)
+      splashCode.set(splashCodeTrack)
       splashButtons.set(splashButtonsTrack)
       splashImage.set(splashImageTrack)
       header.set(headerTrack)

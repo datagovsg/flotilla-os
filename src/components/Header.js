@@ -13,7 +13,7 @@ const Title = () => (
 const Header = () => (
   <div className="fl-header-container" id="header">
     <div className="fl-header-inner">
-      <div className="fl-header-section">
+      <div className="fl-header-section fl-header-section-left">
         <img
           className="fl-header-logo"
           src={Logo}
@@ -22,7 +22,7 @@ const Header = () => (
         />
         <Title />
       </div>
-      <div className="fl-header-section">
+      <div className="fl-header-section fl-header-section-right">
         <Link className="fl-header-link" activeClassName="active" to="/docs/introduction">
           Docs
         </Link>

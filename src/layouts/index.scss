@@ -11,7 +11,7 @@ $fl-app-max-width: 1080px;
 $fl-body-background: $light_gray_3;
 $fl-color: $black_2;
 $fl-header-height: 80px;
-$fl-header-background: transparentize($light_gray_3, 0.05);
+$fl-header-background: transparentize($light_gray_3, 0.033);
 $fl-header-color: $black_2;
 $fl-header-link-color: $fl-header-color;
 $fl-code-font-family: "SFMono-Regular", "Source Code Pro", "Roboto Mono", monospace;
@@ -136,8 +136,8 @@ code {
   }
   .fl-header-section {
     @include flex(row, nowrap, flex-start, center);
-    & > * {
-      margin-right: $spacing * 2;
+    &.fl-header-section-right > * {
+      margin-left: $spacing * 2;
     }
     a {
       @extend %with-active-color;
@@ -156,6 +156,7 @@ code {
     .fl-header-title-sub {
       font-size: 0.75rem;
       color: $gray_1;
+      white-space: nowrap;
     }
   }
   img.fl-header-logo {
@@ -209,13 +210,18 @@ code {
       width: 100%;
       padding-top: $spacing * 6;
       & > * {
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.45rem;
+        &:last-child {
+          margin-bottom: 0;
+        }
       }
       .fl-splash-text {
         max-width: 600px;
-        p {
-          text-align: center;
-        }
+        text-align: center;
+      }
+      .fl-splash-code {
+        max-width: 600px;
+        margin-top: 0;
         code {
           display: block;
         }
