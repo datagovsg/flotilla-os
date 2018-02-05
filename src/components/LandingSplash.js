@@ -7,7 +7,7 @@ import splashMotion from "../motion/splash"
 const defaultText = "Flotilla is a self-service framework that dramatically simplifies the process of defining and executing containerized jobs for data science. Focus on the work you're doing rather than how to do it."
 const textOptions = [
   {
-    header: "You* don't need data engineers 😉",
+    header: "You don't need data engineers 😉",
     text: "You need Flotilla, a self-service framework that dramatically simplifies the process of defining and executing containerized jobs for data science. Focus on the work you're doing rather than how to do it.",
   },
   {
@@ -37,7 +37,6 @@ class LandingSplash extends Component {
             <Link className="pl-button pl-intent-primary" to="/docs/introduction">Get Started</Link>
           </div>
           <img className="fl-splash-image" src="https://user-images.githubusercontent.com/166823/35580026-038ae348-059d-11e8-95e4-f0150400a1a8.png" alt="flotilla-ui-image" id="splashImage" />
-          {index === 0 && <p className="fl-splash-text">* By "you", we mean data scientists.</p>}
         </div>
       </LandingPageSection>
     )
