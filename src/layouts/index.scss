@@ -11,7 +11,7 @@ $fl-app-max-width: 1080px;
 $fl-body-background: $light_gray_3;
 $fl-color: $black_2;
 $fl-header-height: 80px;
-$fl-header-background: transparentize($light_gray_3, 0.1);
+$fl-header-background: transparentize($light_gray_3, 0.05);
 $fl-header-color: $black_2;
 $fl-header-link-color: $fl-header-color;
 $fl-code-font-family: "SFMono-Regular", "Source Code Pro", "Roboto Mono", monospace;
@@ -147,10 +147,20 @@ code {
     @include flex(row, nowrap, flex-start, center);
     color: $fl-header-link-color;
   }
+  .fl-header-title {
+    @include flex(column, nowrap, center, flex-start);
+    font-family: $fl-code-font-family;
+    text-transform: uppercase;
+    line-height: 1;
+
+    .fl-header-title-sub {
+      font-size: 0.75rem;
+      color: $gray_1;
+    }
+  }
   img.fl-header-logo {
-    width: 40px;
-    height: 40px;
-    border-radius: 6px;
+    width: 24px;
+    height: 24px;
     margin-right: $spacing;
   }
 }

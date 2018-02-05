@@ -3,12 +3,19 @@ import Link from "gatsby-link"
 import { ExternalLink } from "react-feather"
 import Logo from "../assets/favicon.png"
 
+const Title = () => (
+  <Link to="/" className="fl-header-link fl-header-title">
+    <div className="fl-header-title-name">Flotilla</div>
+    <div className="fl-header-title-sub">Stitch Fix Open Source</div>
+  </Link>
+)
+
 const Header = () => (
   <div className="fl-header-container" id="header">
     <div className="fl-header-inner">
       <div className="fl-header-section">
         <img className="fl-header-logo" src={Logo} alt="stitchfix-logo" />
-        <Link className="fl-header-link" to="/">Flotilla</Link>
+        <Title />
       </div>
       <div className="fl-header-section">
         <Link className="fl-header-link" activeClassName="active" to="/docs/introduction">
