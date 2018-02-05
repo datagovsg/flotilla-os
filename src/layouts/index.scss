@@ -6,7 +6,7 @@
 
 // Note: prefix all variables with `.fl-` to avoid any duplicates.
 // Side note: fl stands for flotilla landing.
-$fl-font-size: 15px;
+$fl-font-size: 1em;
 $fl-app-max-width: 1080px;
 $fl-body-background: $light_gray_3;
 $fl-color: $black_2;
@@ -33,7 +33,7 @@ $fl-mobile-breakpoint: 640px;
 %with-active-color {
   &:hover,
   &.active {
-    color: $color-primary;
+    color: $color-primary !important;
   }
 }
 a.pl-button:hover,
@@ -246,6 +246,7 @@ code {
     @include flex(column, nowrap, flex-start, stretch);
   }
   .fl-docs-sidebar {
+    width: 100%;
     margin-bottom: $spacing * 2;
   }
   .fl-footer-container > .fl-footer-inner {
