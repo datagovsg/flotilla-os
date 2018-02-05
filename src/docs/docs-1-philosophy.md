@@ -7,7 +7,7 @@ index: "1"
 
 Flotilla is strongly opinionated about self-service for data science.
 
-The core assumption is that you understand your work the best. Therefor, it is _you_ who should own your work from end-to-end.
+The core assumption is that you understand your work the best. Therefore, it is _you_ who should own your work from end-to-end.
 
 * You shouldn't need to be a "data engineer" to extract, transform, and load data for your work. Run this work with Flotilla.
 

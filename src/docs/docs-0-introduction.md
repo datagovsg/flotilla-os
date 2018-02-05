@@ -4,6 +4,7 @@ title: "Introduction"
 group: "docs"
 index: "0"
 ---
+
 Flotilla is a self-service framework that dramatically simplifies the process of defining and executing containerized jobs. This means you get to focus on the work you're doing rather than _how_ to do it.
 
 Once deployed, Flotilla allows you to:

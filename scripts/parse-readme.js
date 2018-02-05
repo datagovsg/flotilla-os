@@ -25,6 +25,9 @@ const getFileName = (line, index, group) => {
   return `${group}-${index}-${getPath(getCleanTitle(line))}`
 }
 
+const markdownInternalLinkRegex = /(\[(.*)\]\(#[^\)]*\))/
+const withNoInternalLinks = str => str.replace(markdownInternalLinkRegex, (match, p1, p2) => p2)
+
 Promise.resolve()
   .then(() => {
     // Read it.
@@ -45,7 +48,7 @@ Promise.resolve()
         ]
       } else if (acc.length > 0) {
         const index = acc.length - 1
-        acc[index].text += `${line}\n`
+        acc[index].text += `${withNoInternalLinks(line)}\n`
       }
       return acc
     }, [])
