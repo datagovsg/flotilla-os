@@ -40,6 +40,12 @@ module.exports = {
           windows: false
         }
       }
-    }
+    },
+    //{
+    //  resolve: "gatsby-plugin-google-analytics",
+    //  options: {
+    //    trackingId: "FILL_ME_IN",
+    //  }
+    //}
   ],
 };
