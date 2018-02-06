@@ -22,43 +22,41 @@ const splash = () => {
     duration: motionDuration,
   }
 
-  window.addEventListener("DOMContentLoaded", () => {
-    timeline([
-      { ...sharedMotion, track: "splashHeaderTrack" },
-      `${staggerDuration}`,
-      { ...sharedMotion, track: "splashParagraphTrack" },
-      `${staggerDuration}`,
-      { ...sharedMotion, track: "splashCodeTrack" },
-      `${staggerDuration}`,
-      { ...sharedMotion, track: "splashButtonsTrack" },
-      `${staggerDuration}`,
-      { ...sharedMotion, track: "splashImageTrack" },
-      `${staggerDuration - 150}`,
-      {
-        from: { opacity: 0, y: -80 },
-        to: { opacity: 1, y: 0 },
-        ease: easing.backInOut,
-        duration: 1000,
-        track: "headerTrack",
-      },
-    ]).start(
-      ({
-        headerTrack,
-        splashHeaderTrack,
-        splashParagraphTrack,
-        splashCodeTrack,
-        splashButtonsTrack,
-        splashImageTrack,
-      }) => {
-        splashHeader.set(splashHeaderTrack)
-        splashParagraph.set(splashParagraphTrack)
-        splashCode.set(splashCodeTrack)
-        splashButtons.set(splashButtonsTrack)
-        splashImage.set(splashImageTrack)
-        header.set(headerTrack)
-      }
-    )
-  })
+  timeline([
+    { ...sharedMotion, track: "splashHeaderTrack" },
+    `${staggerDuration}`,
+    { ...sharedMotion, track: "splashParagraphTrack" },
+    `${staggerDuration}`,
+    { ...sharedMotion, track: "splashCodeTrack" },
+    `${staggerDuration}`,
+    { ...sharedMotion, track: "splashButtonsTrack" },
+    `${staggerDuration}`,
+    { ...sharedMotion, track: "splashImageTrack" },
+    `${staggerDuration - 150}`,
+    {
+      from: { opacity: 0, y: -80 },
+      to: { opacity: 1, y: 0 },
+      ease: easing.backInOut,
+      duration: 1000,
+      track: "headerTrack",
+    },
+  ]).start(
+    ({
+      headerTrack,
+      splashHeaderTrack,
+      splashParagraphTrack,
+      splashCodeTrack,
+      splashButtonsTrack,
+      splashImageTrack,
+    }) => {
+      splashHeader.set(splashHeaderTrack)
+      splashParagraph.set(splashParagraphTrack)
+      splashCode.set(splashCodeTrack)
+      splashButtons.set(splashButtonsTrack)
+      splashImage.set(splashImageTrack)
+      header.set(headerTrack)
+    }
+  )
 }
 
 export default splash

@@ -257,6 +257,17 @@ code {
   }
 }
 
+//
+// Utils
+//
+.fl-initial-opacity-zero {
+  opacity: 0;
+}
+
+//
+// Media
+//
+
 @media screen AND (max-width: $fl-mobile-breakpoint) {
   .fl-page-container > .fl-page-inner {
     @include flex(column, nowrap, flex-start, stretch);

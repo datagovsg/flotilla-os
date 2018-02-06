@@ -18,8 +18,10 @@ const TemplateWrapper = props => {
     shouldRenderSidebar = location.pathname.startsWith("/docs")
     isLanding = location.pathname === "/"
   } else {
-    shouldRenderSidebar = location.pathname.startsWith(`${config.pathPrefix}/docs`)
-    isLanding = location.pathname === config.pathPrefix
+    shouldRenderSidebar = location.pathname.startsWith(
+      `${config.pathPrefix}/docs`
+    )
+    isLanding = location.pathname === `${config.pathPrefix}/`
   }
 
   return (
