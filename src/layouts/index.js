@@ -6,11 +6,21 @@ import Footer from "../components/Footer"
 import DocsSidebar from "../components/DocsSidebar"
 import Page from "../components/Page"
 import "./index.scss"
+import config from "../../gatsby-config"
 
 const TemplateWrapper = props => {
   const { children, location } = props
-  const shouldRenderSidebar = location.pathname.startsWith("/docs")
-  const isLanding = location.pathname === "/"
+
+  let shouldRenderSidebar
+  let isLanding
+
+  if (process.env.NODE_ENV === "development") {
+    shouldRenderSidebar = location.pathname.startsWith("/docs")
+    isLanding = location.pathname === "/"
+  } else {
+    shouldRenderSidebar = location.pathname.startsWith(`${config.pathPrefix}/docs`)
+    isLanding = location.pathname === config.pathPrefix
+  }
 
   return (
     <div>
