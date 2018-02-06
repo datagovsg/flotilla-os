@@ -11,7 +11,7 @@ const Title = () => (
 )
 
 const Header = () => (
-  <div className="fl-header-container" id="header">
+  <div className="fl-header-container fl-initial-opacity-zero" id="header">
     <div className="fl-header-inner">
       <div className="fl-header-section fl-header-section-left">
         <img
