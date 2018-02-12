@@ -1,7 +1,6 @@
 import React from "react"
 import Link from "gatsby-link"
 import { ExternalLink } from "react-feather"
-import Logo from "../assets/favicon.png"
 
 const Title = () => (
   <Link to="/" className="fl-header-link fl-header-title">
