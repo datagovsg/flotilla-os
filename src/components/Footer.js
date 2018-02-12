@@ -1,6 +1,7 @@
 import React from "react"
 import Link from "gatsby-link"
 import { ExternalLink } from "react-feather"
+import { API_URL } from "../constants/"
 import mapDocsToLinks from "../utils/mapDocsToLinks"
 
 const Footer = props => {
@@ -24,15 +25,15 @@ const Footer = props => {
                 {p.title}
               </Link>
             ))}
+          <hr />
           <a
             className="fl-footer-link"
-            href="swagger.html"
+            href={API_URL}
             target="_blank"
             rel="noopener noreferrer"
           >
             API <ExternalLink size={16} />
           </a>
-          <hr />
           <a
             className="fl-footer-link"
             target="_blank"

@@ -23,7 +23,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "copy-swagger": "cp ./swagger.html ./public/swagger.html && cp ./docs/swagger-spec.json ./public/swagger-spec.json",
+    "copy-swagger": "cp ./api.html ./public/api.html && cp ./docs/swagger-spec.json ./public/swagger-spec.json",
     "build": "gatsby build && npm run copy-swagger",
     "develop": "gatsby develop",
     "format": "prettier --trailing-comma es5 --no-semi --write \"src/**/*.js\"",

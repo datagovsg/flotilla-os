@@ -1,6 +1,8 @@
 import React from "react"
 import Link from "gatsby-link"
 import { ExternalLink } from "react-feather"
+import Logo from "../assets/favicon.png"
+import { API_URL } from "../constants/"
 
 const Title = () => (
   <Link to="/" className="fl-header-link fl-header-title">
@@ -10,13 +12,18 @@ const Title = () => (
 )
 
 const Header = () => (
-  <div className="fl-header-container fl-initial-opacity-zero" id="header">
+  <div className="fl-header-container" id="header">
     <div className="fl-header-inner">
       <div className="fl-header-section fl-header-section-left">
+        <img
+          className="fl-header-logo"
+          src={Logo}
+          alt="stitchfix-logo"
+          id="headerLogo"
+        />
         <Title />
       </div>
       <div className="fl-header-section fl-header-section-right">
-        <a href="swagger.html" className="fl-header-link">API</a>
         <Link
           className="fl-header-link"
           activeClassName="active"
@@ -24,6 +31,14 @@ const Header = () => (
         >
           Docs
         </Link>
+        <a
+          href={API_URL}
+          className="fl-header-link"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          API&nbsp;<ExternalLink size={16} />
+        </a>
         <a
           className="fl-header-link"
           target="_blank"

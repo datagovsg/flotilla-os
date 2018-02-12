@@ -160,9 +160,10 @@ code {
     }
   }
   img.fl-header-logo {
-    width: 24px;
-    height: 24px;
-    margin-right: $spacing;
+    width: 32px;
+    height: 32px;
+    margin-right: $spacing / 2;
+    transform: translateY(-2px);
   }
 }
 

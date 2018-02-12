@@ -1,7 +1,7 @@
 module.exports = {
   pathPrefix: "/flotilla-os",
   siteMetadata: {
-    title: 'Flotilla | Stitch Fix',
+    title: 'Flotilla | Stitch Fix Open Source',
   },
   plugins: [
     'gatsby-plugin-react-helmet',
@@ -23,24 +23,24 @@ module.exports = {
         sizeByPixelDensity: false,
       },
     },
-    // {
-    //   resolve: `gatsby-plugin-favicon`,
-    //   options: {
-    //     logo: "./src/assets/favicon.png",
-    //     injectHTML: true,
-    //     icons: {
-    //       android: true,
-    //       appleIcon: true,
-    //       appleStartup: true,
-    //       coast: false,
-    //       favicons: true,
-    //       firefox: true,
-    //       twitter: false,
-    //       yandex: false,
-    //       windows: false
-    //     }
-    //   }
-    // },
+    {
+      resolve: `gatsby-plugin-favicon`,
+      options: {
+        logo: "./src/assets/favicon.png",
+        injectHTML: true,
+        icons: {
+          android: true,
+          appleIcon: true,
+          appleStartup: true,
+          coast: false,
+          favicons: true,
+          firefox: true,
+          twitter: false,
+          yandex: false,
+          windows: false
+        }
+      }
+    },
     //{
     //  resolve: "gatsby-plugin-google-analytics",
     //  options: {
