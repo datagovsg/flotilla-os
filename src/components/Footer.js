@@ -26,7 +26,7 @@ const Footer = props => {
             ))}
           <a
             className="fl-footer-link"
-            href="https://github.com/stitchfix/flotilla-os/blob/documentation/docs/api.md"
+            href="swagger.html"
             target="_blank"
             rel="noopener noreferrer"
           >

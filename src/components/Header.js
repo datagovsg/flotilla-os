@@ -14,15 +14,10 @@ const Header = () => (
   <div className="fl-header-container fl-initial-opacity-zero" id="header">
     <div className="fl-header-inner">
       <div className="fl-header-section fl-header-section-left">
-        <img
-          className="fl-header-logo"
-          src={Logo}
-          alt="stitchfix-logo"
-          id="headerLogo"
-        />
         <Title />
       </div>
       <div className="fl-header-section fl-header-section-right">
+        <a href="swagger.html" className="fl-header-link">API</a>
         <Link
           className="fl-header-link"
           activeClassName="active"

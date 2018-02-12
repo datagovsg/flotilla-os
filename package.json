@@ -23,10 +23,11 @@
   },
   "license": "MIT",
   "scripts": {
-    "build": "gatsby build",
+    "copy-swagger": "cp ./swagger.html ./public/swagger.html && cp ./docs/swagger-spec.json ./public/swagger-spec.json",
+    "build": "gatsby build && npm run copy-swagger",
     "develop": "gatsby develop",
     "format": "prettier --trailing-comma es5 --no-semi --write \"src/**/*.js\"",
-    "deploy": "gatsby build --prefix-paths && gh-pages -d public",
+    "deploy": "gatsby build --prefix-paths && npm run copy-swagger && gh-pages -d public",
     "test": "echo \"Error: no test specified\" && exit 1",
     "write-docs": "rimraf src/docs/* && node scripts/parse-readme.js"
   },

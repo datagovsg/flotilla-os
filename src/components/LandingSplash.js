@@ -16,16 +16,13 @@ class LandingSplash extends Component {
             className="fl-splash-text fl-splash-header fl-initial-opacity-zero"
             id="splashHeader"
           >
-            Engineers shouldn't write ETL.
+            Own your work end-to-end.
           </h1>
           <p
             className="fl-splash-text fl-initial-opacity-zero"
             id="splashParagraph"
           >
-            Own your work from end-to-end with Flotilla, a self-service batch
-            job execution framework that dramatically simplifies the process of
-            defining and executing containerized jobs. Focus on the work you're
-            doing rather than how to do it.
+            Flotilla is a self-service batch job execution framework that dramatically simplifies the process of defining and executing containerized jobs. Focus on the work you're doing rather than how to do it.
           </p>
           <pre
             className="fl-splash-code fl-initial-opacity-zero"
