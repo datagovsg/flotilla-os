@@ -16,12 +16,12 @@ Before we can do _anything_ there's some *prerequistes* that must be met.
 2. Flotilla uses AWS's Elastic Continer Service (ECS) as the execution backend. However, Flotilla does not manage ECS clusters. There must be at least one cluster defined in AWS's ECS service available to you and it must have at least one task node. Most typically this is the `default` cluster and examples will assume this going forward.
 
 ### Starting the service locally
- 
+
 You can run the service locally (which will still leverage AWS resources) using the [docker-compose](https://docs.docker.com/compose/) tool. From inside the repo run:
 
 ```
 docker-compose up -d
-```	
+```
 
 You'll notice it builds the code in the repo and starts the flotilla service as well as the default postgres backend.
 
@@ -37,7 +37,7 @@ Flotilla has a simple, easy to use UI. Here's some example images for basic usag
 
 The UI allows you to quickly create new tasks.
 
-![Define Task](https://user-images.githubusercontent.com/10807627/36405382-37baa6c2-15a5-11e8-9775-642ca3edaf7a.png "Create New Task")
+![Define Task](https://user-images.githubusercontent.com/10807627/36499487-47a0b82c-16f6-11e8-886b-ca6d38276889.png "Create New Task")
 
 
 #### Launch a task with UI
@@ -47,18 +47,18 @@ You can run tasks you've created with the UI as well. Once you've ran a task the
 
 1. Launch
 
-   ![Run Task](https://user-images.githubusercontent.com/10807627/36405381-37982926-15a5-11e8-9de0-0ad6d2cd30b6.png "Run Task")
+   ![Run Task](https://user-images.githubusercontent.com/10807627/36499492-481da436-16f6-11e8-9f14-5bbe8c297434.png "Run Task")
 
 2. Queued --> Pending
 
-   ![Queued Task](https://user-images.githubusercontent.com/10807627/36405384-38020422-15a5-11e8-802c-aa02c7a4f89b.png "Queued Task")
-   
-   ![Pending Task](https://user-images.githubusercontent.com/10807627/36405383-37dd9cf4-15a5-11e8-848a-535671c92523.png "Pending Task")
+   ![Queued Task](https://user-images.githubusercontent.com/10807627/36499491-4801515a-16f6-11e8-9525-db85bb999887.png "Queued Task")
+
+   ![Pending Task](https://user-images.githubusercontent.com/10807627/36499490-47e27e88-16f6-11e8-8041-355de885be44.png "Pending Task")
 3. View logs
 
-   ![Running Task](https://user-images.githubusercontent.com/10807627/36405380-3775e00a-15a5-11e8-96d1-60680d3fcb7a.png "Running Task")
-   
-   ![Finished Task](https://user-images.githubusercontent.com/10807627/36405379-3753150c-15a5-11e8-9463-a3d0f5a81d42.png "Finished Task")
+   ![Running Task](https://user-images.githubusercontent.com/10807627/36499493-4842176c-16f6-11e8-9467-a345987bd407.png "Running Task")
+
+   ![Finished Task](https://user-images.githubusercontent.com/10807627/36499494-48609cfa-16f6-11e8-8656-5504063cb6e7.png "Finished Task")
 
 
 ### Basic API Usage
@@ -84,7 +84,7 @@ Before you can run a task you first need to define it. We'll use the example hel
 }
 ```
 
-It's a simple task that runs in the default ubuntu image, prints your username to the logs, and exits. 
+It's a simple task that runs in the default ubuntu image, prints your username to the logs, and exits.
 
 > Note: While you can use non-public images and images in your own registries with flotilla, credentials for accessing those images must exist on the ECS hosts. This is outside the scope of this doc. See the AWS [documentation](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/private-auth.html).
 
@@ -104,10 +104,10 @@ This is the fun part. You'll make a `PUT` request to the execution endpoint for 
 
 ```
 curl -XPUT localhost:3000/api/v1/task/alias/hello-flotilla/execute -d '{
-  "cluster":"default", 
+  "cluster":"default",
   "env":[
     {"name":"USERNAME","value":"yourusername"}
-  ], 
+  ],
   "run_tags":{"owner_id":"youruser"}
 }'
 ```

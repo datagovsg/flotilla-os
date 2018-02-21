@@ -7,7 +7,7 @@ index: "5"
 
 ### API Documentation
 
-See [API](docs/api.md)
+See [API](https://stitchfix.github.io/flotilla-os/api.html)
 
 ### Building
 
