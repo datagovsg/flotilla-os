@@ -44,7 +44,7 @@ class LandingSplash extends Component {
           </div>
           <img
             className="fl-splash-image fl-initial-opacity-zero"
-            src="https://user-images.githubusercontent.com/166823/35580026-038ae348-059d-11e8-95e4-f0150400a1a8.png"
+            src="https://user-images.githubusercontent.com/10807627/36499493-4842176c-16f6-11e8-9467-a345987bd407.png"
             alt="flotilla-ui-image"
             id="splashImage"
           />
