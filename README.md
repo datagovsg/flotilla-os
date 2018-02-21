@@ -1,3 +1,5 @@
+<img src="https://user-images.githubusercontent.com/10807627/36405385-38266dd0-15a5-11e8-89e1-57a09232c4e4.png" height="64">
+
 # flotilla-os
 
 [![Circle CI](https://circleci.com/gh/stitchfix/flotilla-os.svg?style=shield)](https://circleci.com/gh/stitchfix/flotilla-os)
@@ -19,13 +21,7 @@ Once deployed, Flotilla allows you to:
 
 Flotilla is strongly opinionated about self-service for data science.
 
-The core assumption is that you understand your work the best. Therefore, it is _you_ who should own your work from end-to-end.
-
-* You shouldn't need to be a "data engineer" to extract, transform, and load data for your work. Run this work with Flotilla.
-
-* You shouldn't need to be an "algorithms engineer" to run a model training job. Run this work with Flotilla.
-
-* You shouldn't need to be a "production engineer" to run your production jobs or to access logs in case of problems. Do this with Flotilla.
+The core assumption is that you understand your work the best. Therefore, it is _you_ who should own your work from end-to-end. In other words, you shouldn't need to be a "production engineer" to run your jobs or to access logs in case of problems. Do this with Flotilla.
 
 ## Quick Start
 
@@ -61,7 +57,7 @@ Flotilla has a simple, easy to use UI. Here's some example images for basic usag
 
 The UI allows you to quickly create new tasks.
 
-![Define Task](https://user-images.githubusercontent.com/166823/35579884-999e0b04-059c-11e8-8ec7-65a14f7ae647.png "Create New Task")
+![Define Task](https://user-images.githubusercontent.com/10807627/36405382-37baa6c2-15a5-11e8-9775-642ca3edaf7a.png "Create New Task")
 
 
 #### Launch a task with UI
@@ -71,18 +67,18 @@ You can run tasks you've created with the UI as well. Once you've ran a task the
 
 1. Launch
 
-   ![Run Task](https://user-images.githubusercontent.com/166823/35579954-cc158d8c-059c-11e8-857c-0c0c7e8cd7b9.png "Run Task")
+   ![Run Task](https://user-images.githubusercontent.com/10807627/36405381-37982926-15a5-11e8-9de0-0ad6d2cd30b6.png "Run Task")
 
 2. Queued --> Pending
 
-   ![Queued Task](https://user-images.githubusercontent.com/166823/35579975-e1e3bb20-059c-11e8-87d5-5c78f8aa96f4.png "Queued Task")
+   ![Queued Task](https://user-images.githubusercontent.com/10807627/36405384-38020422-15a5-11e8-802c-aa02c7a4f89b.png "Queued Task")
    
-   ![Pending Task](https://user-images.githubusercontent.com/166823/35579998-eff41368-059c-11e8-8fb7-d5c217998a5d.png "Pending Task")
+   ![Pending Task](https://user-images.githubusercontent.com/10807627/36405383-37dd9cf4-15a5-11e8-848a-535671c92523.png "Pending Task")
 3. View logs
 
-   ![Running Task](https://user-images.githubusercontent.com/166823/35580026-038ae348-059d-11e8-95e4-f0150400a1a8.png "Running Task")
+   ![Running Task](https://user-images.githubusercontent.com/10807627/36405380-3775e00a-15a5-11e8-96d1-60680d3fcb7a.png "Running Task")
    
-   ![Finished Task](https://user-images.githubusercontent.com/166823/35580037-1455ea10-059d-11e8-92da-dd1249dcf40d.png "Finished Task")
+   ![Finished Task](https://user-images.githubusercontent.com/10807627/36405379-3753150c-15a5-11e8-9463-a3d0f5a81d42.png "Finished Task")
 
 
 ### Basic API Usage
