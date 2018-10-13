@@ -103,6 +103,29 @@ CREATE TABLE IF NOT EXISTS task_def_tags (
   tag_id character varying NOT NULL REFERENCES tags(text),
   task_def_id character varying NOT NULL REFERENCES task_def(definition_id)
 );
+
+--
+-- RunTimeDefs for generic tasks
+-- 
+
+CREATE TABLE IF NOT EXISTS run_time_def (
+	definition_id character varying NOT NULL REFERENCES task_def (definition_id),
+	run_id character varying NOT NULL REFERENCES task (run_id),
+	task_id character varying NOT NULL,
+	owner character varying NOT NULL,
+	command text NOT NULL,
+	memory integer NOT NULL,
+	cpu integer NOT NULL,
+	image character varying NOT NULL,
+	env jsonb,
+	user_tags jsonb,
+	PRIMARY KEY (definition_id, run_id)
+);
+
+CREATE INDEX IF NOT EXISTS ix_run_time_def_taskid ON run_time_def (task_id);
+CREATE INDEX IF NOT EXISTS ix_run_time_def_image ON run_time_def (image);
+CREATE INDEX IF NOT EXISTS ix_run_time_def_owner ON run_time_def (owner);
+CREATE INDEX IF NOT EXISTS ix_run_time_def_utags ON run_time_def USING GIN (user_tags);
 `
 
 //

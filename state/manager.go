@@ -21,6 +21,7 @@ type Manager interface {
 	GetDefinitionByAlias(alias string) (Definition, error)
 	UpdateDefinition(definitionID string, updates Definition) (Definition, error)
 	CreateDefinition(d Definition) error
+	CreateRunTimeDef(d RunTimeDef) error
 	DeleteDefinition(definitionID string) error
 
 	ListRuns(limit int, offset int, sortBy string,

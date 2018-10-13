@@ -1,6 +1,7 @@
 package flotilla
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -37,6 +38,19 @@ type launchRequest struct {
 type launchRequestV2 struct {
 	RunTags RunTags `json:"run_tags"`
 	*launchRequest
+}
+
+type launchGenericReq struct {
+	ClusterName     string  `json:"cluster"`
+	RunTags         RunTags `json:"run_tags"`
+	TaskID          string  `json:"task_id"`
+	Command         string
+	CommandEncoding *string `json:"cmd_enconding"`
+	Memory          int
+	CPU             int `json:"cpu"`
+	Image           string
+	Env             *state.EnvList
+	UserTags        map[string]string `json:"user_tags"`
 }
 
 //
@@ -308,6 +322,126 @@ func (ep *endpoints) CreateRunV4(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	run, err := ep.executionService.Create(vars["definition_id"], lr.ClusterName, lr.Env, lr.RunTags.OwnerID)
+	if err != nil {
+		ep.encodeError(w, err)
+	} else {
+		ep.encodeResponse(w, run)
+	}
+}
+
+func (ep *endpoints) decodeGenericReq(r *http.Request) (launchGenericReq, error) {
+	var lr launchGenericReq
+	err := ep.decodeRequest(r, &lr)
+	if err != nil {
+		return lr, exceptions.MalformedInput{err.Error()}
+	}
+
+	if len(lr.RunTags.OwnerID) == 0 {
+		return lr, exceptions.MalformedInput{
+			ErrorString: fmt.Sprintf("run_tags must exist in body and contain [owner_id]")}
+	}
+
+	if lr.CommandEncoding != nil && *lr.CommandEncoding == "base64" {
+		decoded, err := base64.StdEncoding.DecodeString(lr.Command)
+		if err != nil {
+			return lr, err
+		}
+		lr.Command = string(decoded)
+	}
+
+	return lr, nil
+}
+
+//
+// Returns generic task def corresponding to image. If one does not exist,
+// creates it and returns the newly created image.
+//
+func (ep *endpoints) findGenericDef(image string) (state.Definition, error) {
+	filter := map[string][]string{
+		"group_name": []string{ep.groupNameForImage(image)},
+		"image":      []string{image}}
+
+	defList, err := ep.definitionService.List(100, 0, "image", "desc",
+		filter, nil)
+	if err != nil {
+		return state.Definition{}, err
+	}
+
+	if defList.Total > 1 {
+		// Inconsistent db state
+		return state.Definition{}, fmt.Errorf("More than one generic task def found.")
+	}
+
+	if defList.Total == 1 {
+		return defList.Definitions[0], nil
+	}
+
+	return ep.createGenericDef(image)
+}
+
+func (ep *endpoints) groupNameForImage(image string) string {
+	imgTag := strings.TrimPrefix(image, "docker.vertigo.stitchfix.com:5000/")
+	cleanImgTag := strings.Replace(imgTag, ":", "_", -1)
+	return fmt.Sprintf("__gen_%s", cleanImgTag)
+}
+
+//
+// Create a generic task def for a particular image
+//
+func (ep *endpoints) createGenericDef(image string) (state.Definition, error) {
+	groupName := ep.groupNameForImage(image)
+	cmd := ` echo "__generic_run__"
+			 exit 1
+		   `
+	mem := int64(100)
+
+	def := state.Definition{
+		Alias:     groupName,
+		GroupName: groupName,
+		Image:     image,
+		Memory:    &mem,
+		Command:   cmd,
+		TaskType:  "generic"}
+
+	return ep.definitionService.Create(&def)
+}
+
+func (ep *endpoints) CreateGenericRun(w http.ResponseWriter, r *http.Request) {
+	// decode
+	lr, err := ep.decodeGenericReq(r)
+	if err != nil {
+		ep.encodeError(w, err)
+		return
+	}
+
+	// find generic def; create if not exists
+	genericDef, err := ep.findGenericDef(lr.Image)
+	if err != nil {
+		ep.encodeError(w, err)
+		return
+	}
+
+	// create run
+	run, err := ep.executionService.Create(genericDef.DefinitionID, lr.ClusterName, lr.Env, lr.RunTags.OwnerID)
+	if err != nil {
+		ep.encodeError(w, err)
+		return
+	}
+
+	// create run-time def
+	rtDef := state.RunTimeDef{
+		DefinitionID: genericDef.DefinitionID,
+		RunID:        run.RunID,
+		TaskID:       lr.TaskID,
+		Owner:        lr.RunTags.OwnerID,
+		Command:      lr.Command,
+		Memory:       lr.Memory,
+		CPU:          lr.CPU,
+		Image:        lr.Image,
+		Env:          lr.Env,
+		UserTags:     lr.UserTags}
+
+	err = ep.definitionService.CreateRunTimeDef(rtDef)
 	if err != nil {
 		ep.encodeError(w, err)
 	} else {

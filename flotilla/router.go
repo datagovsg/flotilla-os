@@ -33,5 +33,6 @@ func NewRouter(ep endpoints) *mux.Router {
 
 	v4 := r.PathPrefix("/api/v4").Subrouter()
 	v4.HandleFunc("/task/{definition_id}/execute", ep.CreateRunV4).Methods("PUT")
+	v4.HandleFunc("/execute", ep.CreateGenericRun).Methods("PUT")
 	return r
 }

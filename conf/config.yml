@@ -14,9 +14,9 @@ cluster_client: ecs
 logs_client: cloudwatch
 execution_engine: ecs
 enabled_workers:
-  - retry
-  - submit
-  - status
+    - retry
+    - submit
+    - status
 
 
 # Log namespace
