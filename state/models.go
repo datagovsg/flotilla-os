@@ -394,3 +394,24 @@ type TagsList struct {
 	Tags  []string
 	Total int
 }
+
+//
+// RunTimeDef represents a run time task def, for executing
+// generic tasks.
+//
+
+// First, define new type to serialize maps
+type UserTagMap map[string]string
+
+type RunTimeDef struct {
+	DefinitionID string
+	RunID        string
+	TaskID       string
+	Owner        string
+	Command      string
+	Memory       int
+	CPU          int
+	Image        string
+	Env          *EnvList
+	UserTags     UserTagMap
+}

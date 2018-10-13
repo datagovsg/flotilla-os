@@ -370,6 +370,21 @@ func (sm *SQLStateManager) CreateDefinition(d Definition) error {
 	return nil
 }
 
+func (sm *SQLStateManager) CreateRunTimeDef(d RunTimeDef) error {
+	q := `
+		INSERT INTO run_time_def (definition_id, run_id, task_id, owner,
+		command, memory, cpu, image, env, user_tags)
+		VALUES (:definitionid, :runid, :taskid, :owner, :command, :memory,
+		:cpu, :image, :env, :usertags)
+		`
+
+	_, err := sm.db.NamedExec(q, d)
+	if err != nil {
+		panic(err)
+	}
+	return err
+}
+
 //
 // DeleteDefinition deletes definition and associated runs and environment variables
 //
@@ -654,6 +669,21 @@ func (r *Run) validOrderField(field string) bool {
 
 func (r *Run) validOrderFields() []string {
 	return []string{"run_id", "cluster_name", "status", "started_at", "finished_at", "group_name"}
+}
+
+// Scan from db
+func (u UserTagMap) Scan(value interface{}) error {
+	b, ok := value.([]byte)
+	if !ok {
+		return fmt.Errorf("Value not of type []byte")
+	}
+
+	return json.Unmarshal(b, &u)
+}
+
+// Value to db
+func (u UserTagMap) Value() (driver.Value, error) {
+	return json.Marshal(u)
 }
 
 // Scan from db
