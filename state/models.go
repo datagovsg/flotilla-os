@@ -409,8 +409,7 @@ type RunTimeDef struct {
 	TaskID       string
 	Owner        string
 	Command      string
-	Memory       int
-	CPU          int
+	Memory       int64
 	Image        string
 	Env          *EnvList
 	UserTags     UserTagMap
