@@ -71,63 +71,6 @@ func setUp(t *testing.T) ecsAdapter {
 	return adapter
 }
 
-func TestEcsAdapter_AdaptRunGeneric(t *testing.T) {
-	adapter := setUp(t)
-
-	definition := state.Definition{
-		Arn:           "darn",
-		GroupName:     "groupa",
-		ContainerName: "mynameiswhat",
-		Command: `echo "new command"`,
-		CP
-		TaskType:      "generic"}
-
-	k1 := "ENVVAR_A"
-	k2 := "ENVVAR_B"
-	v1 := "VALUEA"
-	v2 := "VALUEB"
-	env := state.EnvList([]state.EnvVar{
-		{Name: k1, Value: v1},
-		{Name: k2, Value: v2},
-	})
-
-	run := state.Run{
-		ClusterName: "clusta",
-		GroupName:   "groupa",
-		Env:         &env,
-	}
-	rti := adapter.AdaptRun(definition, run)
-
-	if rti.StartedBy == nil || *rti.StartedBy != definition.GroupName {
-		t.Errorf("Expected startedBy name groupa")
-	}
-
-	if rti.Cluster == nil || *rti.Cluster != run.ClusterName {
-		t.Errorf("Expected cluster name clusta")
-	}
-
-	if rti.Overrides != nil && len(rti.Overrides.ContainerOverrides) > 0 {
-		envOverrides := rti.Overrides.ContainerOverrides[0].Environment
-		if len(envOverrides) != len(env) {
-			t.Errorf("Expected %v env vars, got %v", len(env), len(envOverrides))
-		}
-
-		for _, e := range envOverrides {
-			if *e.Name != k1 && *e.Name != k2 {
-				t.Errorf("Unexpected env var %s", *e.Name)
-			}
-			if *e.Name == k1 && *e.Value != v1 {
-				t.Errorf("Expected %s value %v but was %v", k1, v1, *e.Value)
-			}
-			if *e.Name == k2 && *e.Value != v2 {
-				t.Errorf("Expected %s value %v but was %v", k2, v2, *e.Value)
-			}
-		}
-	} else {
-		t.Errorf("Expected non-nil and non empty container overrides")
-	}
-}
-
 func TestEcsAdapter_AdaptRun(t *testing.T) {
 	adapter := setUp(t)
 

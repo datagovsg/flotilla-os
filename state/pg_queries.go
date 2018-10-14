@@ -58,8 +58,12 @@ CREATE TABLE IF NOT EXISTS task (
   task_arn character varying,
   docker_id character varying,
   "user" character varying,
-  task_type character varying
+  task_type character varying,
   -- Refactor these --
+  task_id text,
+  command text,
+  memory integer,
+  user_tags jsonb
 );
 
 CREATE INDEX IF NOT EXISTS ix_task_definition_id ON task(definition_id);
@@ -69,6 +73,8 @@ CREATE INDEX IF NOT EXISTS ix_task_group_name ON task(group_name);
 CREATE INDEX IF NOT EXISTS ix_task_env ON task USING gin (env jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS ix_task_definition_id ON task(definition_id);
 CREATE INDEX IF NOT EXISTS ix_task_task_arn ON task(task_arn);
+CREATE INDEX IF NOT EXISTS ix_task_task_id ON task(task_id);
+CREATE INDEX IF NOT EXISTS ix_task_user_tags ON task USING GIN (user_tags);
 --
 -- Status
 --
@@ -103,27 +109,6 @@ CREATE TABLE IF NOT EXISTS task_def_tags (
   tag_id character varying NOT NULL REFERENCES tags(text),
   task_def_id character varying NOT NULL REFERENCES task_def(definition_id)
 );
-
---
--- RunTimeDefs for generic tasks
--- 
-
-CREATE TABLE IF NOT EXISTS run_time_def (
-	definition_id character varying NOT NULL REFERENCES task_def (definition_id),
-	run_id character varying PRIMARY KEY REFERENCES task (run_id),
-	task_id character varying NOT NULL,
-	owner character varying NOT NULL,
-	command text NOT NULL,
-	memory integer NOT NULL,
-	image character varying NOT NULL,
-	env jsonb,
-	user_tags jsonb
-);
-
-CREATE INDEX IF NOT EXISTS ix_run_time_def_taskid ON run_time_def (task_id);
-CREATE INDEX IF NOT EXISTS ix_run_time_def_image ON run_time_def (image);
-CREATE INDEX IF NOT EXISTS ix_run_time_def_owner ON run_time_def (owner);
-CREATE INDEX IF NOT EXISTS ix_run_time_def_utags ON run_time_def USING GIN (user_tags);
 `
 
 //
@@ -192,7 +177,11 @@ select
   coalesce(t.group_name,'')                  as groupname,
   coalesce(t.user,'')                        as "user",
   coalesce(t.task_type,'')                   as tasktype,
-  env::TEXT                                  as env
+  env::TEXT                                  as env,
+  coalesce(t.task_id,'') 					 as taskid,
+  coalesce(t.command,'') 					 as command,
+  coalesce(t.Memory,0) 						 as memory,
+  user_tags 								 as usertags
 from task t
 `
 

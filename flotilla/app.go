@@ -65,10 +65,15 @@ func NewApp(conf config.Config,
 	if err != nil {
 		return app, errors.Wrap(err, "problem initializing log service")
 	}
+	runService, err := services.NewRunService(conf, sm)
+	if err != nil {
+		return app, err
+	}
 
 	ep := endpoints{
 		executionService:  executionService,
 		definitionService: definitionService,
+		runService:        runService,
 		logService:        logService,
 	}
 

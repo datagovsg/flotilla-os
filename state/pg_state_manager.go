@@ -308,9 +308,9 @@ func (sm *SQLStateManager) CreateDefinition(d Definition) error {
 	insert := `
     INSERT INTO task_def(
       arn, definition_id, image, group_name,
-      container_name, "user", alias, memory, command, env
+      container_name, "user", alias, memory, command, env, task_type
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
     `
 
 	insertPorts := `
@@ -336,7 +336,7 @@ func (sm *SQLStateManager) CreateDefinition(d Definition) error {
 
 	if _, err = tx.Exec(insert,
 		d.Arn, d.DefinitionID, d.Image, d.GroupName, d.ContainerName,
-		d.User, d.Alias, d.Memory, d.Command, d.Env); err != nil {
+		d.User, d.Alias, d.Memory, d.Command, d.Env, d.TaskType); err != nil {
 		tx.Rollback()
 		return errors.Wrapf(
 			err, "issue creating new task definition with alias [%s] and id [%s]", d.DefinitionID, d.Alias)
@@ -368,28 +368,6 @@ func (sm *SQLStateManager) CreateDefinition(d Definition) error {
 		return errors.WithStack(err)
 	}
 	return nil
-}
-
-func (sm *SQLStateManager) CreateRunTimeDef(d RunTimeDef) error {
-	q := `
-		INSERT INTO run_time_def (definition_id, run_id, task_id, owner,
-		command, memory, image, env, user_tags)
-		VALUES (:definitionid, :runid, :taskid, :owner, :command, :memory,
-		:image, :env, :usertags)
-		`
-
-	_, err := sm.db.NamedExec(q, d)
-	if err != nil {
-		panic(err)
-	}
-	return err
-}
-
-func (sm *SQLStateManager) GetRunTimeDef(runId string) (state.RunTimeDef, error) {
-	q := `SELECT * FROM run_time_def WHERE run_id = :runid`
-	var rtDef state.RunTimeDef
-	err := sm.db.Get(*rtDef, q)
-	return rtDef, err
 }
 
 //
@@ -508,7 +486,7 @@ func (sm *SQLStateManager) UpdateRun(runID string, updates Run) (Run, error) {
 			&existing.TaskArn, &existing.RunID, &existing.DefinitionID, &existing.Alias, &existing.Image,
 			&existing.ClusterName, &existing.ExitCode, &existing.Status, &existing.StartedAt,
 			&existing.FinishedAt, &existing.InstanceID, &existing.InstanceDNSName, &existing.GroupName,
-			&existing.User, &existing.TaskType, &existing.Env)
+			&existing.User, &existing.TaskType, &existing.Env, &existing.TaskID, &existing.Command, &existing.Memory, &existing.UserTags)
 	}
 	if err != nil {
 		return existing, errors.WithStack(err)
@@ -557,9 +535,9 @@ func (sm *SQLStateManager) CreateRun(r Run) error {
 	INSERT INTO task (
       task_arn, run_id, definition_id, alias, image, cluster_name, exit_code, status,
       started_at, finished_at, instance_id, instance_dns_name, group_name,
-      env, task_type
+      env, task_type, command, memory
     ) VALUES (
-      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 'task'
+      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 'task', $15, $16
     );
     `
 
@@ -573,7 +551,7 @@ func (sm *SQLStateManager) CreateRun(r Run) error {
 		r.Alias, r.Image, r.ClusterName,
 		r.ExitCode, r.Status, r.StartedAt,
 		r.FinishedAt, r.InstanceID,
-		r.InstanceDNSName, r.GroupName, r.Env); err != nil {
+		r.InstanceDNSName, r.GroupName, r.Env, r.Command, r.Memory); err != nil {
 		tx.Rollback()
 		return errors.Wrapf(err, "issue creating new task run with id [%s]", r.RunID)
 	}
@@ -638,6 +616,20 @@ func (sm *SQLStateManager) ListTags(limit int, offset int, name *string) (TagsLi
 	}
 
 	return result, nil
+}
+
+func (sm *SQLStateManager) UpdateRunTags(runID string, userTags UserTagMap, taskID string) error {
+	q := `UPDATE task 
+	SET user_tags = :userTags, task_id = :taskID
+	WHERE run_id = :runID`
+
+	data := map[string]interface{}{
+		"runID":    runID,
+		"userTags": userTags,
+		"taskID":   taskID}
+
+	_, err := sm.db.NamedExec(q, data)
+	return err
 }
 
 //

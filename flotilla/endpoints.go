@@ -18,6 +18,7 @@ import (
 type endpoints struct {
 	executionService  services.ExecutionService
 	definitionService services.DefinitionService
+	runService        services.RunService
 	logService        services.LogService
 }
 
@@ -41,15 +42,26 @@ type launchRequestV2 struct {
 }
 
 type launchGenericReq struct {
-	ClusterName     string  `json:"cluster"`
+	ClusterName     *string `json:"cluster"`
 	RunTags         RunTags `json:"run_tags"`
-	TaskID          string  `json:"task_id"`
-	Command         string
+	TaskID          *string `json:"task_id"`
+	Command         *string
 	CommandEncoding *string `json:"cmd_enconding"`
-	Memory          int
-	Image           string
+	Memory          *int64
+	Image           *string
 	Env             *state.EnvList
 	UserTags        map[string]string `json:"user_tags"`
+}
+
+func (lr launchGenericReq) Validate() error {
+	if lr.ClusterName == nil || lr.TaskID == nil || lr.Command == nil ||
+		lr.Memory == nil || lr.Image == nil {
+		msg := "Required fields: cluster, run_tags, task_id, command, memory, image"
+		return exceptions.MalformedInput{msg}
+	}
+
+	return nil
+
 }
 
 //
@@ -340,12 +352,16 @@ func (ep *endpoints) decodeGenericReq(r *http.Request) (launchGenericReq, error)
 			ErrorString: fmt.Sprintf("run_tags must exist in body and contain [owner_id]")}
 	}
 
+	if lr.Command == nil {
+		return lr, exceptions.MalformedInput{"[command] is required"}
+	}
 	if lr.CommandEncoding != nil && *lr.CommandEncoding == "base64" {
-		decoded, err := base64.StdEncoding.DecodeString(lr.Command)
+		decoded, err := base64.StdEncoding.DecodeString(*lr.Command)
 		if err != nil {
 			return lr, err
 		}
-		lr.Command = string(decoded)
+		decodedS := string(decoded)
+		lr.Command = &decodedS
 	}
 
 	return lr, nil
@@ -400,7 +416,7 @@ func (ep *endpoints) createGenericDef(image string) (state.Definition, error) {
 		Image:     image,
 		Memory:    &mem,
 		Command:   cmd,
-		TaskType:  "generic"}
+		TaskType:  state.TaskTypeGeneric}
 
 	return ep.definitionService.Create(&def)
 }
@@ -413,33 +429,33 @@ func (ep *endpoints) CreateGenericRun(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// find generic def; create if not exists
-	genericDef, err := ep.findGenericDef(lr.Image)
+	err = lr.Validate()
 	if err != nil {
 		ep.encodeError(w, err)
 		return
 	}
+
+	// find generic def; create if not exists
+	genericDef, err := ep.findGenericDef(*lr.Image)
+	if err != nil {
+		ep.encodeError(w, err)
+		return
+	}
+
+	// update command and memory, but note that this is never saved
+	// in the state manger
+	genericDef.Command = *lr.Command
+	genericDef.Memory = lr.Memory
 
 	// create run
-	run, err := ep.executionService.Create(genericDef.DefinitionID, lr.ClusterName, lr.Env, lr.RunTags.OwnerID)
+	run, err := ep.executionService.CreateFromDefinition(genericDef, *lr.ClusterName, lr.Env, lr.RunTags.OwnerID)
 	if err != nil {
 		ep.encodeError(w, err)
 		return
 	}
 
-	// create run-time def
-	rtDef := state.RunTimeDef{
-		DefinitionID: genericDef.DefinitionID,
-		RunID:        run.RunID,
-		TaskID:       lr.TaskID,
-		Owner:        lr.RunTags.OwnerID,
-		Command:      lr.Command,
-		Memory:       lr.Memory,
-		Image:        lr.Image,
-		Env:          lr.Env,
-		UserTags:     lr.UserTags}
-
-	err = ep.definitionService.CreateRunTimeDef(rtDef)
+	// Now that we have a run, update user_tags and task_id
+	err = ep.runService.UpdateTags(run.RunID, lr.UserTags, *lr.TaskID)
 	if err != nil {
 		ep.encodeError(w, err)
 	} else {
