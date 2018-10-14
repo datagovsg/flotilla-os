@@ -18,7 +18,6 @@ import (
 type endpoints struct {
 	executionService  services.ExecutionService
 	definitionService services.DefinitionService
-	runService        services.RunService
 	logService        services.LogService
 }
 
@@ -29,6 +28,7 @@ type listRequest struct {
 	order      string
 	filters    map[string][]string
 	envFilters map[string]string
+	tagFilters map[string]string
 }
 
 type launchRequest struct {
@@ -81,9 +81,10 @@ func (ep *endpoints) getURLParam(v url.Values, key string, defaultValue string) 
 	return defaultValue
 }
 
-func (ep *endpoints) getFilters(params url.Values, nonFilters map[string]bool) (map[string][]string, map[string]string) {
+func (ep *endpoints) getFilters(params url.Values, nonFilters map[string]bool) (map[string][]string, map[string]string, map[string]string) {
 	filters := make(map[string][]string)
 	envFilters := make(map[string]string)
+	tagFilters := make(map[string]string)
 	for k, v := range params {
 		if !nonFilters[k] && len(v) > 0 {
 			// Env filters have the "env" key and are "|" separated key-value pairs
@@ -97,12 +98,20 @@ func (ep *endpoints) getFilters(params url.Values, nonFilters map[string]bool) (
 						envFilters[split[0]] = split[1]
 					}
 				}
+			} else if k == "tag" {
+				// Tag filters refer to user tags; syntax is same as env filters.
+				for _, kv := range v {
+					split := strings.Split(kv, "|")
+					if len(split) == 2 {
+						tagFilters[split[0]] = split[1]
+					}
+				}
 			} else {
 				filters[k] = v
 			}
 		}
 	}
-	return filters, envFilters
+	return filters, envFilters, tagFilters
 }
 
 func (ep *endpoints) decodeListRequest(r *http.Request) listRequest {
@@ -113,7 +122,7 @@ func (ep *endpoints) decodeListRequest(r *http.Request) listRequest {
 	lr.offset, _ = strconv.Atoi(ep.getURLParam(params, "offset", "0"))
 	lr.sortBy = ep.getURLParam(params, "sort_by", "group_name")
 	lr.order = ep.getURLParam(params, "order", "asc")
-	lr.filters, lr.envFilters = ep.getFilters(params, map[string]bool{
+	lr.filters, lr.envFilters, lr.tagFilters = ep.getFilters(params, map[string]bool{
 		"limit":   true,
 		"offset":  true,
 		"sort_by": true,
@@ -248,7 +257,7 @@ func (ep *endpoints) ListRuns(w http.ResponseWriter, r *http.Request) {
 	}
 
 	runList, err := ep.executionService.List(
-		lr.limit, lr.offset, lr.order, lr.sortBy, lr.filters, lr.envFilters)
+		lr.limit, lr.offset, lr.order, lr.sortBy, lr.filters, lr.envFilters, lr.tagFilters)
 	if err != nil {
 		ep.encodeError(w, err)
 	} else {
@@ -455,7 +464,7 @@ func (ep *endpoints) CreateGenericRun(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Now that we have a run, update user_tags and task_id
-	err = ep.runService.UpdateTags(run.RunID, lr.UserTags, *lr.TaskID)
+	err = ep.executionService.UpdateTags(run.RunID, lr.UserTags, *lr.TaskID)
 	if err != nil {
 		ep.encodeError(w, err)
 	} else {

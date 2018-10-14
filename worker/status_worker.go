@@ -85,7 +85,7 @@ func (sw *statusWorker) runOnce() {
 func (sw *statusWorker) findRun(taskArn string) (state.Run, error) {
 	runs, err := sw.sm.ListRuns(1, 0, "started_at", "asc", map[string][]string{
 		"task_arn": {taskArn},
-	}, nil)
+	}, nil, nil)
 	if err != nil {
 		return state.Run{}, err
 	}

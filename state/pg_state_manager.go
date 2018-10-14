@@ -83,11 +83,22 @@ func (sm *SQLStateManager) makeWhereClause(filters map[string][]string) []string
 			wc = append(wc, fmt.Sprintf("%s in (%s)", k, strings.Join(quoted, ",")))
 		} else if len(v) == 1 {
 			fmtString := "%s='%s'"
+
 			if k == "image" || k == "alias" || k == "group_name" || k == "command" || k == "text" {
 				fmtString = "%s like '%%%s%%'"
 			}
+
 			wc = append(wc, fmt.Sprintf(fmtString, k, v[0]))
 		}
+	}
+	return wc
+}
+
+func (sm *SQLStateManager) makeTagWhereClause(filters map[string]string) []string {
+	wc := []string{}
+	fmtString := `user_tags @> '{"%s" : "%s"}'`
+	for k, v := range filters {
+		wc = append(wc, fmt.Sprintf(fmtString, k, v))
 	}
 	return wc
 }
@@ -384,12 +395,13 @@ func (sm *SQLStateManager) DeleteDefinition(definitionID string) error {
 func (sm *SQLStateManager) ListRuns(
 	limit int, offset int, sortBy string,
 	order string, filters map[string][]string,
-	envFilters map[string]string) (RunList, error) {
+	envFilters map[string]string, tagFilters map[string]string) (RunList, error) {
 
 	var err error
 	var result RunList
 	var whereClause, orderQuery string
 	where := append(sm.makeWhereClause(filters), sm.makeEnvWhereClause(envFilters)...)
+	where = append(where, sm.makeTagWhereClause(tagFilters)...)
 	if len(where) > 0 {
 		whereClause = fmt.Sprintf("where %s", strings.Join(where, " and "))
 	}

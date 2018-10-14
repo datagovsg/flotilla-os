@@ -26,9 +26,11 @@ type ExecutionService interface {
 		sortOrder string,
 		sortField string,
 		filters map[string][]string,
-		envFilters map[string]string) (state.RunList, error)
+		envFilters map[string]string,
+		tagFilters map[string]string) (state.RunList, error)
 	Get(runID string) (state.Run, error)
 	UpdateStatus(runID string, status string, exitCode *int64) error
+	UpdateTags(runID string, userTags state.UserTagMap, taskID string) error
 	Terminate(runID string) error
 	ReservedVariables() []string
 	ListClusters() ([]string, error)
@@ -247,7 +249,8 @@ func (es *executionService) List(
 	sortOrder string,
 	sortField string,
 	filters map[string][]string,
-	envFilters map[string]string) (state.RunList, error) {
+	envFilters map[string]string,
+	tagFilters map[string]string) (state.RunList, error) {
 
 	// If definition_id is present in filters, validate its
 	// existence first
@@ -269,7 +272,7 @@ func (es *executionService) List(
 			}
 		}
 	}
-	return es.sm.ListRuns(limit, offset, sortField, sortOrder, filters, envFilters)
+	return es.sm.ListRuns(limit, offset, sortField, sortOrder, filters, envFilters, tagFilters)
 }
 
 //
@@ -288,6 +291,14 @@ func (es *executionService) UpdateStatus(runID string, status string, exitCode *
 	}
 	_, err := es.sm.UpdateRun(runID, state.Run{Status: status, ExitCode: exitCode})
 	return err
+}
+
+//
+// Update tags for a run. Tags necessarily include a "TaskID" tag, and then
+// an arbitrary map of string key-values, specified by the user.
+//
+func (es *executionService) UpdateTags(runID string, userTags state.UserTagMap, taskID string) error {
+	return es.sm.UpdateRunTags(runID, userTags, taskID)
 }
 
 //
