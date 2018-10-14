@@ -47,7 +47,6 @@ type launchGenericReq struct {
 	Command         string
 	CommandEncoding *string `json:"cmd_enconding"`
 	Memory          int
-	CPU             int `json:"cpu"`
 	Image           string
 	Env             *state.EnvList
 	UserTags        map[string]string `json:"user_tags"`
@@ -436,7 +435,6 @@ func (ep *endpoints) CreateGenericRun(w http.ResponseWriter, r *http.Request) {
 		Owner:        lr.RunTags.OwnerID,
 		Command:      lr.Command,
 		Memory:       lr.Memory,
-		CPU:          lr.CPU,
 		Image:        lr.Image,
 		Env:          lr.Env,
 		UserTags:     lr.UserTags}

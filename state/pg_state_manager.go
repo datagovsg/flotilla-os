@@ -348,9 +348,9 @@ func (sm *SQLStateManager) CreateDefinition(d Definition) error {
 func (sm *SQLStateManager) CreateRunTimeDef(d RunTimeDef) error {
 	q := `
 		INSERT INTO run_time_def (definition_id, run_id, task_id, owner,
-		command, memory, cpu, image, env, user_tags)
+		command, memory, image, env, user_tags)
 		VALUES (:definitionid, :runid, :taskid, :owner, :command, :memory,
-		:cpu, :image, :env, :usertags)
+		:image, :env, :usertags)
 		`
 
 	_, err := sm.db.NamedExec(q, d)
@@ -358,6 +358,13 @@ func (sm *SQLStateManager) CreateRunTimeDef(d RunTimeDef) error {
 		panic(err)
 	}
 	return err
+}
+
+func (sm *SQLStateManager) GetRunTimeDef(runId string) (state.RunTimeDef, error) {
+	q := `SELECT * FROM run_time_def WHERE run_id = :runid`
+	var rtDef state.RunTimeDef
+	err := sm.db.Get(*rtDef, q)
+	return rtDef, err
 }
 
 //

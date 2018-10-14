@@ -110,16 +110,14 @@ CREATE TABLE IF NOT EXISTS task_def_tags (
 
 CREATE TABLE IF NOT EXISTS run_time_def (
 	definition_id character varying NOT NULL REFERENCES task_def (definition_id),
-	run_id character varying NOT NULL REFERENCES task (run_id),
+	run_id character varying PRIMARY KEY REFERENCES task (run_id),
 	task_id character varying NOT NULL,
 	owner character varying NOT NULL,
 	command text NOT NULL,
 	memory integer NOT NULL,
-	cpu integer NOT NULL,
 	image character varying NOT NULL,
 	env jsonb,
-	user_tags jsonb,
-	PRIMARY KEY (definition_id, run_id)
+	user_tags jsonb
 );
 
 CREATE INDEX IF NOT EXISTS ix_run_time_def_taskid ON run_time_def (task_id);
