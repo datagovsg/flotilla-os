@@ -26,6 +26,12 @@ var StatusPending = "PENDING"
 var StatusStopped = "STOPPED"
 
 //
+// TaskTypeGeneric is used for generic tasks, to support the
+// /execute endpoint.
+//
+var TaskTypeGeneric = "GENERIC"
+
+//
 // IsValidStatus checks that the given status
 // string is one of the valid statuses
 //
@@ -262,6 +268,10 @@ func (dl *DefinitionList) MarshalJSON() ([]byte, error) {
 //   is created and launched meaning the run is acting
 //   on information that is no longer accessible.
 //
+
+// This will be helpful for db ops, much like EnvList
+type UserTagMap map[string]string
+
 type Run struct {
 	TaskArn         string     `json:"task_arn"`
 	RunID           string     `json:"run_id"`
@@ -279,6 +289,10 @@ type Run struct {
 	User            string     `json:"user,omitempty"`
 	TaskType        string     `json:"-"`
 	Env             *EnvList   `json:"env,omitempty"`
+	TaskID          string     `json:"task_id,omitempty"`
+	Command         string     `json:"command,omitempty"`
+	Memory          *int64     `json:"memory,omitempty"`
+	UserTags        UserTagMap `json:"user_tags,omitempty"`
 }
 
 //
@@ -330,6 +344,22 @@ func (d *Run) UpdateWith(other Run) {
 	}
 	if other.Env != nil {
 		d.Env = other.Env
+	}
+
+	if len(other.TaskID) > 0 {
+		d.TaskID = other.TaskID
+	}
+
+	if len(other.Command) > 0 {
+		d.Command = other.Command
+	}
+
+	if other.Memory != nil {
+		d.Memory = other.Memory
+	}
+
+	if other.UserTags != nil {
+		d.UserTags = other.UserTags
 	}
 
 	//
@@ -397,24 +427,4 @@ type GroupsList struct {
 type TagsList struct {
 	Tags  []string
 	Total int
-}
-
-//
-// RunTimeDef represents a run time task def, for executing
-// generic tasks.
-//
-
-// First, define new type to serialize maps
-type UserTagMap map[string]string
-
-type RunTimeDef struct {
-	DefinitionID string
-	RunID        string
-	TaskID       string
-	Owner        string
-	Command      string
-	Memory       int64
-	Image        string
-	Env          *EnvList
-	UserTags     UserTagMap
 }

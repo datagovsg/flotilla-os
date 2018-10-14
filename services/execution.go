@@ -18,6 +18,7 @@ import (
 //
 type ExecutionService interface {
 	Create(definitionID string, clusterName string, env *state.EnvList, ownerID string) (state.Run, error)
+	CreateFromDefinition(def state.Definition, clusterName string, env *state.EnvList, onwerID string) (state.Run, error)
 	CreateByAlias(alias string, clusterName string, env *state.EnvList, ownerID string) (state.Run, error)
 	List(
 		limit int,
@@ -102,7 +103,7 @@ func (es *executionService) Create(
 		return state.Run{}, err
 	}
 
-	return es.createFromDefinition(definition, clusterName, env, ownerID)
+	return es.CreateFromDefinition(definition, clusterName, env, ownerID)
 }
 
 //
@@ -117,10 +118,10 @@ func (es *executionService) CreateByAlias(
 		return state.Run{}, err
 	}
 
-	return es.createFromDefinition(definition, clusterName, env, ownerID)
+	return es.CreateFromDefinition(definition, clusterName, env, ownerID)
 }
 
-func (es *executionService) createFromDefinition(
+func (es *executionService) CreateFromDefinition(
 	definition state.Definition, clusterName string, env *state.EnvList, ownerID string) (state.Run, error) {
 	var (
 		run state.Run
@@ -170,6 +171,11 @@ func (es *executionService) constructRun(
 		Image:        definition.Image,
 		Status:       state.StatusQueued,
 		User:         ownerID,
+	}
+
+	if definition.TaskType == state.TaskTypeGeneric {
+		run.Command = definition.Command
+		run.Memory = definition.Memory
 	}
 	runEnv := es.constructEnviron(run, env)
 	run.Env = &runEnv

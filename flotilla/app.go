@@ -64,10 +64,15 @@ func NewApp(conf config.Config,
 	if err != nil {
 		return app, err
 	}
+	runService, err := services.NewRunService(conf, sm)
+	if err != nil {
+		return app, err
+	}
 
 	ep := endpoints{
 		executionService:  executionService,
 		definitionService: definitionService,
+		runService:        runService,
 		logService:        logService,
 	}
 

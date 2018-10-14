@@ -16,7 +16,6 @@ import (
 //
 type DefinitionService interface {
 	Create(definition *state.Definition) (state.Definition, error)
-	CreateRunTimeDef(def state.RunTimeDef) error
 	Get(definitionID string) (state.Definition, error)
 	GetByAlias(alias string) (state.Definition, error)
 	List(limit int, offset int, sortBy string,
@@ -75,10 +74,6 @@ func (ds *definitionService) Create(definition *state.Definition) (state.Definit
 		return state.Definition{}, err
 	}
 	return defined, ds.sm.CreateDefinition(defined)
-}
-
-func (ds *definitionService) CreateRunTimeDef(def state.RunTimeDef) error {
-	return ds.sm.CreateRunTimeDef(def)
 }
 
 func (ds *definitionService) aliasExists(alias string) (bool, error) {

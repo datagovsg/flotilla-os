@@ -81,20 +81,6 @@ func (sw *submitWorker) runOnce() {
 		//
 		if run.Status == state.StatusQueued {
 			//
-			// If definition is a generic definition, update definition
-			// fields using real time def fields. These will be used
-			// by the adapter to construct container overrides.
-			//
-			if definition.TaskType == "generic" {
-				definition, err = sw.updateGenericDef(definition, run)
-				if err != nil {
-					// This is non-retryable error
-					sw.log.Log("message", "Error updating generic def while executing run", "run_id", run.RunID, "error", err.Error())
-					launched.Status = state.StatusStopped
-				}
-			}
-
-			//
 			// Execute the run using the execution engine
 			//
 			sw.log.Log("message", "Submitting", "run_id", run.RunID)
@@ -133,17 +119,4 @@ func (sw *submitWorker) runOnce() {
 			sw.log.Log("message", "Acking run failed", "run_id", run.RunID, "error", err.Error())
 		}
 	}
-}
-
-func (sw *submitWorker) updateGenericDef(definition state.Definition, run state.Run) (state.Definition, error) {
-
-	rtDef, err := sw.sm.GetRunTimeDef(run.RunID)
-	if err != nil {
-		return state.Definition{}, err
-	}
-
-	definition.Command = rtDef.Command
-	definition.Memory = rtDef.Memory
-
-	return definition, nil
 }

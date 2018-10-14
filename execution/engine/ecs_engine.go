@@ -264,6 +264,7 @@ func (ee *ECSExecutionEngine) Enqueue(run state.Run) error {
 func (ee *ECSExecutionEngine) Execute(definition state.Definition, run state.Run) (state.Run, bool, error) {
 	var executed state.Run
 	rti := ee.toRunTaskInput(definition, run)
+
 	result, err := ee.ecsClient.RunTask(&rti)
 	if err != nil {
 		retryable := false
@@ -331,6 +332,14 @@ func (ee *ECSExecutionEngine) Define(definition state.Definition) (state.Definit
 	//
 	defined := ee.adapter.AdaptTaskDef(*result.TaskDefinition)
 	defined.Command = definition.Command
+
+	//
+	// Attach passed-in definitions TaskType field. This field is only
+	// used by flotilla internally, and has no corresponding feature
+	// in ECS. This field is support run-time task defs, i.e. to support
+	// the /execute endpoint.
+	//
+	defined.TaskType = definition.TaskType
 	return defined, nil
 }
 

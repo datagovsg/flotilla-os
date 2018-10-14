@@ -158,9 +158,9 @@ func (a *ecsAdapter) AdaptRun(definition state.Definition, run state.Run) ecs.Ru
 		ContainerOverrides: []*ecs.ContainerOverride{a.envOverrides(definition, run)},
 	}
 
-	if definition.TaskType == "generic" {
+	if definition.TaskType == state.TaskTypeGeneric {
 		overrides.ContainerOverrides = a.overridesForGenericDef(definition,
-			overrides.ContainerOverrides[0])
+			overrides.ContainerOverrides[0], run)
 	}
 
 	rti := ecs.RunTaskInput{
@@ -173,11 +173,11 @@ func (a *ecsAdapter) AdaptRun(definition state.Definition, run state.Run) ecs.Ru
 	return rti
 }
 
-func (a *ecsAdapter) overridesForGenericDef(definition state.Definition, containerOverride *ecs.ContainerOverride) []*ecs.ContainerOverride {
-	containerOverride.Command = []*string{&definition.Command}
-	containerOverride.Memory = &definition.Memory
+func (a *ecsAdapter) overridesForGenericDef(definition state.Definition, containerOverride *ecs.ContainerOverride, run state.Run) []*ecs.ContainerOverride {
+	containerOverride.Command = []*string{&run.Command}
+	containerOverride.Memory = run.Memory
 
-	return []*ecs.ContainerOverrides{containerOverride}
+	return []*ecs.ContainerOverride{containerOverride}
 }
 
 func (a *ecsAdapter) envOverrides(definition state.Definition, run state.Run) *ecs.ContainerOverride {
