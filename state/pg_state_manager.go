@@ -100,6 +100,15 @@ func (sm *SQLStateManager) makeWhereClause(filters map[string][]string) []string
 	return wc
 }
 
+func (sm *SQLStateManager) makeTagWhereClause(filters map[string]string) []string {
+	wc := []string{}
+	fmtString := `user_tags @> '{"%s" : "%s"}'`
+	for k, v := range filters {
+		wc = append(wc, fmt.Sprintf(fmtString, k, v))
+	}
+	return wc
+}
+
 func (sm *SQLStateManager) makeEnvWhereClause(filters map[string]string) []string {
 	wc := make([]string, len(filters))
 	i := 0
@@ -413,12 +422,13 @@ func (sm *SQLStateManager) DeleteDefinition(definitionID string) error {
 func (sm *SQLStateManager) ListRuns(
 	limit int, offset int, sortBy string,
 	order string, filters map[string][]string,
-	envFilters map[string]string) (RunList, error) {
+	envFilters map[string]string, tagFilters map[string]string) (RunList, error) {
 
 	var err error
 	var result RunList
 	var whereClause, orderQuery string
 	where := append(sm.makeWhereClause(filters), sm.makeEnvWhereClause(envFilters)...)
+	where = append(where, sm.makeTagWhereClause(tagFilters)...)
 	if len(where) > 0 {
 		whereClause = fmt.Sprintf("where %s", strings.Join(where, " and "))
 	}

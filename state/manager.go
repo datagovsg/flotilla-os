@@ -25,7 +25,7 @@ type Manager interface {
 
 	ListRuns(limit int, offset int, sortBy string,
 		order string, filters map[string][]string,
-		envFilters map[string]string) (RunList, error)
+		envFilters map[string]string, tagFilters map[string]string) (RunList, error)
 
 	GetRun(runID string) (Run, error)
 	CreateRun(r Run) error
