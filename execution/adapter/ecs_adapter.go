@@ -174,7 +174,10 @@ func (a *ecsAdapter) AdaptRun(definition state.Definition, run state.Run) ecs.Ru
 }
 
 func (a *ecsAdapter) overridesForGenericDef(definition state.Definition, containerOverride *ecs.ContainerOverride, run state.Run) []*ecs.ContainerOverride {
-	containerOverride.Command = []*string{&run.Command}
+	bashCmd := "bash"
+	optLogin := "-l"
+	optStr := "-c"
+	containerOverride.Command = []*string{&bashCmd, &optLogin, &optStr, &run.Command}
 	containerOverride.Memory = run.Memory
 
 	return []*ecs.ContainerOverride{containerOverride}

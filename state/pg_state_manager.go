@@ -628,20 +628,6 @@ func (sm *SQLStateManager) ListTags(limit int, offset int, name *string) (TagsLi
 	return result, nil
 }
 
-func (sm *SQLStateManager) UpdateRunTags(runID string, userTags UserTagMap, taskID string) error {
-	q := `UPDATE task 
-	SET user_tags = :userTags, task_id = :taskID
-	WHERE run_id = :runID`
-
-	data := map[string]interface{}{
-		"runID":    runID,
-		"userTags": userTags,
-		"taskID":   taskID}
-
-	_, err := sm.db.NamedExec(q, data)
-	return err
-}
-
 //
 // Cleanup close any open resources
 //
@@ -681,17 +667,21 @@ func (r *Run) validOrderFields() []string {
 }
 
 // Scan from db
-func (u UserTagMap) Scan(value interface{}) error {
-	b, ok := value.([]byte)
-	if !ok {
-		return fmt.Errorf("Value not of type []byte")
+func (u *UserTagMap) Scan(value interface{}) error {
+	switch b := value.(type) {
+	case nil:
+		var um UserTagMap = map[string]string{}
+		u = &um
+		return nil
+	case []byte:
+		return json.Unmarshal(b, &u)
+	default:
+		return fmt.Errorf("UserTag Value not of type []byte")
 	}
-
-	return json.Unmarshal(b, &u)
 }
 
 // Value to db
-func (u UserTagMap) Value() (driver.Value, error) {
+func (u *UserTagMap) Value() (driver.Value, error) {
 	return json.Marshal(u)
 }
 
