@@ -180,8 +180,8 @@ select
   env::TEXT                                  as env,
   coalesce(t.task_id,'') 					 as taskid,
   coalesce(t.command,'') 					 as command,
-  coalesce(t.Memory,0) 						 as memory,
-  user_tags 								 as usertags
+  t.Memory           						 as memory,
+  user_tags					 as usertags
 from task t
 `
 

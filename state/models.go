@@ -124,7 +124,7 @@ _FLOTILLA_EOF
 exit_code=$?
 exit ${exit_code}
 `
-var commandTemplate, _ = template.New("command").Parse(commandWrapper)
+var CommandTemplate, _ = template.New("command").Parse(commandWrapper)
 
 //
 // WrappedCommand returns the wrapped command for the definition
@@ -132,7 +132,7 @@ var commandTemplate, _ = template.New("command").Parse(commandWrapper)
 //
 func (d *Definition) WrappedCommand() (string, error) {
 	var result bytes.Buffer
-	if err := commandTemplate.Execute(&result, d); err != nil {
+	if err := CommandTemplate.Execute(&result, d); err != nil {
 		return "", err
 	}
 	return result.String(), nil
@@ -144,6 +144,7 @@ type validationCondition struct {
 }
 
 var validGroupName = regexp.MustCompile(`^[a-zA-Z0-9_\\-]+$`)
+var GenericDefPrefix = "__generic_"
 
 //
 // IsValid returns true only if this is a valid definition with all
@@ -273,26 +274,26 @@ func (dl *DefinitionList) MarshalJSON() ([]byte, error) {
 type UserTagMap map[string]string
 
 type Run struct {
-	TaskArn         string     `json:"task_arn"`
-	RunID           string     `json:"run_id"`
-	DefinitionID    string     `json:"definition_id"`
-	Alias           string     `json:"alias"`
-	Image           string     `json:"image"`
-	ClusterName     string     `json:"cluster"`
-	ExitCode        *int64     `json:"exit_code,omitempty"`
-	Status          string     `json:"status"`
-	StartedAt       *time.Time `json:"started_at,omitempty"`
-	FinishedAt      *time.Time `json:"finished_at,omitempty"`
-	InstanceID      string     `json:"-"`
-	InstanceDNSName string     `json:"-"`
-	GroupName       string     `json:"group_name"`
-	User            string     `json:"user,omitempty"`
-	TaskType        string     `json:"-"`
-	Env             *EnvList   `json:"env,omitempty"`
-	TaskID          string     `json:"task_id,omitempty"`
-	Command         string     `json:"command,omitempty"`
-	Memory          *int64     `json:"memory,omitempty"`
-	UserTags        UserTagMap `json:"user_tags,omitempty"`
+	TaskArn         string      `json:"task_arn"`
+	RunID           string      `json:"run_id"`
+	DefinitionID    string      `json:"definition_id"`
+	Alias           string      `json:"alias"`
+	Image           string      `json:"image"`
+	ClusterName     string      `json:"cluster"`
+	ExitCode        *int64      `json:"exit_code,omitempty"`
+	Status          string      `json:"status"`
+	StartedAt       *time.Time  `json:"started_at,omitempty"`
+	FinishedAt      *time.Time  `json:"finished_at,omitempty"`
+	InstanceID      string      `json:"-"`
+	InstanceDNSName string      `json:"-"`
+	GroupName       string      `json:"group_name"`
+	User            string      `json:"user,omitempty"`
+	TaskType        string      `json:"-"`
+	Env             *EnvList    `json:"env,omitempty"`
+	TaskID          string      `json:"task_id,omitempty"`
+	Command         string      `json:"command,omitempty"`
+	Memory          *int64      `json:"memory,omitempty"`
+	UserTags        *UserTagMap `json:"user_tags"`
 }
 
 //

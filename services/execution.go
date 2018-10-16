@@ -18,7 +18,7 @@ import (
 //
 type ExecutionService interface {
 	Create(definitionID string, clusterName string, env *state.EnvList, ownerID string) (state.Run, error)
-	CreateFromDefinition(def state.Definition, clusterName string, env *state.EnvList, onwerID string) (state.Run, error)
+	CreateFromDefinition(def state.Definition, clusterName string, env *state.EnvList, onwerID string, taskID *string, command *string, memory *int64, userTags *state.UserTagMap) (state.Run, error)
 	CreateByAlias(alias string, clusterName string, env *state.EnvList, ownerID string) (state.Run, error)
 	List(
 		limit int,
@@ -30,7 +30,6 @@ type ExecutionService interface {
 		tagFilters map[string]string) (state.RunList, error)
 	Get(runID string) (state.Run, error)
 	UpdateStatus(runID string, status string, exitCode *int64) error
-	UpdateTags(runID string, userTags state.UserTagMap, taskID string) error
 	Terminate(runID string) error
 	ReservedVariables() []string
 	ListClusters() ([]string, error)
@@ -105,7 +104,7 @@ func (es *executionService) Create(
 		return state.Run{}, err
 	}
 
-	return es.CreateFromDefinition(definition, clusterName, env, ownerID)
+	return es.CreateFromDefinition(definition, clusterName, env, ownerID, nil, nil, nil, nil)
 }
 
 //
@@ -120,11 +119,11 @@ func (es *executionService) CreateByAlias(
 		return state.Run{}, err
 	}
 
-	return es.CreateFromDefinition(definition, clusterName, env, ownerID)
+	return es.CreateFromDefinition(definition, clusterName, env, ownerID, nil, nil, nil, nil)
 }
 
 func (es *executionService) CreateFromDefinition(
-	definition state.Definition, clusterName string, env *state.EnvList, ownerID string) (state.Run, error) {
+	definition state.Definition, clusterName string, env *state.EnvList, ownerID string, taskID *string, command *string, memory *int64, userTags *state.UserTagMap) (state.Run, error) {
 	var (
 		run state.Run
 		err error
@@ -136,7 +135,7 @@ func (es *executionService) CreateFromDefinition(
 	}
 
 	// Construct run object with StatusQueued and new UUID4 run id
-	run, err = es.constructRun(clusterName, definition, env, ownerID)
+	run, err = es.constructRun(clusterName, definition, env, ownerID, taskID, command, memory, userTags)
 	if err != nil {
 		return run, err
 	}
@@ -152,7 +151,7 @@ func (es *executionService) CreateFromDefinition(
 }
 
 func (es *executionService) constructRun(
-	clusterName string, definition state.Definition, env *state.EnvList, ownerID string) (state.Run, error) {
+	clusterName string, definition state.Definition, env *state.EnvList, ownerID string, taskID *string, command *string, memory *int64, userTags *state.UserTagMap) (state.Run, error) {
 
 	var (
 		run state.Run
@@ -176,8 +175,15 @@ func (es *executionService) constructRun(
 	}
 
 	if definition.TaskType == state.TaskTypeGeneric {
-		run.Command = definition.Command
-		run.Memory = definition.Memory
+		if taskID == nil || command == nil || memory == nil || userTags == nil {
+			msg := "Found <nil> for one of [TaskID], [Command], [Memory], [UserTagas]"
+			return run, fmt.Errorf(msg)
+		}
+
+		run.TaskID = *taskID
+		run.Command = *command
+		run.Memory = memory
+		run.UserTags = userTags
 	}
 	runEnv := es.constructEnviron(run, env)
 	run.Env = &runEnv
@@ -291,14 +297,6 @@ func (es *executionService) UpdateStatus(runID string, status string, exitCode *
 	}
 	_, err := es.sm.UpdateRun(runID, state.Run{Status: status, ExitCode: exitCode})
 	return err
-}
-
-//
-// Update tags for a run. Tags necessarily include a "TaskID" tag, and then
-// an arbitrary map of string key-values, specified by the user.
-//
-func (es *executionService) UpdateTags(runID string, userTags state.UserTagMap, taskID string) error {
-	return es.sm.UpdateRunTags(runID, userTags, taskID)
 }
 
 //

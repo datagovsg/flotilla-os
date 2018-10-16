@@ -1,6 +1,7 @@
 package flotilla
 
 import (
+	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -8,6 +9,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"unicode"
 
 	"github.com/gorilla/mux"
 	"github.com/stitchfix/flotilla-os/exceptions"
@@ -50,7 +52,7 @@ type launchGenericReq struct {
 	Memory          *int64
 	Image           *string
 	Env             *state.EnvList
-	UserTags        map[string]string `json:"user_tags"`
+	UserTags        *state.UserTagMap `json:"user_tags"`
 }
 
 func (lr launchGenericReq) Validate() error {
@@ -373,16 +375,31 @@ func (ep *endpoints) decodeGenericReq(r *http.Request) (launchGenericReq, error)
 		lr.Command = &decodedS
 	}
 
+	lr.Command, err = ep.wrapRunTimeCmd(*lr.Command)
+	if err != nil {
+		return lr, err
+	}
+
 	return lr, nil
+}
+
+func (ep *endpoints) wrapRunTimeCmd(cmd string) (*string, error) {
+	var result bytes.Buffer
+	if err := state.CommandTemplate.Execute(&result, map[string]string{
+		"Command": cmd}); err != nil {
+		return nil, err
+	}
+	resultS := result.String()
+	return &resultS, nil
 }
 
 //
 // Returns generic task def corresponding to image. If one does not exist,
 // creates it and returns the newly created image.
 //
-func (ep *endpoints) findGenericDef(image string) (state.Definition, error) {
+func (ep *endpoints) findOrCreateGenericDef(image string) (state.Definition, error) {
 	filter := map[string][]string{
-		"group_name": []string{ep.groupNameForImage(image)},
+		"group_name": []string{state.GenericDefPrefix},
 		"image":      []string{image}}
 
 	defList, err := ep.definitionService.List(100, 0, "image", "desc",
@@ -404,9 +421,30 @@ func (ep *endpoints) findGenericDef(image string) (state.Definition, error) {
 }
 
 func (ep *endpoints) groupNameForImage(image string) string {
-	imgTag := strings.TrimPrefix(image, "docker.vertigo.stitchfix.com:5000/")
-	cleanImgTag := strings.Replace(imgTag, ":", "_", -1)
-	return fmt.Sprintf("__gen_%s", cleanImgTag)
+	splits := strings.Split(image, "/")
+	var imgTag string
+	if len(splits) == 2 {
+		imgTag = splits[1]
+	} else {
+		imgTag = image
+	}
+
+	mapFunc := func(r rune) rune {
+		switch {
+		case unicode.IsLetter(r) || unicode.IsDigit(r) || r == '-' || r == '_':
+			return r
+		default:
+			return '_'
+		}
+	}
+
+	suffix := strings.Map(mapFunc, imgTag)
+
+	if len(state.GenericDefPrefix)+len(suffix) > 255 {
+		toRemove := len(state.GenericDefPrefix) + len(suffix) - 255
+		return fmt.Sprintf("%s%s", state.GenericDefPrefix, suffix[toRemove:])
+	}
+	return fmt.Sprintf("%s%s", state.GenericDefPrefix, suffix)
 }
 
 //
@@ -414,7 +452,7 @@ func (ep *endpoints) groupNameForImage(image string) string {
 //
 func (ep *endpoints) createGenericDef(image string) (state.Definition, error) {
 	groupName := ep.groupNameForImage(image)
-	cmd := ` echo "__generic_run__"
+	cmd := ` echo "ERROR This is a generic task def. It should be run with run time params, see docs."
 			 exit 1
 		   `
 	mem := int64(100)
@@ -445,26 +483,14 @@ func (ep *endpoints) CreateGenericRun(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// find generic def; create if not exists
-	genericDef, err := ep.findGenericDef(*lr.Image)
+	genericDef, err := ep.findOrCreateGenericDef(*lr.Image)
 	if err != nil {
 		ep.encodeError(w, err)
 		return
 	}
-
-	// update command and memory, but note that this is never saved
-	// in the state manger
-	genericDef.Command = *lr.Command
-	genericDef.Memory = lr.Memory
 
 	// create run
-	run, err := ep.executionService.CreateFromDefinition(genericDef, *lr.ClusterName, lr.Env, lr.RunTags.OwnerID)
-	if err != nil {
-		ep.encodeError(w, err)
-		return
-	}
-
-	// Now that we have a run, update user_tags and task_id
-	err = ep.executionService.UpdateTags(run.RunID, lr.UserTags, *lr.TaskID)
+	run, err := ep.executionService.CreateFromDefinition(genericDef, *lr.ClusterName, lr.Env, lr.RunTags.OwnerID, lr.TaskID, lr.Command, lr.Memory, lr.UserTags)
 	if err != nil {
 		ep.encodeError(w, err)
 	} else {
