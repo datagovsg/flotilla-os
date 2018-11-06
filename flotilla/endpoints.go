@@ -2,7 +2,6 @@ package flotilla
 
 import (
 	"bytes"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -44,15 +43,14 @@ type launchRequestV2 struct {
 }
 
 type launchGenericReq struct {
-	ClusterName     *string `json:"cluster"`
-	RunTags         RunTags `json:"run_tags"`
-	TaskID          *string `json:"task_id"`
-	Command         *string
-	CommandEncoding *string `json:"cmd_enconding"`
-	Memory          *int64
-	Image           *string
-	Env             *state.EnvList
-	UserTags        *state.UserTagMap `json:"user_tags"`
+	ClusterName *string `json:"cluster"`
+	RunTags     RunTags `json:"run_tags"`
+	TaskID      *string `json:"task_id"`
+	Command     *string
+	Memory      *int64
+	Image       *string
+	Env         *state.EnvList
+	UserTags    *state.UserTagMap `json:"user_tags"`
 }
 
 func (lr launchGenericReq) Validate() error {
@@ -365,14 +363,6 @@ func (ep *endpoints) decodeGenericReq(r *http.Request) (launchGenericReq, error)
 
 	if lr.Command == nil {
 		return lr, exceptions.MalformedInput{"[command] is required"}
-	}
-	if lr.CommandEncoding != nil && *lr.CommandEncoding == "base64" {
-		decoded, err := base64.StdEncoding.DecodeString(*lr.Command)
-		if err != nil {
-			return lr, err
-		}
-		decodedS := string(decoded)
-		lr.Command = &decodedS
 	}
 
 	lr.Command, err = ep.wrapRunTimeCmd(*lr.Command)
