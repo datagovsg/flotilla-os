@@ -73,6 +73,8 @@ func NewApp(conf config.Config,
 	}
 
 	app.configureRoutes(ep)
+	app.logger.Log("message", "Starting server with mode", "mode", app.mode)
+	app.logger.Log("message", "Starting server on port", "port_number", app.address)
 	if err = app.initializeWorkers(conf, log, ee, sm); err != nil {
 		return app, errors.Wrap(err, "problem initializing workers")
 	}

@@ -1,5 +1,5 @@
 # aws region - relevant for aws related components (sqs,ecs)
-aws_default_region: us-east-1
+aws_default_region: ap-southeast-1
 
 # Database url - relevant for database oriented state managers
 database_url: postgresql://flotilla:flotilla@localhost/flotilla?sslmode=disable
@@ -28,7 +28,7 @@ log:
     options:
       awslogs-group: flotilla-os-logs
       awslogs-stream-prefix: flotilla
-      awslogs-region: us-east-1
+      awslogs-region: ap-southeast-1
 
 # Queue namespace
 queue:
@@ -55,7 +55,7 @@ http:
   server:
     read_timeout_seconds: 5
     write_timeout_seconds: 10
-    listen_address: :3000
+    listen_address: localhost:3000
     cors_allowed_origins:
      - http://localhost:3000
 
