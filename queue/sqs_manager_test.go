@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/aws/aws-sdk-go/service/sqs"
-	"github.com/stitchfix/flotilla-os/config"
-	"github.com/stitchfix/flotilla-os/state"
+	"github.com/datagovsg/flotilla-os/config"
+	"github.com/datagovsg/flotilla-os/state"
 	"testing"
 )
 

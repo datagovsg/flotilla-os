@@ -6,10 +6,10 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/ecs"
 	"github.com/aws/aws-sdk-go/service/sqs"
-	"github.com/stitchfix/flotilla-os/config"
-	"github.com/stitchfix/flotilla-os/execution/adapter"
-	"github.com/stitchfix/flotilla-os/queue"
-	"github.com/stitchfix/flotilla-os/state"
+	"github.com/datagovsg/flotilla-os/config"
+	"github.com/datagovsg/flotilla-os/execution/adapter"
+	"github.com/datagovsg/flotilla-os/queue"
+	"github.com/datagovsg/flotilla-os/state"
 	"testing"
 )
 

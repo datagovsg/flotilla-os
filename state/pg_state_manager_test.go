@@ -8,7 +8,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	"github.com/stitchfix/flotilla-os/config"
+	"github.com/datagovsg/flotilla-os/config"
 )
 
 func getDB(conf config.Config) *sqlx.DB {

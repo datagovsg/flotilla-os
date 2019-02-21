@@ -1,6 +1,6 @@
 # Flotilla UI
 
-The Flotilla UI is a React application bundled along with the rest of Flotilla. If you are running the entire Flotilla stack locally, it is recommended to use docker-compose as documented in the main [README](https://github.com/stitchfix/flotilla-os#starting-the-service-locally). If you are interested in developing the UI itself, you can follow these steps:
+The Flotilla UI is a React application bundled along with the rest of Flotilla. If you are running the entire Flotilla stack locally, it is recommended to use docker-compose as documented in the main [README](https://github.com/datagovsg/flotilla-os#starting-the-service-locally). If you are interested in developing the UI itself, you can follow these steps:
 
 ### Development
 #### Prerequsites
@@ -11,7 +11,7 @@ The Flotilla UI is a React application bundled along with the rest of Flotilla. 
 1. Clone the repo
 
 ```
-git clone git@github.com:stitchfix/flotilla-os.git
+git clone git@github.com:datagovsg/flotilla-os.git
 cd flotilla-os/ui
 ```
 

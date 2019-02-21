@@ -3,8 +3,8 @@ package queue
 import (
 	"fmt"
 	"github.com/pkg/errors"
-	"github.com/stitchfix/flotilla-os/config"
-	"github.com/stitchfix/flotilla-os/state"
+	"github.com/datagovsg/flotilla-os/config"
+	"github.com/datagovsg/flotilla-os/state"
 )
 
 //

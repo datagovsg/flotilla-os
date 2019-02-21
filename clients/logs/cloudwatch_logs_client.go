@@ -7,9 +7,9 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
 	"github.com/pkg/errors"
-	"github.com/stitchfix/flotilla-os/config"
-	"github.com/stitchfix/flotilla-os/exceptions"
-	"github.com/stitchfix/flotilla-os/state"
+	"github.com/datagovsg/flotilla-os/config"
+	"github.com/datagovsg/flotilla-os/exceptions"
+	"github.com/datagovsg/flotilla-os/state"
 	"sort"
 	"strings"
 )

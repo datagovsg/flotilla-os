@@ -14,7 +14,7 @@ const FlotillaTopbar = props => {
     <Topbar>
       <div className="pl-topbar-section">
         <Link to="/" className="pl-topbar-app-name">
-          <img src={Favicon} alt="stitchfix-logo" className="topbar-logo" />
+          <img src={Favicon} alt="datagovsg-logo" className="topbar-logo" />
           <div>FLOTILLA</div>
         </Link>
         <div className="pl-topbar-nav-link-group">

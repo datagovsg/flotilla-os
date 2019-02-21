@@ -2,8 +2,8 @@ package logs
 
 import (
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
-	"github.com/stitchfix/flotilla-os/config"
-	"github.com/stitchfix/flotilla-os/state"
+	"github.com/datagovsg/flotilla-os/config"
+	"github.com/datagovsg/flotilla-os/state"
 	"os"
 	"testing"
 )
