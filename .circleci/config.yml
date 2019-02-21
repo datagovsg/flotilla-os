@@ -1,7 +1,7 @@
 version: 2
 jobs:
    build:
-     working_directory: /go/src/github.com/stitchfix/flotilla-os
+     working_directory: /go/src/github.com/datagovsg/flotilla-os
      docker:
        - image: circleci/golang:1.8
          environment:

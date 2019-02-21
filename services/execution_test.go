@@ -3,9 +3,9 @@ package services
 import (
 	"testing"
 
-	"github.com/stitchfix/flotilla-os/config"
-	"github.com/stitchfix/flotilla-os/state"
-	"github.com/stitchfix/flotilla-os/testutils"
+	"github.com/datagovsg/flotilla-os/config"
+	"github.com/datagovsg/flotilla-os/state"
+	"github.com/datagovsg/flotilla-os/testutils"
 )
 
 func setUp(t *testing.T) (ExecutionService, *testutils.ImplementsAllTheThings) {

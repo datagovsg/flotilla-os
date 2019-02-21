@@ -825,4 +825,4 @@ definitions:
           
 externalDocs:
   description: "Find out more about flotilla"
-  url: "https://github.com/stitchfix/flotilla-os"
+  url: "https://github.com/datagovsg/flotilla-os"

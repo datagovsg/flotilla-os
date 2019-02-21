@@ -2,10 +2,10 @@ package services
 
 import (
 	"fmt"
-	"github.com/stitchfix/flotilla-os/config"
-	"github.com/stitchfix/flotilla-os/exceptions"
-	"github.com/stitchfix/flotilla-os/execution/engine"
-	"github.com/stitchfix/flotilla-os/state"
+	"github.com/datagovsg/flotilla-os/config"
+	"github.com/datagovsg/flotilla-os/exceptions"
+	"github.com/datagovsg/flotilla-os/execution/engine"
+	"github.com/datagovsg/flotilla-os/state"
 	"strings"
 )
 

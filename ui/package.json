@@ -5,14 +5,14 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com:stitchfix/flotilla-os.git"
+    "url": "git+ssh://git@github.com:datagovsg/flotilla-os.git"
   },
   "author": "Patrick Sun",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/stitchfix/flotilla-os/issues"
+    "url": "https://github.com/datagovsg/flotilla-os/issues"
   },
-  "homepage": "https://github.com/stitchfix/flotilla-os",
+  "homepage": "https://github.com/datagovsg/flotilla-os",
   "dependencies": {
     "ansi-to-react": "^1.6.0",
     "axios": "0.17.1",

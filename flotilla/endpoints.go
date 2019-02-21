@@ -9,9 +9,9 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/stitchfix/flotilla-os/exceptions"
-	"github.com/stitchfix/flotilla-os/services"
-	"github.com/stitchfix/flotilla-os/state"
+	"github.com/datagovsg/flotilla-os/exceptions"
+	"github.com/datagovsg/flotilla-os/services"
+	"github.com/datagovsg/flotilla-os/state"
 )
 
 type endpoints struct {

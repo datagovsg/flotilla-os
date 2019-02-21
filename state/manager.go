@@ -2,7 +2,7 @@ package state
 
 import (
 	"github.com/pkg/errors"
-	"github.com/stitchfix/flotilla-os/config"
+	"github.com/datagovsg/flotilla-os/config"
 )
 
 //

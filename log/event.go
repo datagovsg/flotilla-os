@@ -4,7 +4,7 @@ import (
 	"os"
 	"log"
 	"errors"
-	"github.com/stitchfix/flotilla-os/clients/httpclient"
+	"github.com/datagovsg/flotilla-os/clients/httpclient"
 	"time"
 )
 
