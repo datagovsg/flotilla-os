@@ -13,10 +13,16 @@ import (
 // ECSAdapter translates back and forth from ECS api objects to our representation
 //
 type ECSAdapter interface {
+	// AdaptTask converts from an ecs task to a generic run
 	AdaptTask(task ecs.Task) state.Run
-	AdaptRun(definition state.Definition, run state.Run) ecs.RunTaskInput
-	AdaptDefinition(definition state.Definition) ecs.RegisterTaskDefinitionInput
+	// AdaptTaskDef translates from an ecs task definition to a generic definition
 	AdaptTaskDef(taskDef ecs.TaskDefinition) state.Definition
+
+	// AdaptRun translates the definition and run into the required arguments
+	// to run an ecs task.
+	AdaptRun(definition state.Definition, run state.Run) ecs.RunTaskInput
+	// AdaptDefinition translates from definition to the ecs arguments for registering a task
+	AdaptDefinition(definition state.Definition) ecs.RegisterTaskDefinitionInput
 }
 
 type EC2ServiceClient interface {
