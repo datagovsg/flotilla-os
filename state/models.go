@@ -93,14 +93,14 @@ type Tags []string
 // - roughly 1-1 with an AWS ECS task definition
 //
 type Definition struct {
-	Arn           string     `json:"arn"`
-	DefinitionID  string     `json:"definition_id"`
+	Alias         string     `json:"alias"`          // User given name when defining task in Flotilla
+	Memory        *int64     `json:"memory"`         // Memory of the Docker image
+	User          string     `json:"user,omitempty"` // Name of the user running in Docker image
+	Arn           string     `json:"arn,omitempty"`
+	DefinitionID  string     `json:"definition_id"` // `name` in Nomad
 	Image         string     `json:"image"`
-	GroupName     string     `json:"group_name"`
-	ContainerName string     `json:"container_name"`
-	User          string     `json:"user,omitempty"`
-	Alias         string     `json:"alias"`
-	Memory        *int64     `json:"memory"`
+	GroupName     string     `json:"group_name"`     // `dockerLabels` in ECS
+	ContainerName string     `json:"container_name"` // same as definition_id for ECS
 	Command       string     `json:"command,omitempty"`
 	TaskType      string     `json:"-"`
 	Env           *EnvList   `json:"env"`
