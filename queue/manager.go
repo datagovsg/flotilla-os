@@ -12,6 +12,7 @@ import (
 //
 type Manager interface {
 	Name() string
+	// Calling QurlFor creates the status queue if it does not exist
 	QurlFor(name string, prefixed bool) (string, error)
 	Initialize(config.Config) error
 	Enqueue(qURL string, run state.Run) error

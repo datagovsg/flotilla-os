@@ -1,6 +1,7 @@
 package adapter
 
 import (
+	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/ecs"
@@ -270,6 +271,7 @@ func (a *ecsAdapter) AdaptDefinition(definition state.Definition) ecs.RegisterTa
 	}
 
 	networkMode := "host"
+	fmt.Println(containerDef)
 	return ecs.RegisterTaskDefinitionInput{
 		ContainerDefinitions: []*ecs.ContainerDefinition{containerDef},
 		Family:               &definition.DefinitionID,
