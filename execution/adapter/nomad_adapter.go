@@ -17,9 +17,7 @@ type NomadAdapter interface {
 	// AdaptTaskDef converts from an nomad jobspec to a generic definition
 	AdaptTaskDef(task api.Job) state.Definition
 
-	// AdaptRun translates the definition and run into the required arguments to run a nomad job.
-	AdaptRun(definition state.Definition, run state.Run) api.Job
-	// AdaptDefinition translates from definition to the ecs arguments for registering a nomad job
+	// AdaptDefinition translates from definition to a nomad Job struct (required for executing a job)
 	AdaptDefinition(definition state.Definition) api.Job
 }
 
@@ -105,17 +103,6 @@ func (a *nomadAdapter) AdaptTaskDef(taskDef ecs.TaskDefinition) state.Definition
 	// 	Tags          *Tags      `json:"tags,omitempty"`
 	// }
 
-}
-
-//
-// AdaptRun translates the definition and run into the required arguments to run a nomad job.
-//
-func (a *nomadAdapter) AdaptRun(definition state.Definition, run state.Run) api.Job {
-
-	// Author the job file according to the job specification
-	// Plan and review the changes with a Nomad server
-	// Submit the job file to a Nomad server
-	// (Optional) Review job status and logs
 }
 
 //

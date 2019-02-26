@@ -10,11 +10,11 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/ecs"
 	"github.com/aws/aws-sdk-go/service/sqs"
-	"github.com/pkg/errors"
 	"github.com/datagovsg/flotilla-os/config"
 	"github.com/datagovsg/flotilla-os/execution/adapter"
 	"github.com/datagovsg/flotilla-os/queue"
 	"github.com/datagovsg/flotilla-os/state"
+	"github.com/pkg/errors"
 	"strings"
 )
 
@@ -122,7 +122,7 @@ func (ee *ECSExecutionEngine) createOrUpdateEventRule(statusRule string, statusQ
 	createUpdate, err := ee.cwClient.PutRule(&cloudwatchevents.PutRuleInput{
 		Description:  aws.String("Routes ecs task status events to flotilla status queues"),
 		Name:         &statusRule,
-		EventPattern: aws.String(`{"source":["aws.ecs"],"detail-type":["ECS Task State Change"]}`),
+		EventPattern: aws.String(`{"source":["nomad.script"],"detail-type":["Nomad Job State Change"]}`),
 	})
 
 	if err != nil {

@@ -6,9 +6,9 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
-	"github.com/pkg/errors"
 	"github.com/datagovsg/flotilla-os/config"
 	"github.com/datagovsg/flotilla-os/state"
+	"github.com/pkg/errors"
 )
 
 //
