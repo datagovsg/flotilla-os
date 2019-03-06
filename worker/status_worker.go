@@ -2,11 +2,11 @@ package worker
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
 	"github.com/datagovsg/flotilla-os/config"
 	"github.com/datagovsg/flotilla-os/execution/engine"
 	flotillaLog "github.com/datagovsg/flotilla-os/log"
 	"github.com/datagovsg/flotilla-os/state"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -103,42 +103,42 @@ func (sw *statusWorker) logStatusUpdate(update state.Run) {
 		env = *update.Env
 	}
 
-	// if update.ExitCode != nil {
-	// 	err = sw.log.Event("eventClassName", "FlotillaTaskStatus",
-	// 		"run_id", update.RunID,
-	// 		"task_arn", update.TaskArn,
-	// 		"definition_id", update.DefinitionID,
-	// 		"alias", update.Alias,
-	// 		"image", update.Image,
-	// 		"cluster_name", update.ClusterName,
-	// 		"exit_code", *update.ExitCode,
-	// 		"status", update.Status,
-	// 		"started_at", startedAt,
-	// 		"finished_at", finishedAt,
-	// 		"instance_id", update.InstanceID,
-	// 		"instance_dns_name", update.InstanceDNSName,
-	// 		"group_name", update.GroupName,
-	// 		"user", update.User,
-	// 		"task_type", update.TaskType,
-	// 		"env", env)
-	// } else {
-	// 	err = sw.log.Event("eventClassName", "FlotillaTaskStatus",
-	// 		"run_id", update.RunID,
-	// 		"task_arn", update.TaskArn,
-	// 		"definition_id", update.DefinitionID,
-	// 		"alias", update.Alias,
-	// 		"image", update.Image,
-	// 		"cluster_name", update.ClusterName,
-	// 		"status", update.Status,
-	// 		"started_at", startedAt,
-	// 		"finished_at", finishedAt,
-	// 		"instance_id", update.InstanceID,
-	// 		"instance_dns_name", update.InstanceDNSName,
-	// 		"group_name", update.GroupName,
-	// 		"user", update.User,
-	// 		"task_type", update.TaskType,
-	// 		"env", env)
-	// }
+	if update.ExitCode != nil {
+		err = sw.log.Event("eventClassName", "FlotillaTaskStatus",
+			"run_id", update.RunID,
+			"task_arn", update.TaskArn,
+			"definition_id", update.DefinitionID,
+			"alias", update.Alias,
+			"image", update.Image,
+			"cluster_name", update.ClusterName,
+			"exit_code", *update.ExitCode,
+			"status", update.Status,
+			"started_at", startedAt,
+			"finished_at", finishedAt,
+			"instance_id", update.InstanceID,
+			"instance_dns_name", update.InstanceDNSName,
+			"group_name", update.GroupName,
+			"user", update.User,
+			"task_type", update.TaskType,
+			"env", env)
+	} else {
+		err = sw.log.Event("eventClassName", "FlotillaTaskStatus",
+			"run_id", update.RunID,
+			"task_arn", update.TaskArn,
+			"definition_id", update.DefinitionID,
+			"alias", update.Alias,
+			"image", update.Image,
+			"cluster_name", update.ClusterName,
+			"status", update.Status,
+			"started_at", startedAt,
+			"finished_at", finishedAt,
+			"instance_id", update.InstanceID,
+			"instance_dns_name", update.InstanceDNSName,
+			"group_name", update.GroupName,
+			"user", update.User,
+			"task_type", update.TaskType,
+			"env", env)
+	}
 
 	if err != nil {
 		sw.log.Log("message", "Failed to emit status event", "run_id", update.RunID, "error", err.Error())

@@ -38,21 +38,6 @@ type ecsServiceClient interface {
 	DescribeContainerInstances(input *ecs.DescribeContainerInstancesInput) (*ecs.DescribeContainerInstancesOutput, error)
 }
 
-type cloudwatchServiceClient interface {
-	PutRule(input *cloudwatchevents.PutRuleInput) (*cloudwatchevents.PutRuleOutput, error)
-	PutTargets(input *cloudwatchevents.PutTargetsInput) (*cloudwatchevents.PutTargetsOutput, error)
-	ListRuleNamesByTarget(input *cloudwatchevents.ListRuleNamesByTargetInput) (*cloudwatchevents.ListRuleNamesByTargetOutput, error)
-}
-
-type sqsClient interface {
-	GetQueueAttributes(input *sqs.GetQueueAttributesInput) (*sqs.GetQueueAttributesOutput, error)
-	SetQueueAttributes(input *sqs.SetQueueAttributesInput) (*sqs.SetQueueAttributesOutput, error)
-}
-
-type ecsUpdate struct {
-	Detail ecs.Task `json:"detail"`
-}
-
 //
 // Initialize configures the ECSExecutionEngine and initializes internal clients
 //
@@ -262,6 +247,7 @@ func (ee *ECSExecutionEngine) PollStatus() (RunReceipt, error) {
 
 //
 // PollRuns receives -at most- one run per queue that is pending execution
+// Called by submit_worker.go
 //
 func (ee *ECSExecutionEngine) PollRuns() ([]RunReceipt, error) {
 	queues, err := ee.qm.List()
