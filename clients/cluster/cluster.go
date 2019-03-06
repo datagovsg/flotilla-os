@@ -2,9 +2,9 @@ package cluster
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
 	"github.com/datagovsg/flotilla-os/config"
 	"github.com/datagovsg/flotilla-os/state"
+	"github.com/pkg/errors"
 )
 
 //
@@ -24,7 +24,7 @@ type Client interface {
 // NewClusterClient returns a cluster client
 //
 func NewClusterClient(conf config.Config) (Client, error) {
-	name := "ecs"
+	name := "nomad"
 	if conf.IsSet("cluster_client") {
 		name = conf.GetString("cluster_client")
 	}
@@ -36,6 +36,12 @@ func NewClusterClient(conf config.Config) (Client, error) {
 			return nil, errors.Wrap(err, "problem initializing ECSClusterClient")
 		}
 		return ecsc, nil
+	case "nomad":
+		ncc := &NomadClusterClient{}
+		if err := ncc.Initialize(conf); err != nil {
+			return nil, errors.Wrap(err, "problem initializing NomadClusterClient")
+		}
+		return ncc, nil
 	default:
 		return nil, fmt.Errorf("No Client named [%s] was found", name)
 	}

@@ -10,9 +10,9 @@ create_database_schema: true
 #
 state_manager: postgres
 queue_manager: sqs
-cluster_client: ecs
+cluster_client: nomad
 logs_client: cloudwatch
-execution_engine: ecs
+execution_engine: nomad
 enabled_workers:
   - retry
   - submit

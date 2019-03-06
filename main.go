@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	gklog "github.com/go-kit/kit/log"
-	"github.com/pkg/errors"
 	"github.com/datagovsg/flotilla-os/clients/cluster"
 	"github.com/datagovsg/flotilla-os/clients/logs"
 	"github.com/datagovsg/flotilla-os/clients/registry"
@@ -13,6 +11,8 @@ import (
 	flotillaLog "github.com/datagovsg/flotilla-os/log"
 	"github.com/datagovsg/flotilla-os/queue"
 	"github.com/datagovsg/flotilla-os/state"
+	gklog "github.com/go-kit/kit/log"
+	"github.com/pkg/errors"
 	"log"
 	"os"
 )
