@@ -84,7 +84,6 @@ func (a *nomadAdapter) AdaptTask(job nomad.Job) state.Run {
 		InstanceDNSName: gjson.GetBytes(val, "TaskGroups[0].Tasks[0].Config.dns_servers").Str,
 		// GroupName: gjson.GetBytes(val, ""), // not applicable
 		// User: gjson.GetBytes(val, TaskGroups.0.Tasks.0.User), // not applicable
-		TaskType: gjson.GetBytes(val, "Type").Str,
 		// Env:      &env,
 	}
 
@@ -104,7 +103,6 @@ func (a *nomadAdapter) AdaptTask(job nomad.Job) state.Run {
 	// 	InstanceDNSName string     `json:"taskgroups[0].tasks[0].config.dns_servers"` // dns_servers?
 	// 	GroupName       string     `json:"group_name"` // not applicable
 	// 	User            string     `json:"taskgroups[0].tasks[0].user"` // not applicable
-	// 	TaskType        string     `json:"type"` // enum("service", "batch", "parameterized")
 	// 	Env             *EnvList   `json:"taskgroups[0].tasks[0].env"`
 	// }
 

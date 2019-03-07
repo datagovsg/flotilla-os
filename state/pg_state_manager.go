@@ -488,7 +488,7 @@ func (sm *SQLStateManager) UpdateRun(runID string, updates Run) (Run, error) {
 			&existing.TaskArn, &existing.RunID, &existing.DefinitionID, &existing.Alias, &existing.Image,
 			&existing.ClusterName, &existing.ExitCode, &existing.Status, &existing.StartedAt,
 			&existing.FinishedAt, &existing.InstanceID, &existing.InstanceDNSName, &existing.GroupName,
-			&existing.User, &existing.TaskType, &existing.Env)
+			&existing.User, &existing.Env)
 	}
 	if err != nil {
 		return existing, errors.WithStack(err)
@@ -537,7 +537,7 @@ func (sm *SQLStateManager) CreateRun(r Run) error {
 	INSERT INTO task (
       task_arn, run_id, definition_id, alias, image, cluster_name, exit_code, status,
       started_at, finished_at, instance_id, instance_dns_name, group_name,
-      env, task_type
+      env
     ) VALUES (
       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 'task'
     );
