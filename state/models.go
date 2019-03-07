@@ -106,12 +106,12 @@ type Definition struct {
 	Alias         string   `json:"alias"`             // User given name when defining task in Flotilla
 	Memory        *int64   `json:"memory"`            // Memory of the Docker image
 	User          string   `json:"user,omitempty"`    // Name of the user running in Docker image
-	DefinitionID  string   `json:"definition_id"`     // `name` in Nomad, DefinitionID == ecs family == ContainerName
+	DefinitionID  string   `json:"definition_id"`     // DefinitionID == ecs family == ContainerName
 	Image         string   `json:"image"`             // Docker image name
-	GroupName     string   `json:"group_name"`        // `dockerLabels` in ECS (not sure for now)
 	ContainerName string   `json:"container_name"`    // DefinitionID for ECS
 	Command       string   `json:"command,omitempty"` // shell script to run
 	Env           *EnvList `json:"env"`               // environment variables
+	GroupName     string   `json:"group_name"`        // used in ECS `container.dockerLabels` (not sure for now)
 
 	// ECS specific
 	Ports *PortsList `json:"ports,omitempty"` // (not sure for now)
