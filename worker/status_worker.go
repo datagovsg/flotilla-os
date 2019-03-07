@@ -119,7 +119,6 @@ func (sw *statusWorker) logStatusUpdate(update state.Run) {
 			"instance_dns_name", update.InstanceDNSName,
 			"group_name", update.GroupName,
 			"user", update.User,
-			"task_type", update.TaskType,
 			"env", env)
 	} else {
 		err = sw.log.Event("eventClassName", "FlotillaTaskStatus",
@@ -136,7 +135,6 @@ func (sw *statusWorker) logStatusUpdate(update state.Run) {
 			"instance_dns_name", update.InstanceDNSName,
 			"group_name", update.GroupName,
 			"user", update.User,
-			"task_type", update.TaskType,
 			"env", env)
 	}
 
