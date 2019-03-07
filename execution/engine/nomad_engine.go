@@ -301,17 +301,9 @@ func (ne *NomadExecutionEngine) Execute(definition state.Definition, run state.R
 
 	var executed state.Run
 
-	job := ne.adapter.AdaptRun(definition, run)
-
-	// Set the register options
-	opts := &nomad.RegisterOptions{}
-	// if enforce {
-	// 	opts.EnforceIndex = true
-	// 	opts.ModifyIndex = checkIndex
-	// }
-	// if override {
-	// 	opts.PolicyOverride = true
-	// }
+	nomadRunInput := ne.adapter.AdaptRun(definition, run)
+	job := nomadRunInput.Job
+	opts := &nomadRunInput.Options
 
 	// enforceIndexRegex is a regular expression which extracts the enforcement error
 	var enforceIndexRegex = regexp.MustCompile(`\((Enforcing job modify index.*)\)`)
@@ -327,7 +319,7 @@ func (ne *NomadExecutionEngine) Execute(definition state.Definition, run state.R
 			if len(matches) == 2 {
 				fmt.Println(matches[1]) // The matched group
 				fmt.Println("Job not updated")
-				retryable := false
+				retryable = false
 			}
 		}
 		fmt.Println(fmt.Sprintf("Error submitting job: %s", err))
@@ -350,7 +342,7 @@ func (ne *NomadExecutionEngine) Execute(definition state.Definition, run state.R
 	// 	QueryMeta
 	// }
 
-	return ne.adapter.AdaptTask(*result.Tasks[0]), false, nil
+	return state.Run{}, false, nil
 }
 
 //

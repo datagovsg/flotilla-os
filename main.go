@@ -43,16 +43,6 @@ func main() {
 	}
 
 	//
-	// Get state manager for reading and writing
-	// state about definitions and runs
-	//
-	sm, err := state.NewStateManager(c)
-	if err != nil {
-		fmt.Printf("%+v\n", errors.Wrap(err, "unable to initialize state manager"))
-		os.Exit(1)
-	}
-
-	//
 	// Get registry client for validating images
 	//
 	rc, err := registry.NewRegistryClient(c)
@@ -68,6 +58,16 @@ func main() {
 	cc, err := cluster.NewClusterClient(c)
 	if err != nil {
 		fmt.Printf("%+v\n", errors.Wrap(err, "unable to initialize cluster client"))
+		os.Exit(1)
+	}
+
+	//
+	// Get state manager for reading and writing
+	// state about definitions and runs
+	//
+	sm, err := state.NewStateManager(c, cc.Name())
+	if err != nil {
+		fmt.Printf("%+v\n", errors.Wrap(err, "unable to initialize state manager"))
 		os.Exit(1)
 	}
 

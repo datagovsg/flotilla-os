@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 
+# adapted from https://github.com/trackit/cloudwatch-nomad-metrics
 
-import collections
 import datetime
 import sched
 import time
 import json
 
 from copy import deepcopy
-from pathlib import Path
 from pprint import pprint
 
 import nomad
@@ -16,13 +15,13 @@ import boto3
 
 # config for this instance assumes that you have aws_credentials
 client_events = boto3.client('events')
+
 # config for this instance assumes that you have NOMAD_TOKEN and NOMAD_ADDR in envvar
 # export NOMAD_TOKEN=`cat ~/.nomad-token`; export NOMAD_ADDR=https://nomad.locus.rocks
 client_nomad = nomad.Nomad()
-states = frozenset(['running', 'pending', 'dead'])
 
-# Source = "nomad.script" is the key to how cloudwatch re-routes the json objects to SQS
-# DetailType also must match the rule
+# Source = "nomad.script", DetailType = 'Nomad Job State Change'
+# is the key to how cloudwatch re-routes the json objects to SQS
 json_template = {
     'Source': 'nomad.script',
     'Resources': ['resource1'],
