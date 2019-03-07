@@ -7,10 +7,10 @@ import (
 	"github.com/jmoiron/sqlx"
 	// Pull in postgres specific drivers
 	"database/sql"
-	_ "github.com/lib/pq"
-	"github.com/pkg/errors"
 	"github.com/datagovsg/flotilla-os/config"
 	"github.com/datagovsg/flotilla-os/exceptions"
+	_ "github.com/lib/pq"
+	"github.com/pkg/errors"
 	"math"
 	"strings"
 	"time"
@@ -20,7 +20,8 @@ import (
 // SQLStateManager uses postgresql to manage state
 //
 type SQLStateManager struct {
-	db *sqlx.DB
+	db          *sqlx.DB
+	clusterName string
 }
 
 //
@@ -32,6 +33,7 @@ func (sm *SQLStateManager) Name() string {
 
 //
 // Initialize creates tables if they do not exist
+// cloud agnostic function
 //
 func (sm *SQLStateManager) Initialize(conf config.Config) error {
 	dburl := conf.GetString("database_url")

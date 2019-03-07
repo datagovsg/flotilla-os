@@ -14,12 +14,14 @@ import (
 // NomadAdapter translates back and forth from Nomad api objects to our representation
 //
 type NomadAdapter interface {
-	// AdaptTask converts from an nomad job to a generic run
+	// AdaptTask converts from an nomad job to a Run
 	AdaptTask(task nomad.Job) state.Run
+	// AdaptRun translates Definition and Run into the required arguments to run a Nomad job.
+	AdaptRun(definition state.Definition, run state.Run) NomadRunInput
 
-	// AdaptTaskDef converts from an nomad jobspec to a generic definition
+	// AdaptTaskDef converts from an nomad jobspec to a Definition
 	// AdaptTaskDef(task api.Job) state.Definition
-	// AdaptDefinition translates from definition to a nomad Job struct (required for executing a job)
+	// AdaptDefinition translates from Definition to a nomad Job struct
 	// AdaptDefinition(definition state.Definition) api.Job
 }
 
@@ -29,6 +31,11 @@ type NomadAdapter interface {
 // 	Register(job *api.Job, q *api.WriteOptions) (*api.JobRegisterResponse, *api.WriteMeta, error)
 // 	List(q *api.QueryOptions) ([]*api.JobListStub, *api.QueryMeta, error)
 // }
+
+type NomadRunInput struct {
+	Options nomad.RegisterOptions
+	Job     *nomad.Job
+}
 
 type nomadAdapter struct {
 	nc        nomad.Client
@@ -104,6 +111,19 @@ func (a *nomadAdapter) AdaptTask(job nomad.Job) state.Run {
 	// needsRetried(run, task)
 
 	return run
+}
+
+func (a *nomadAdapter) AdaptRun(definition state.Definition, run state.Run) NomadRunInput {
+
+	// Set the register options
+	// if enforce {
+	// 	opts.EnforceIndex = true
+	// 	opts.ModifyIndex = checkIndex
+	// }
+	// if override {
+	// 	opts.PolicyOverride = true
+	// }
+	return NomadRunInput{}
 }
 
 //
