@@ -76,6 +76,7 @@ type PortsList []int
 //
 // EnvVar represents a single environment variable
 // for either a definition or a run
+// https://www.nomadproject.io/docs/job-specification/env.html
 //
 type EnvVar struct {
 	Name  string `json:"name"`
@@ -89,23 +90,36 @@ type EnvVar struct {
 //
 type Tags []string
 
+type TemplateList []Template
+
+// https://www.nomadproject.io/docs/job-specification/template.html
+type Template struct {
+	Destination string `json:"destination"`
+	Value       string `json:"value"`
+}
+
 // Definition represents a definition of a job
 // - roughly 1-1 with an AWS ECS task definition
 //
 type Definition struct {
-	Alias         string     `json:"alias"`          // User given name when defining task in Flotilla
-	Memory        *int64     `json:"memory"`         // Memory of the Docker image
-	User          string     `json:"user,omitempty"` // Name of the user running in Docker image
-	Arn           string     `json:"arn,omitempty"`
-	DefinitionID  string     `json:"definition_id"` // `name` in Nomad
-	Image         string     `json:"image"`
-	GroupName     string     `json:"group_name"`     // `dockerLabels` in ECS
-	ContainerName string     `json:"container_name"` // same as definition_id for ECS
-	Command       string     `json:"command,omitempty"`
-	TaskType      string     `json:"-"`
-	Env           *EnvList   `json:"env"`
-	Ports         *PortsList `json:"ports,omitempty"`
-	Tags          *Tags      `json:"tags,omitempty"`
+	// common keys
+	Alias         string   `json:"alias"`             // User given name when defining task in Flotilla
+	Memory        *int64   `json:"memory"`            // Memory of the Docker image
+	User          string   `json:"user,omitempty"`    // Name of the user running in Docker image
+	DefinitionID  string   `json:"definition_id"`     // `name` in Nomad, DefinitionID == ecs family == ContainerName
+	Image         string   `json:"image"`             // Docker image name
+	GroupName     string   `json:"group_name"`        // `dockerLabels` in ECS (not sure for now)
+	ContainerName string   `json:"container_name"`    // DefinitionID for ECS
+	Command       string   `json:"command,omitempty"` // shell script to run
+	Env           *EnvList `json:"env"`               // environment variables
+
+	// ECS specific
+	Ports *PortsList `json:"ports,omitempty"` // (not sure for now)
+	Tags  *Tags      `json:"tags,omitempty"`  // (not sure for now)
+	Arn   string     `json:"arn,omitempty"`   //
+
+	// Nomad specific
+	Templates *TemplateList `json:"templates,omitempty"` // Template stanza
 }
 
 var commandWrapper = `
@@ -192,9 +206,6 @@ func (d *Definition) UpdateWith(other Definition) {
 	if len(other.Command) > 0 {
 		d.Command = other.Command
 	}
-	if len(other.TaskType) > 0 {
-		d.TaskType = other.TaskType
-	}
 	if other.Env != nil {
 		d.Env = other.Env
 	}
@@ -273,7 +284,6 @@ type Run struct {
 	InstanceDNSName string     `json:"-"`
 	GroupName       string     `json:"group_name"`
 	User            string     `json:"user,omitempty"`
-	TaskType        string     `json:"-"`
 	Env             *EnvList   `json:"env,omitempty"`
 }
 
@@ -320,9 +330,6 @@ func (d *Run) UpdateWith(other Run) {
 	}
 	if len(other.User) > 0 {
 		d.User = other.User
-	}
-	if len(other.TaskType) > 0 {
-		d.TaskType = other.TaskType
 	}
 	if other.Env != nil {
 		d.Env = other.Env
