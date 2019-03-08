@@ -387,6 +387,9 @@ func (ne *NomadExecutionEngine) Terminate(run state.Run) error {
 // These 2 functions are functionally used and are preserved to match the Engine interface
 //
 func (ne *NomadExecutionEngine) Define(definition state.Definition) (state.Definition, error) {
+	// {Alias:forever1 Memory:0xc0003ca1c8 User: DefinitionID: Image:library/ubuntu:latest ContainerName:
+	// Command:while true; do echo 'hi'; sleep 2; done
+	// Env:0xc000446ba0 GroupName:flotilla Ports:<nil> Tags:<nil> Arn: Templates:<nil>}
 	return definition, nil
 }
 

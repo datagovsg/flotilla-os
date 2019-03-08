@@ -90,36 +90,28 @@ type EnvVar struct {
 //
 type Tags []string
 
-type TemplateList []Template
-
-// https://www.nomadproject.io/docs/job-specification/template.html
-type Template struct {
-	Destination string `json:"destination"`
-	Value       string `json:"value"`
-}
-
 // Definition represents a definition of a job
 // - roughly 1-1 with an AWS ECS task definition
 //
 type Definition struct {
 	// common keys
-	Alias         string   `json:"alias"`             // User given name when defining task in Flotilla
-	Memory        *int64   `json:"memory"`            // Memory of the Docker image
-	User          string   `json:"user,omitempty"`    // Name of the user running in Docker image
-	DefinitionID  string   `json:"definition_id"`     // DefinitionID == ecs family == ContainerName
-	Image         string   `json:"image"`             // Docker image name
-	ContainerName string   `json:"container_name"`    // DefinitionID for ECS
-	Command       string   `json:"command,omitempty"` // shell script to run
-	Env           *EnvList `json:"env"`               // environment variables
-	GroupName     string   `json:"group_name"`        // used in ECS `container.dockerLabels` (not sure for now)
+	Alias         string   `json:"alias"`          // User given name when defining task in Flotilla
+	Memory        *int64   `json:"memory"`         // Memory of the Docker image
+	User          string   `json:"user,omitempty"` // Name of the user running in Docker image
+	DefinitionID  string   `json:"definition_id"`  // DefinitionID == ecs family == ContainerName
+	Image         string   `json:"image"`          // Docker image name
+	ContainerName string   `json:"container_name"` // DefinitionID for ECS
+	Env           *EnvList `json:"env"`            // environment variables
+	GroupName     string   `json:"group_name"`     // used in ECS `container.dockerLabels` (not sure for now)
 
 	// ECS specific
-	Ports *PortsList `json:"ports,omitempty"` // (not sure for now)
-	Tags  *Tags      `json:"tags,omitempty"`  // (not sure for now)
-	Arn   string     `json:"arn,omitempty"`   //
+	Ports   *PortsList `json:"ports,omitempty"`   // (not sure for now)
+	Tags    *Tags      `json:"tags,omitempty"`    // (not sure for now)
+	Command string     `json:"command,omitempty"` // shell script to run
+	Arn     string     `json:"arn,omitempty"`     //
 
 	// Nomad specific
-	Templates *TemplateList `json:"templates,omitempty"` // Template stanza
+	Template string `json:"filename,omitempty"` // filename of jobspec template
 }
 
 var commandWrapper = `
@@ -161,7 +153,7 @@ func (d *Definition) IsValid() (bool, []string) {
 		{len(d.GroupName) > 255, "Group name must be 255 characters or less"},
 		{len(d.Alias) == 0, "string [alias] must be specified"},
 		{d.Memory == nil, "int [memory] must be specified"},
-		{len(d.Command) == 0, "string [command] must be specified"},
+		// {len(d.Command) == 0, "string [command] must be specified"},
 	}
 
 	valid := true
@@ -215,24 +207,9 @@ func (d *Definition) UpdateWith(other Definition) {
 	if other.Tags != nil {
 		d.Tags = other.Tags
 	}
-
-}
-
-func (d Definition) MarshalJSON() ([]byte, error) {
-	type Alias Definition
-
-	env := d.Env
-	if env == nil {
-		env = &EnvList{}
+	if len(other.Template) > 0 {
+		d.Template = other.Template
 	}
-
-	return json.Marshal(&struct {
-		Env *EnvList `json:"env"`
-		Alias
-	}{
-		Env:   env,
-		Alias: (Alias)(d),
-	})
 }
 
 //
@@ -241,21 +218,6 @@ func (d Definition) MarshalJSON() ([]byte, error) {
 type DefinitionList struct {
 	Total       int          `json:"total"`
 	Definitions []Definition `json:"definitions"`
-}
-
-func (dl *DefinitionList) MarshalJSON() ([]byte, error) {
-	type Alias DefinitionList
-	l := dl.Definitions
-	if l == nil {
-		l = []Definition{}
-	}
-	return json.Marshal(&struct {
-		Definitions []Definition `json:"definitions"`
-		*Alias
-	}{
-		Definitions: l,
-		Alias:       (*Alias)(dl),
-	})
 }
 
 //

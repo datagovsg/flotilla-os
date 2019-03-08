@@ -228,7 +228,8 @@ func (sm *SQLStateManager) UpdateDefinition(definitionID string, updates Definit
       arn = $2, image = $3,
       container_name = $4, "user" = $5,
       alias = $6, memory = $7,
-      command = $8, env = $9
+      command = $8, env = $9,
+      template = $10
     WHERE definition_id = $1;
     `
 
@@ -269,7 +270,7 @@ func (sm *SQLStateManager) UpdateDefinition(definitionID string, updates Definit
 		update, definitionID,
 		existing.Arn, existing.Image, existing.ContainerName,
 		existing.User, existing.Alias, existing.Memory,
-		existing.Command, existing.Env); err != nil {
+		existing.Command, existing.Env, existing.Template); err != nil {
 		return existing, errors.Wrapf(err, "issue updating definition [%s]", definitionID)
 	}
 
@@ -309,10 +310,10 @@ func (sm *SQLStateManager) CreateDefinition(d Definition) error {
 	var err error
 	insert := `
     INSERT INTO task_def(
-      arn, definition_id, image, group_name,
-      container_name, "user", alias, memory, command, env
+      arn, definition_id, image, group_name, container_name,
+      "user", alias, memory, command, env, template
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
     `
 
 	insertPorts := `
@@ -322,14 +323,14 @@ func (sm *SQLStateManager) CreateDefinition(d Definition) error {
     `
 
 	insertDefTags := `
-	INSERT INTO task_def_tags(
-	  task_def_id, tag_id
-	) VALUES ($1, $2);
-	`
+    INSERT INTO task_def_tags(
+      task_def_id, tag_id
+    ) VALUES ($1, $2);
+    `
 
 	insertTags := `
-	INSERT INTO tags(text) SELECT $1 WHERE NOT EXISTS (SELECT text from tags where text = $2)
-	`
+    INSERT INTO tags(text) SELECT $1 WHERE NOT EXISTS (SELECT text from tags where text = $2)
+    `
 
 	tx, err := sm.db.Begin()
 	if err != nil {
@@ -338,7 +339,7 @@ func (sm *SQLStateManager) CreateDefinition(d Definition) error {
 
 	if _, err = tx.Exec(insert,
 		d.Arn, d.DefinitionID, d.Image, d.GroupName, d.ContainerName,
-		d.User, d.Alias, d.Memory, d.Command, d.Env); err != nil {
+		d.User, d.Alias, d.Memory, d.Command, d.Env, d.Template); err != nil {
 		tx.Rollback()
 		return errors.Wrapf(
 			err, "issue creating new task definition with alias [%s] and id [%s]", d.DefinitionID, d.Alias)
@@ -539,7 +540,7 @@ func (sm *SQLStateManager) CreateRun(r Run) error {
       started_at, finished_at, instance_id, instance_dns_name, group_name,
       env
     ) VALUES (
-      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 'task'
+      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14
     );
     `
 

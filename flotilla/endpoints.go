@@ -8,10 +8,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gorilla/mux"
 	"github.com/datagovsg/flotilla-os/exceptions"
 	"github.com/datagovsg/flotilla-os/services"
 	"github.com/datagovsg/flotilla-os/state"
+	"github.com/gorilla/mux"
 )
 
 type endpoints struct {

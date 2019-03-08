@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS task_def (
   memory integer,
   command text,
   env jsonb,
+  template character varying,
   -- Refactor these
   "user" character varying,
   arn character varying,
@@ -56,7 +57,7 @@ CREATE TABLE IF NOT EXISTS task (
   -- Refactor these --
   task_arn character varying,
   docker_id character varying,
-  "user" character varying,
+  "user" character varying
   -- Refactor these --
 );
 
