@@ -385,6 +385,56 @@ func (ne *NomadExecutionEngine) Terminate(run state.Run) error {
 
 }
 
+func (ne *NomadExecutionEngine) ConstructRun(
+	definition state.Definition, clusterName string, env *state.EnvList, ownerID string, reservedEnv map[string]func(run state.Run) string) (state.Run, error) {
+
+	var (
+		run state.Run
+		err error
+	)
+
+	runID, err := state.NewRunID()
+	if err != nil {
+		return run, err
+	}
+
+	run = state.Run{
+		RunID:        runID,
+		ClusterName:  clusterName,
+		GroupName:    definition.GroupName,
+		DefinitionID: definition.DefinitionID,
+		Alias:        definition.Alias,
+		Image:        definition.Image,
+		Status:       state.StatusQueued,
+		User:         ownerID,
+	}
+	runEnv := ne.constructEnviron(run, env, reservedEnv)
+	run.Env = &runEnv
+	return run, nil
+}
+
+func (ne *NomadExecutionEngine) constructEnviron(run state.Run, env *state.EnvList, reservedEnv map[string]func(run state.Run) string) state.EnvList {
+	size := len(reservedEnv)
+	if env != nil {
+		size += len(*env)
+	}
+	runEnv := make([]state.EnvVar, size)
+	i := 0
+	for k, f := range reservedEnv {
+		runEnv[i] = state.EnvVar{
+			Name:  k,
+			Value: f(run),
+		}
+		i++
+	}
+	if env != nil {
+		for j, e := range *env {
+			runEnv[i+j] = e
+		}
+	}
+	return state.EnvList(runEnv)
+}
+
 //
 // The concept of defining a pre-defined task and deregistering a defined task does not apply to Nomad
 // These 2 functions are functionally used and are preserved to match the Engine interface

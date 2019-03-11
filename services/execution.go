@@ -133,7 +133,7 @@ func (es *executionService) createFromDefinition(
 	}
 
 	// Construct run object with StatusQueued and new UUID4 run id
-	run, err = es.constructRun(clusterName, definition, env, ownerID)
+	run, err = es.ee.ConstructRun(definition, clusterName, env, ownerID, es.reservedEnv)
 	if err != nil {
 		return run, err
 	}
@@ -146,56 +146,6 @@ func (es *executionService) createFromDefinition(
 
 	// Queue run
 	return run, es.ee.Enqueue(run)
-}
-
-func (es *executionService) constructRun(
-	clusterName string, definition state.Definition, env *state.EnvList, ownerID string) (state.Run, error) {
-
-	var (
-		run state.Run
-		err error
-	)
-
-	runID, err := state.NewRunID()
-	if err != nil {
-		return run, err
-	}
-
-	run = state.Run{
-		RunID:        runID,
-		ClusterName:  clusterName,
-		GroupName:    definition.GroupName,
-		DefinitionID: definition.DefinitionID,
-		Alias:        definition.Alias,
-		Image:        definition.Image,
-		Status:       state.StatusQueued,
-		User:         ownerID,
-	}
-	runEnv := es.constructEnviron(run, env)
-	run.Env = &runEnv
-	return run, nil
-}
-
-func (es *executionService) constructEnviron(run state.Run, env *state.EnvList) state.EnvList {
-	size := len(es.reservedEnv)
-	if env != nil {
-		size += len(*env)
-	}
-	runEnv := make([]state.EnvVar, size)
-	i := 0
-	for k, f := range es.reservedEnv {
-		runEnv[i] = state.EnvVar{
-			Name:  k,
-			Value: f(run),
-		}
-		i++
-	}
-	if env != nil {
-		for j, e := range *env {
-			runEnv[i+j] = e
-		}
-	}
-	return state.EnvList(runEnv)
 }
 
 func (es *executionService) canBeRun(clusterName string, definition state.Definition, env *state.EnvList) error {
