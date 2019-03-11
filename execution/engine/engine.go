@@ -34,6 +34,8 @@ type Engine interface {
 	PollRuns() ([]RunReceipt, error)
 
 	PollStatus() (RunReceipt, error)
+
+	ConstructRun(definition state.Definition, clusterName string, env *state.EnvList, ownerID string, reservedEnv map[string]func(run state.Run) string) (state.Run, error)
 }
 
 type sqsClient interface {

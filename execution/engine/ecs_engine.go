@@ -103,6 +103,56 @@ func (ee *ECSExecutionEngine) Initialize(conf config.Config) error {
 	return ee.createOrUpdateEventRule(statusRule, statusQueue)
 }
 
+func (ee *ECSExecutionEngine) ConstructRun(
+	definition state.Definition, clusterName string, env *state.EnvList, ownerID string, reservedEnv map[string]func(run state.Run) string) (state.Run, error) {
+
+	var (
+		run state.Run
+		err error
+	)
+
+	runID, err := state.NewRunID()
+	if err != nil {
+		return run, err
+	}
+
+	run = state.Run{
+		RunID:        runID,
+		ClusterName:  clusterName,
+		GroupName:    definition.GroupName,
+		DefinitionID: definition.DefinitionID,
+		Alias:        definition.Alias,
+		Image:        definition.Image,
+		Status:       state.StatusQueued,
+		User:         ownerID,
+	}
+	runEnv := ee.constructEnviron(run, env, reservedEnv)
+	run.Env = &runEnv
+	return run, nil
+}
+
+func (ee *ECSExecutionEngine) constructEnviron(run state.Run, env *state.EnvList, reservedEnv map[string]func(run state.Run) string) state.EnvList {
+	size := len(reservedEnv)
+	if env != nil {
+		size += len(*env)
+	}
+	runEnv := make([]state.EnvVar, size)
+	i := 0
+	for k, f := range reservedEnv {
+		runEnv[i] = state.EnvVar{
+			Name:  k,
+			Value: f(run),
+		}
+		i++
+	}
+	if env != nil {
+		for j, e := range *env {
+			runEnv[i+j] = e
+		}
+	}
+	return state.EnvList(runEnv)
+}
+
 func (ee *ECSExecutionEngine) createOrUpdateEventRule(statusRule string, statusQueue string) error {
 	createUpdate, err := ee.cwClient.PutRule(&cloudwatchevents.PutRuleInput{
 		Description:  aws.String("Routes ecs task status events to flotilla status queues"),
