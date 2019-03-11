@@ -3,6 +3,8 @@ package engine
 import (
 	"encoding/json"
 	"fmt"
+	"io"
+	"os"
 	"regexp"
 	"strings"
 
@@ -11,6 +13,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudwatchevents"
 	"github.com/aws/aws-sdk-go/service/sqs"
 	nomad "github.com/hashicorp/nomad/api"
+	jobspec "github.com/hashicorp/nomad/jobspec"
 	"github.com/pkg/errors"
 
 	"github.com/datagovsg/flotilla-os/config"
@@ -390,6 +393,31 @@ func (ne *NomadExecutionEngine) Define(definition state.Definition) (state.Defin
 	// {Alias:forever1 Memory:0xc0003ca1c8 User: DefinitionID: Image:library/ubuntu:latest ContainerName:
 	// Command:while true; do echo 'hi'; sleep 2; done
 	// Env:0xc000446ba0 GroupName:flotilla Ports:<nil> Tags:<nil> Arn: Templates:<nil>}
+	jpath := "zeppelin.nomad"
+	definition.Template = jpath
+	var jobfile io.Reader
+
+	// Get the pwd
+	pwd, err := os.Getwd()
+	if err != nil {
+		fmt.Println("Nooo 1")
+		return state.Definition{}, err
+	}
+
+	file, err := os.Open(pwd + "/jobspecs/" + jpath)
+	defer file.Close()
+	if err != nil {
+		fmt.Println("Nooo 2")
+		return state.Definition{}, fmt.Errorf("Error opening file %q: %v", jpath, err)
+	}
+	jobfile = file
+
+	job, err := jobspec.Parse(jobfile)
+	if err != nil {
+		return state.Definition{}, fmt.Errorf("Error parsing job file from %s: %v", jpath, err)
+	}
+	fmt.Printf("%+v\n", job)
+
 	return definition, nil
 }
 
