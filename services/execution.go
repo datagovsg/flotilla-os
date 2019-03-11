@@ -199,35 +199,39 @@ func (es *executionService) constructEnviron(run state.Run, env *state.EnvList) 
 }
 
 func (es *executionService) canBeRun(clusterName string, definition state.Definition, env *state.EnvList) error {
-	if env != nil {
-		for _, e := range *env {
-			_, usingRestricted := es.reservedEnv[e.Name]
-			if usingRestricted {
-				return exceptions.ConflictingResource{
-					ErrorString: fmt.Sprintf("environment variable %s is reserved", e.Name)}
-			}
-		}
-	}
+	// not sure what this is checking for
+	// if env != nil {
+	// 	for _, e := range *env {
+	// 		_, usingRestricted := es.reservedEnv[e.Name]
+	// 		if usingRestricted {
+	// 			return exceptions.ConflictingResource{
+	// 				ErrorString: fmt.Sprintf("environment variable %s is reserved", e.Name)}
+	// 		}
+	// 	}
+	// }
 
-	ok, err := es.rc.IsImageValid(definition.Image)
-	if err != nil {
-		return err
-	}
-	if !ok {
-		return exceptions.MissingResource{
-			ErrorString: fmt.Sprintf(
-				"image [%s] was not found in any of the configured repositories", definition.Image)}
-	}
+	// should check if jobspec AND image is valid. comment out for now as we are using private repo
+	// ok, err := es.rc.IsImageValid(definition.Image)
+	// if err != nil {
+	// 	return err
+	// }
+	// if !ok {
+	// 	return exceptions.MissingResource{
+	// 		ErrorString: fmt.Sprintf(
+	// 			"image [%s] was not found in any of the configured repositories", definition.Image)}
+	// }
 
-	ok, err = es.cc.CanBeRun(clusterName, definition)
-	if err != nil {
-		return err
-	}
-	if !ok {
-		return exceptions.MalformedInput{
-			ErrorString: fmt.Sprintf(
-				"definition [%s] cannot be run on cluster [%s]", definition.DefinitionID, clusterName)}
-	}
+	// assume it can be run
+	// ok, err = es.cc.CanBeRun(clusterName, definition)
+	// if err != nil {
+	// 	return err
+	// }
+	// if !ok {
+	// 	return exceptions.MalformedInput{
+	// 		ErrorString: fmt.Sprintf(
+	// 			"definition [%s] cannot be run on cluster [%s]", definition.DefinitionID, clusterName)}
+	// }
+
 	return nil
 }
 

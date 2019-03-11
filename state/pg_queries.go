@@ -121,6 +121,7 @@ select
   env::TEXT                 as env,
   ports                     as ports,
   tags                      as tags
+  td.template               as template,
   from (select * from task_def) td left outer join
     (select task_def_id,
       array_to_json(array_agg(port))::TEXT as ports
@@ -169,6 +170,7 @@ select
   coalesce(t.group_name,'')                  as groupname,
   coalesce(t.user,'')                        as "user",
   env::TEXT                                  as env
+  td.template                                as template,
 from task t
 `
 
