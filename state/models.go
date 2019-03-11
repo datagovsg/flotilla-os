@@ -111,7 +111,7 @@ type Definition struct {
 	Arn     string     `json:"arn,omitempty"`     //
 
 	// Nomad specific
-	Template string `json:"filename,omitempty"` // filename of jobspec template
+	Template string `json:"template,omitempty"` // filename of jobspec template
 }
 
 var commandWrapper = `
@@ -232,21 +232,27 @@ type DefinitionList struct {
 //   on information that is no longer accessible.
 //
 type Run struct {
-	TaskArn         string     `json:"task_arn"`
-	RunID           string     `json:"run_id"`
-	DefinitionID    string     `json:"definition_id"`
-	Alias           string     `json:"alias"`
-	Image           string     `json:"image"`
-	ClusterName     string     `json:"cluster"`
-	ExitCode        *int64     `json:"exit_code,omitempty"`
-	Status          string     `json:"status"`
-	StartedAt       *time.Time `json:"started_at,omitempty"`
-	FinishedAt      *time.Time `json:"finished_at,omitempty"`
-	InstanceID      string     `json:"-"`
-	InstanceDNSName string     `json:"-"`
-	GroupName       string     `json:"group_name"`
-	User            string     `json:"user,omitempty"`
-	Env             *EnvList   `json:"env,omitempty"`
+	// Common keys
+	RunID        string     `json:"run_id"`
+	DefinitionID string     `json:"definition_id"`
+	Alias        string     `json:"alias"`
+	Image        string     `json:"image"`
+	ExitCode     *int64     `json:"exit_code,omitempty"`
+	Status       string     `json:"status"`
+	StartedAt    *time.Time `json:"started_at,omitempty"`
+	FinishedAt   *time.Time `json:"finished_at,omitempty"`
+	GroupName    string     `json:"group_name"`
+	User         string     `json:"user,omitempty"`
+	Env          *EnvList   `json:"env,omitempty"`
+
+	// ECS specific
+	TaskArn         string `json:"task_arn,omitempty"`
+	ClusterName     string `json:"cluster,omitempty"`
+	InstanceID      string `json:"-"`
+	InstanceDNSName string `json:"-"`
+
+	// Nomad specific
+	Template string `json:"template,omitempty"` // filename of jobspec template
 }
 
 //
