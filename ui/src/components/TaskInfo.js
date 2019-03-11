@@ -31,6 +31,11 @@ const TaskInfo = ({ data }) => (
             <FormGroup isStatic label="Image">
               {get(data, "image", "...")}
             </FormGroup>
+            <FormGroup isStatic label="Template">
+              <pre style={{ fontSize: "0.9rem" }}>
+                {get(data, "template", "...")}
+              </pre>
+            </FormGroup>
             <FormGroup isStatic label="Command">
               <pre style={{ fontSize: "0.9rem" }}>
                 {get(data, "command", "...")}
