@@ -54,6 +54,7 @@ CREATE TABLE IF NOT EXISTS task (
   instance_dns_name character varying,
   group_name character varying,
   env jsonb,
+  template character varying,
   -- Refactor these --
   task_arn character varying,
   docker_id character varying,
@@ -120,8 +121,8 @@ select
   coalesce(td.command,'')   as command,
   env::TEXT                 as env,
   ports                     as ports,
-  tags                      as tags
-  td.template               as template,
+  tags                      as tags,
+  td.template               as template
   from (select * from task_def) td left outer join
     (select task_def_id,
       array_to_json(array_agg(port))::TEXT as ports
@@ -169,8 +170,8 @@ select
   coalesce(t.instance_dns_name,'')           as instancednsname,
   coalesce(t.group_name,'')                  as groupname,
   coalesce(t.user,'')                        as "user",
-  env::TEXT                                  as env
-  td.template                                as template,
+  env::TEXT                                  as env,
+  coalesce(t.template,'')                    as template
 from task t
 `
 
