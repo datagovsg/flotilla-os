@@ -2,11 +2,15 @@ package adapter
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
+	"os"
 
 	"github.com/datagovsg/flotilla-os/config"
 	"github.com/datagovsg/flotilla-os/state"
 
 	nomad "github.com/hashicorp/nomad/api"
+	jobspec "github.com/hashicorp/nomad/jobspec"
 	"github.com/tidwall/gjson"
 )
 
@@ -121,7 +125,39 @@ func (a *nomadAdapter) AdaptRun(definition state.Definition, run state.Run) Noma
 	// if override {
 	// 	opts.PolicyOverride = true
 	// }
-	return NomadRunInput{}
+
+	jpath := definition.Template
+	var jobfile io.Reader
+
+	// Get the pwd
+	pwd, err := os.Getwd()
+	if err != nil {
+		fmt.Println("Nooo 1")
+		fmt.Println(err)
+		return NomadRunInput{}
+	}
+
+	file, err := os.Open(pwd + "/jobspecs/" + jpath)
+	defer file.Close()
+	if err != nil {
+		fmt.Println("Nooo 2")
+		fmt.Println(err)
+		return NomadRunInput{}
+	}
+	jobfile = file
+
+	job, err := jobspec.Parse(jobfile)
+	if err != nil {
+		fmt.Println("Nooo 3")
+		fmt.Println(err)
+		return NomadRunInput{}
+	}
+
+	rtn := NomadRunInput{
+		Job: job,
+	}
+
+	return rtn
 }
 
 //
