@@ -10,20 +10,42 @@ import (
 	"time"
 )
 
-// StatusRunning indicates the run is running
-var StatusRunning = "RUNNING"
+const (
+	// For ECS, StatusRunning indicates the run is running
+	// For Nomad, StatusRunning indicates the job has non-terminal allocations
+	StatusRunning = "RUNNING"
 
-// StatusQueued indicates the run is queued
-var StatusQueued = "QUEUED"
+	// For ECS, StatusQueued indicates the run is queued
+	StatusQueued = "QUEUED"
 
-// StatusNeedsRetry indicates the run failed for infra reasons and needs retried
-var StatusNeedsRetry = "NEEDS_RETRY"
+	// For ECS, StatusNeedsRetry indicates the run failed for infra reasons and needs to be retried
+	// For Nomad, StatusNeedsRetry indicates the _evaluation_ of the job failed and needs to be retried
+	StatusNeedsRetry = "NEEDS_RETRY"
 
-// StatusPending indicates the run has been allocated to a host and is in the process of launching
-var StatusPending = "PENDING"
+	// For ECS, StatusPending indicates the run has been allocated to a host and is in the process of launching
+	// For Nomad, StatusPending the job is waiting on scheduling
+	StatusPending = "PENDING"
 
-// StatusStopped means the run is finished
-var StatusStopped = "STOPPED"
+	// For ECS, StatusStopped means the run is finished
+	// For Nomad, StatusStopped means all evaluation's and allocations are terminal
+	StatusStopped = "STOPPED"
+)
+
+// Refer to github.com/hashicorp/nomad/api/allocations for the updated list of status
+
+// const (
+// 	AllocDesiredStatusRun   = "run"   // Allocation should run
+// 	AllocDesiredStatusStop  = "stop"  // Allocation should stop
+// 	AllocDesiredStatusEvict = "evict" // Allocation should stop, and was evicted
+// )
+
+// const (
+// 	AllocClientStatusPending  = "pending"
+// 	AllocClientStatusRunning  = "running"
+// 	AllocClientStatusComplete = "complete"
+// 	AllocClientStatusFailed   = "failed"
+// 	AllocClientStatusLost     = "lost"
+// )
 
 //
 // IsValidStatus checks that the given status

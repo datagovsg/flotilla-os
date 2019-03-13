@@ -1,6 +1,6 @@
 # There can only be a single job definition per file.
 # Create a job with ID and Name 'example'
-job "redis" {
+job "flotilla-redis" {
 	# Run the job in the global region, which is the default.
 	# region = "global"
 

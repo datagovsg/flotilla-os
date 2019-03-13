@@ -28,9 +28,11 @@ json_template = {
     'DetailType': 'Nomad Job State Change',
 }
 
+JOB_PREFIX = "flotilla"
+
 def put_events(now):
     jobs = client_nomad.jobs.get_jobs()
-    names = [j["Name"] for j in jobs if "qod" in j["Name"]]
+    names = [j["Name"] for j in jobs if JOB_PREFIX in j["Name"]]
     entries = []
     for name in names:
         job = client_nomad.job.get_job(name)
@@ -44,6 +46,24 @@ def put_events(now):
     print("just delivered jobs to queue")
     enter_next(s, put_events)
 
+def put_events2():
+    jobs = client_nomad.jobs.get_jobs()
+    names = [j["Name"] for j in jobs if JOB_PREFIX in j["Name"]]
+    entries = []
+    for name in names:
+        job = client_nomad.job.get_job(name)
+        entry = deepcopy(json_template)
+        entry["Detail"] = json.dumps(job)
+        entries.append(entry)
+    if entries != []:
+        pprint(job)
+        res = client_events.put_events(
+            Entries=entries,
+        )
+        print("just delivered jobs to queue")
+    else:
+        print("no jobs with {} prefix".format(JOB_PREFIX))
+    time.sleep(4)
 
 def enter_next(s, function):
     now = datetime.datetime.now()
@@ -60,7 +80,8 @@ def enter_next(s, function):
 
 
 if __name__ == '__main__':
-    s = sched.scheduler(lambda: datetime.datetime.now().timestamp(), time.sleep)
-    enter_next(s, put_events)
+    ## s = sched.scheduler(lambda: datetime.datetime.now().timestamp(), time.sleep)
+    ## enter_next(s, put_events)
     while True:
-        s.run()
+        # s.run()
+        put_events2()

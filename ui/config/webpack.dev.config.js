@@ -5,6 +5,7 @@ import baseConfig from "./webpack.base.config"
 module.exports = opts => {
   return {
     ...baseConfig(opts),
+    devtool: "cheap-module-eval-source-map",
     plugins: [
       ...baseConfig(opts).plugins,
       new HtmlWebpackPlugin({
