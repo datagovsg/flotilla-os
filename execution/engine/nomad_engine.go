@@ -240,9 +240,10 @@ func (ne *NomadExecutionEngine) PollStatus() (RunReceipt, error) {
 		adapted := ne.adapter.AdaptTask(update.Detail)
 		receipt.Run = &adapted
 	}
+	fmt.Printf("%+v\n", receipt.Run)
 
-	// receipt.Done = rawReceipt.Done
-	return RunReceipt{}, nil
+	receipt.Done = rawReceipt.Done
+	return receipt, nil
 }
 
 //
@@ -410,26 +411,50 @@ func (ne *NomadExecutionEngine) ConstructRun(
 	return run, nil
 }
 
+//
+// add reserved environment variables to the run
+//
 func (ne *NomadExecutionEngine) constructEnviron(run state.Run, env *state.EnvList, reservedEnv map[string]func(run state.Run) string) state.EnvList {
-	size := len(reservedEnv)
-	if env != nil {
-		size += len(*env)
-	}
-	runEnv := make([]state.EnvVar, size)
+	var runEnv []state.EnvVar
+	var envVarNames []string
 	i := 0
-	for k, f := range reservedEnv {
-		runEnv[i] = state.EnvVar{
-			Name:  k,
-			Value: f(run),
-		}
-		i++
-	}
+	fmt.Println("--- view env start ---")
+	fmt.Printf("%+v\n", env)
+	fmt.Println("---  end  ---")
 	if env != nil {
-		for j, e := range *env {
-			runEnv[i+j] = e
+		for _, e := range *env {
+			runEnv = append(runEnv, e)
+			envVarNames = append(envVarNames, e.Name)
+			i++
 		}
 	}
+	fmt.Println("--- view reservedEnv start ---")
+	fmt.Printf("%+v\n", reservedEnv)
+	fmt.Println("---  end  ---")
+	for k, f := range reservedEnv {
+		if !stringInSlice(k, envVarNames) {
+			envVar := state.EnvVar{
+				Name:  k,
+				Value: f(run),
+			}
+			runEnv = append(runEnv, envVar)
+			envVarNames = append(envVarNames, k)
+			i++
+		}
+	}
+	fmt.Println("--- view runEnv start ---")
+	fmt.Printf("%+v\n", runEnv)
+	fmt.Println("---  end  ---")
 	return state.EnvList(runEnv)
+}
+
+func stringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
 }
 
 //

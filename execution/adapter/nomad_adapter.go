@@ -66,53 +66,62 @@ func NewNomadAdapter(conf config.Config, nc nomad.Client) (NomadAdapter, error) 
 
 //
 // AdaptTask converts from an nomad job to a generic run
+// Assume only docker tasks used in this nomad job, and only 1 task per nomad job
+// Assume only 1 allocation per nomad job
 //
 func (a *nomadAdapter) AdaptTask(job nomad.Job) state.Run {
 	val, _ := json.Marshal(job)
 	submitTime := gjson.GetBytes(val, "SubmitTime").Time()
 	exitCode := gjson.GetBytes(val, "TaskGroups.0.Tasks.0.KillSignal").Int()
+	status := gjson.GetBytes(val, "Status").Str
+
+	jobID := job.ID
+	// should deal with error fetching allocations here
+	resp, _, _ := a.nc.Jobs().Allocations(*jobID, true, nil)
+	allocation := resp[0]
+	desiredStatus := allocation.DesiredStatus
 	// env := gjson.GetBytes(val, "TaskGroups.0.tasks.0.Env")
 
 	run := state.Run{
-		// TaskArn:      "", // not applicable
-		RunID:        gjson.GetBytes(val, "Name").Str,
-		DefinitionID: gjson.GetBytes(val, "Name").Str,
-		// Alias:        "", // not applicable
-		Image: gjson.GetBytes(val, "TaskGroups.0.Tasks.0.Config.Image").Str,
-		// ClusterName:  "", // not applicable
-		ExitCode:  &exitCode,
-		Status:    gjson.GetBytes(val, "Status").Str,
+		Status:    status,
 		StartedAt: &submitTime,
-		// FinishedAt: gjson.GetBytes(val, ""), // not applicable
-		// InstanceID: gjson.GetBytes(val, ""), // not applicable
-		InstanceDNSName: gjson.GetBytes(val, "TaskGroups[0].Tasks[0].Config.dns_servers").Str,
-		// GroupName: gjson.GetBytes(val, ""), // not applicable
-		// User: gjson.GetBytes(val, TaskGroups.0.Tasks.0.User), // not applicable
-		// Env:      &env,
+		ExitCode:  &exitCode,
+		// use allocation of job as a proxy for DesiredStatus
+		// Env:       &env,
 	}
 
-	// describe job (allocations?)
-	// type Run struct {
-	// 	TaskArn         string     `json:"task_arn"` // not applicable
-	// 	RunID           string     `json:"id"` // allocation?
-	// 	DefinitionID    string     `json:"id"` // job name
-	// 	Alias           string     `json:"alias"` // user given name
-	// 	Image           string     `json:"taskgroups[0].tasks[0].config.image"` // docker container name
-	// 	ClusterName     string     `json:"cluster"` // not applicable
-	// 	ExitCode        *int64     `json:"taskgroups[0].tasks[0].killsignal"` // kill signal?
-	// 	Status          string     `json:"status"` // enum("running", "complete", "failed", "lost", "queued", "starting")
-	// 	StartedAt       *time.Time `json:"submittime"` // submittime?
-	// 	FinishedAt      *time.Time `json:"finished_at"` // not sure if applicable
-	// 	InstanceID      string     `json:"-"` // allocation?
-	// 	InstanceDNSName string     `json:"taskgroups[0].tasks[0].config.dns_servers"` // dns_servers?
-	// 	GroupName       string     `json:"group_name"` // not applicable
-	// 	User            string     `json:"taskgroups[0].tasks[0].user"` // not applicable
-	// 	Env             *EnvList   `json:"taskgroups[0].tasks[0].env"`
-	// }
+	if desiredStatus != "" && desiredStatus != nomad.AllocDesiredStatusRun {
+		run.Status = state.StatusStopped
+	}
 
-	// needsRetried(run, task)
+	if a.needsRetried(run, job) {
+		run.Status = state.StatusNeedsRetry
+	}
 
 	return run
+}
+
+func (a *nomadAdapter) needsRetried(run state.Run, job nomad.Job) bool {
+	//
+	// This is a -strong- indication of abnormal exit, not internal to the run
+	//
+	// if run.Status == state.StatusStopped && run.ExitCode == nil {
+	// 	containerReason := "?"
+	// 	if len(task.Containers) == 1 {
+	// 		container := task.Containers[0]
+	// 		if container != nil && container.Reason != nil {
+	// 			containerReason = *container.Reason
+	// 		}
+	// 	}
+
+	// 	for _, retriable := range a.retriable {
+	// 		// Container's stopped reason contains a retriable error
+	// 		if strings.Contains(containerReason, retriable) {
+	// 			return true
+	// 		}
+	// 	}
+	// }
+	return false
 }
 
 func (a *nomadAdapter) AdaptRun(definition state.Definition, run state.Run) NomadRunInput {
@@ -129,14 +138,13 @@ func (a *nomadAdapter) AdaptRun(definition state.Definition, run state.Run) Noma
 	jpath := definition.Template
 	var jobfile io.Reader
 
-	// Get the pwd
+	// Get the pwd and open the jobfile
 	pwd, err := os.Getwd()
 	if err != nil {
 		fmt.Println("Nooo 1")
 		fmt.Println(err)
 		return NomadRunInput{}
 	}
-
 	file, err := os.Open(pwd + "/jobspecs/" + jpath)
 	defer file.Close()
 	if err != nil {
@@ -146,12 +154,24 @@ func (a *nomadAdapter) AdaptRun(definition state.Definition, run state.Run) Noma
 	}
 	jobfile = file
 
+	// parse the jobfile from HCL to a nomad.Job struct
 	job, err := jobspec.Parse(jobfile)
 	if err != nil {
 		fmt.Println("Nooo 3")
 		fmt.Println(err)
 		return NomadRunInput{}
 	}
+
+	// TODO inject the image from definition into thee job
+
+	// inject the envvar from definition into the job
+	task := job.TaskGroups[0].Tasks[0]
+	envList := run.Env
+	taskMap := map[string]string{}
+	for _, envVar := range *envList {
+		taskMap[envVar.Name] = envVar.Value
+	}
+	task.Env = taskMap
 
 	rtn := NomadRunInput{
 		Job: job,

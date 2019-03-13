@@ -144,6 +144,10 @@ func (sw *statusWorker) logStatusUpdate(update state.Run) {
 }
 
 func (sw *statusWorker) findRun(taskArn string) (state.Run, error) {
+	// fill up the logic for switching between checking for taskArn and nomad jobID
+	if taskArn == "" {
+		fmt.Println("no taskarn")
+	}
 	runs, err := sw.sm.ListRuns(1, 0, "started_at", "asc", map[string][]string{
 		"task_arn": {taskArn},
 	}, nil)

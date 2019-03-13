@@ -131,6 +131,9 @@ func (ee *ECSExecutionEngine) ConstructRun(
 	return run, nil
 }
 
+//
+// add reserved environment variables to the run
+//
 func (ee *ECSExecutionEngine) constructEnviron(run state.Run, env *state.EnvList, reservedEnv map[string]func(run state.Run) string) state.EnvList {
 	size := len(reservedEnv)
 	if env != nil {
