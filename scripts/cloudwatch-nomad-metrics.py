@@ -63,7 +63,7 @@ def put_events2():
         print("just delivered jobs to queue")
     else:
         print("no jobs with {} prefix".format(JOB_PREFIX))
-    time.sleep(4)
+    time.sleep(10)
 
 def enter_next(s, function):
     now = datetime.datetime.now()

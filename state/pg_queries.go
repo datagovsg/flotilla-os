@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS task (
   instance_dns_name character varying,
   group_name character varying,
   env jsonb,
-  template character varying,
+  jobname character varying,
   -- Refactor these --
   task_arn character varying,
   docker_id character varying,
@@ -171,7 +171,7 @@ select
   coalesce(t.group_name,'')                  as groupname,
   coalesce(t.user,'')                        as "user",
   env::TEXT                                  as env,
-  coalesce(t.template,'')                    as template
+  coalesce(t.jobname,'')                     as jobname
 from task t
 `
 

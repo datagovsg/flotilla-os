@@ -52,18 +52,21 @@ func (sw *statusWorker) runOnce() {
 		// Relies on the reserved env var, FLOTILLA_SERVER_MODE to ensure update
 		// belongs to -this- mode of Flotilla
 		//
-		var serverMode string
+		var serverMode, runID string
 		if update.Env != nil {
 			for _, kv := range *update.Env {
-				if kv.Name == "FLOTILLA_SERVER_MODE" {
+				switch envName := kv.Name; envName {
+				case "FLOTILLA_SERVER_MODE":
 					serverMode = kv.Value
+				case "FLOTILLA_RUN_ID":
+					runID = kv.Value
 				}
 			}
 		}
 
 		shouldProcess := len(serverMode) > 0 && serverMode == sw.conf.GetString("flotilla_mode")
 		if shouldProcess {
-			run, err := sw.findRun(update.TaskArn)
+			run, err := sw.findRun(runID)
 			if err != nil {
 				sw.log.Log("message", "unable to find run to apply update to", "error", fmt.Sprintf("%+v", err))
 				return
@@ -76,12 +79,11 @@ func (sw *statusWorker) runOnce() {
 			}
 
 			// emit status update event
-			sw.logStatusUpdate(*update)
+			sw.logStatusUpdate(run)
 		}
-
-		sw.log.Log("message", "Acking status update", "arn", update.TaskArn)
+		sw.log.Log("message", "Acking status update", "jobName", update.JobName)
 		if err = runReceipt.Done(); err != nil {
-			sw.log.Log("message", "Acking status update failed", "arn", update.TaskArn, "error", fmt.Sprintf("%+v", err))
+			sw.log.Log("message", "Acking status update failed", "jobName", update.JobName, "error", fmt.Sprintf("%+v", err))
 		}
 	}
 }
@@ -119,6 +121,7 @@ func (sw *statusWorker) logStatusUpdate(update state.Run) {
 			"instance_dns_name", update.InstanceDNSName,
 			"group_name", update.GroupName,
 			"user", update.User,
+			"job_name", update.JobName,
 			"env", env)
 	} else {
 		err = sw.log.Event("eventClassName", "FlotillaTaskStatus",
@@ -135,6 +138,7 @@ func (sw *statusWorker) logStatusUpdate(update state.Run) {
 			"instance_dns_name", update.InstanceDNSName,
 			"group_name", update.GroupName,
 			"user", update.User,
+			"job_name", update.JobName,
 			"env", env)
 	}
 
@@ -143,19 +147,15 @@ func (sw *statusWorker) logStatusUpdate(update state.Run) {
 	}
 }
 
-func (sw *statusWorker) findRun(taskArn string) (state.Run, error) {
-	// fill up the logic for switching between checking for taskArn and nomad jobID
-	if taskArn == "" {
-		fmt.Println("no taskarn")
-	}
+func (sw *statusWorker) findRun(runID string) (state.Run, error) {
 	runs, err := sw.sm.ListRuns(1, 0, "started_at", "asc", map[string][]string{
-		"task_arn": {taskArn},
+		"run_id": {runID},
 	}, nil)
 	if err != nil {
-		return state.Run{}, errors.Wrapf(err, "problem finding run by task arn [%s]", taskArn)
+		return state.Run{}, errors.Wrapf(err, "problem finding run by run_id [%s]", runID)
 	}
 	if runs.Total > 0 && len(runs.Runs) > 0 {
 		return runs.Runs[0], nil
 	}
-	return state.Run{}, errors.Errorf("no run found for [%s]", taskArn)
+	return state.Run{}, errors.Errorf("no run found for run_id[%s]", runID)
 }

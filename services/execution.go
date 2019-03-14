@@ -248,7 +248,7 @@ func (es *executionService) Terminate(runID string) error {
 	}
 
 	// If it's been submitted, let the status update workers handle setting it to stopped
-	if run.Status != state.StatusStopped && len(run.TaskArn) > 0 && len(run.ClusterName) > 0 {
+	if run.Status != state.StatusStopped {
 		return es.ee.Terminate(run)
 	}
 
