@@ -62,7 +62,7 @@ job "flotilla-redis" {
 
 			# Configure Docker driver with the image
 			config {
-				image = "redis:latest"
+				image = ""
 				port_map {
 					db = 6379
 				}

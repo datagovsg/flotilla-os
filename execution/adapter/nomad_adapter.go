@@ -1,10 +1,10 @@
 package adapter
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/datagovsg/flotilla-os/config"
@@ -12,7 +12,6 @@ import (
 
 	nomad "github.com/hashicorp/nomad/api"
 	jobspec "github.com/hashicorp/nomad/jobspec"
-	"github.com/tidwall/gjson"
 )
 
 //
@@ -71,11 +70,11 @@ func NewNomadAdapter(conf config.Config, nc nomad.Client) (NomadAdapter, error) 
 // Assume only 1 allocation per nomad job
 //
 func (a *nomadAdapter) AdaptTask(job nomad.Job) state.Run {
-	val, _ := json.Marshal(job)
 	timeInt := job.SubmitTime
 	jobID := job.ID
 	submitTime := time.Unix(0, *timeInt)
-	exitCode := gjson.GetBytes(val, "TaskGroups.0.Tasks.0.KillSignal").Int()
+	task := job.TaskGroups[0].Tasks[0]
+	exitCode, _ := strconv.ParseInt(task.KillSignal, 0, 64)
 	status := a.mapJobStatus(*job.Status)
 
 	// should deal with error fetching allocations here
@@ -83,12 +82,12 @@ func (a *nomadAdapter) AdaptTask(job nomad.Job) state.Run {
 	allocation := resp[0]
 	desiredStatus := allocation.DesiredStatus
 
-	rawEnvList := gjson.GetBytes(val, "TaskGroups.0.Tasks.0.Env").Map()
-	envList := state.EnvList{} // []state.EnvVar{}
+	rawEnvList := task.Env
+	envList := state.EnvList{}
 	for k, v := range rawEnvList {
 		envList = append(envList, state.EnvVar{
 			Name:  k,
-			Value: v.Str,
+			Value: v,
 		})
 	}
 
@@ -113,6 +112,9 @@ func (a *nomadAdapter) AdaptTask(job nomad.Job) state.Run {
 	return run
 }
 
+//
+// convert from Nomad job status to our internal representation of job status
+//
 func (a *nomadAdapter) mapJobStatus(status string) string {
 	switch status {
 	case state.JobStatusPending:
@@ -160,12 +162,13 @@ func (a *nomadAdapter) AdaptRun(definition state.Definition, run state.Run) Noma
 	// if override {
 	// 	opts.PolicyOverride = true
 	// }
-
 	job := a.parseNomadJobspec(definition.Template)
-	// TODO inject the image from definition into the job
+	task := job.TaskGroups[0].Tasks[0]
+
+	// inject the image from definition into the job
+	task.Config["image"] = definition.Image
 
 	// inject the envvar from definition into the job
-	task := job.TaskGroups[0].Tasks[0]
 	envList := run.Env
 	taskMap := map[string]string{}
 	for _, envVar := range *envList {
