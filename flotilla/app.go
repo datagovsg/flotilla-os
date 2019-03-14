@@ -3,15 +3,15 @@ package flotilla
 import (
 	"github.com/pkg/errors"
 	"github.com/rs/cors"
-	"github.com/stitchfix/flotilla-os/clients/cluster"
-	"github.com/stitchfix/flotilla-os/clients/logs"
-	"github.com/stitchfix/flotilla-os/clients/registry"
-	"github.com/stitchfix/flotilla-os/config"
-	"github.com/stitchfix/flotilla-os/execution/engine"
-	flotillaLog "github.com/stitchfix/flotilla-os/log"
-	"github.com/stitchfix/flotilla-os/services"
-	"github.com/stitchfix/flotilla-os/state"
-	"github.com/stitchfix/flotilla-os/worker"
+	"github.com/datagovsg/flotilla-os/clients/cluster"
+	"github.com/datagovsg/flotilla-os/clients/logs"
+	"github.com/datagovsg/flotilla-os/clients/registry"
+	"github.com/datagovsg/flotilla-os/config"
+	"github.com/datagovsg/flotilla-os/execution/engine"
+	flotillaLog "github.com/datagovsg/flotilla-os/log"
+	"github.com/datagovsg/flotilla-os/services"
+	"github.com/datagovsg/flotilla-os/state"
+	"github.com/datagovsg/flotilla-os/worker"
 	"net/http"
 	"strings"
 	"time"
@@ -73,6 +73,8 @@ func NewApp(conf config.Config,
 	}
 
 	app.configureRoutes(ep)
+	app.logger.Log("message", "Starting server with mode", "mode", app.mode)
+	app.logger.Log("message", "Starting server on port", "port_number", app.address)
 	if err = app.initializeWorkers(conf, log, ee, sm); err != nil {
 		return app, errors.Wrap(err, "problem initializing workers")
 	}

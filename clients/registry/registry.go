@@ -16,7 +16,7 @@ import (
 	"github.com/docker/go-connections/sockets"
 	"github.com/moby/moby/registry"
 	"github.com/pkg/errors"
-	"github.com/stitchfix/flotilla-os/config"
+	"github.com/datagovsg/flotilla-os/config"
 	"net"
 	"net/http"
 	"path/filepath"

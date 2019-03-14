@@ -1,11 +1,12 @@
 package adapter
 
 import (
+	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/ecs"
-	"github.com/stitchfix/flotilla-os/config"
-	"github.com/stitchfix/flotilla-os/state"
+	"github.com/datagovsg/flotilla-os/config"
+	"github.com/datagovsg/flotilla-os/state"
 	"strings"
 )
 
@@ -13,10 +14,16 @@ import (
 // ECSAdapter translates back and forth from ECS api objects to our representation
 //
 type ECSAdapter interface {
+	// AdaptTask converts from an ecs task to a generic run
 	AdaptTask(task ecs.Task) state.Run
-	AdaptRun(definition state.Definition, run state.Run) ecs.RunTaskInput
-	AdaptDefinition(definition state.Definition) ecs.RegisterTaskDefinitionInput
+	// AdaptTaskDef translates from an ecs task definition to a generic definition
 	AdaptTaskDef(taskDef ecs.TaskDefinition) state.Definition
+
+	// AdaptRun translates the definition and run into the required arguments
+	// to run an ecs task.
+	AdaptRun(definition state.Definition, run state.Run) ecs.RunTaskInput
+	// AdaptDefinition translates from definition to the ecs arguments for registering a task
+	AdaptDefinition(definition state.Definition) ecs.RegisterTaskDefinitionInput
 }
 
 type EC2ServiceClient interface {
@@ -264,6 +271,7 @@ func (a *ecsAdapter) AdaptDefinition(definition state.Definition) ecs.RegisterTa
 	}
 
 	networkMode := "host"
+	fmt.Println(containerDef)
 	return ecs.RegisterTaskDefinitionInput{
 		ContainerDefinitions: []*ecs.ContainerDefinition{containerDef},
 		Family:               &definition.DefinitionID,

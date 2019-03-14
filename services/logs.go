@@ -1,9 +1,9 @@
 package services
 
 import (
-	"github.com/stitchfix/flotilla-os/clients/logs"
-	"github.com/stitchfix/flotilla-os/config"
-	"github.com/stitchfix/flotilla-os/state"
+	"github.com/datagovsg/flotilla-os/clients/logs"
+	"github.com/datagovsg/flotilla-os/config"
+	"github.com/datagovsg/flotilla-os/state"
 )
 
 type LogService interface {

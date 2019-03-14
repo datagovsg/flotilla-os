@@ -3,12 +3,12 @@ package services
 import (
 	"fmt"
 
-	"github.com/stitchfix/flotilla-os/clients/cluster"
-	"github.com/stitchfix/flotilla-os/clients/registry"
-	"github.com/stitchfix/flotilla-os/config"
-	"github.com/stitchfix/flotilla-os/exceptions"
-	"github.com/stitchfix/flotilla-os/execution/engine"
-	"github.com/stitchfix/flotilla-os/state"
+	"github.com/datagovsg/flotilla-os/clients/cluster"
+	"github.com/datagovsg/flotilla-os/clients/registry"
+	"github.com/datagovsg/flotilla-os/config"
+	"github.com/datagovsg/flotilla-os/exceptions"
+	"github.com/datagovsg/flotilla-os/execution/engine"
+	"github.com/datagovsg/flotilla-os/state"
 )
 
 //
@@ -133,7 +133,7 @@ func (es *executionService) createFromDefinition(
 	}
 
 	// Construct run object with StatusQueued and new UUID4 run id
-	run, err = es.constructRun(clusterName, definition, env, ownerID)
+	run, err = es.ee.ConstructRun(definition, clusterName, env, ownerID, es.reservedEnv)
 	if err != nil {
 		return run, err
 	}
@@ -148,86 +148,40 @@ func (es *executionService) createFromDefinition(
 	return run, es.ee.Enqueue(run)
 }
 
-func (es *executionService) constructRun(
-	clusterName string, definition state.Definition, env *state.EnvList, ownerID string) (state.Run, error) {
-
-	var (
-		run state.Run
-		err error
-	)
-
-	runID, err := state.NewRunID()
-	if err != nil {
-		return run, err
-	}
-
-	run = state.Run{
-		RunID:        runID,
-		ClusterName:  clusterName,
-		GroupName:    definition.GroupName,
-		DefinitionID: definition.DefinitionID,
-		Alias:        definition.Alias,
-		Image:        definition.Image,
-		Status:       state.StatusQueued,
-		User:         ownerID,
-	}
-	runEnv := es.constructEnviron(run, env)
-	run.Env = &runEnv
-	return run, nil
-}
-
-func (es *executionService) constructEnviron(run state.Run, env *state.EnvList) state.EnvList {
-	size := len(es.reservedEnv)
-	if env != nil {
-		size += len(*env)
-	}
-	runEnv := make([]state.EnvVar, size)
-	i := 0
-	for k, f := range es.reservedEnv {
-		runEnv[i] = state.EnvVar{
-			Name:  k,
-			Value: f(run),
-		}
-		i++
-	}
-	if env != nil {
-		for j, e := range *env {
-			runEnv[i+j] = e
-		}
-	}
-	return state.EnvList(runEnv)
-}
-
 func (es *executionService) canBeRun(clusterName string, definition state.Definition, env *state.EnvList) error {
-	if env != nil {
-		for _, e := range *env {
-			_, usingRestricted := es.reservedEnv[e.Name]
-			if usingRestricted {
-				return exceptions.ConflictingResource{
-					ErrorString: fmt.Sprintf("environment variable %s is reserved", e.Name)}
-			}
-		}
-	}
+	// not sure what this is checking for
+	// if env != nil {
+	// 	for _, e := range *env {
+	// 		_, usingRestricted := es.reservedEnv[e.Name]
+	// 		if usingRestricted {
+	// 			return exceptions.ConflictingResource{
+	// 				ErrorString: fmt.Sprintf("environment variable %s is reserved", e.Name)}
+	// 		}
+	// 	}
+	// }
 
-	ok, err := es.rc.IsImageValid(definition.Image)
-	if err != nil {
-		return err
-	}
-	if !ok {
-		return exceptions.MissingResource{
-			ErrorString: fmt.Sprintf(
-				"image [%s] was not found in any of the configured repositories", definition.Image)}
-	}
+	// should check if jobspec AND image is valid. comment out for now as we are using private repo
+	// ok, err := es.rc.IsImageValid(definition.Image)
+	// if err != nil {
+	// 	return err
+	// }
+	// if !ok {
+	// 	return exceptions.MissingResource{
+	// 		ErrorString: fmt.Sprintf(
+	// 			"image [%s] was not found in any of the configured repositories", definition.Image)}
+	// }
 
-	ok, err = es.cc.CanBeRun(clusterName, definition)
-	if err != nil {
-		return err
-	}
-	if !ok {
-		return exceptions.MalformedInput{
-			ErrorString: fmt.Sprintf(
-				"definition [%s] cannot be run on cluster [%s]", definition.DefinitionID, clusterName)}
-	}
+	// assume it can be run
+	// ok, err = es.cc.CanBeRun(clusterName, definition)
+	// if err != nil {
+	// 	return err
+	// }
+	// if !ok {
+	// 	return exceptions.MalformedInput{
+	// 		ErrorString: fmt.Sprintf(
+	// 			"definition [%s] cannot be run on cluster [%s]", definition.DefinitionID, clusterName)}
+	// }
+
 	return nil
 }
 
@@ -294,7 +248,7 @@ func (es *executionService) Terminate(runID string) error {
 	}
 
 	// If it's been submitted, let the status update workers handle setting it to stopped
-	if run.Status != state.StatusStopped && len(run.TaskArn) > 0 && len(run.ClusterName) > 0 {
+	if run.Status != state.StatusStopped {
 		return es.ee.Terminate(run)
 	}
 

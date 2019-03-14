@@ -7,10 +7,10 @@ import (
 	"github.com/jmoiron/sqlx"
 	// Pull in postgres specific drivers
 	"database/sql"
+	"github.com/datagovsg/flotilla-os/config"
+	"github.com/datagovsg/flotilla-os/exceptions"
 	_ "github.com/lib/pq"
 	"github.com/pkg/errors"
-	"github.com/stitchfix/flotilla-os/config"
-	"github.com/stitchfix/flotilla-os/exceptions"
 	"math"
 	"strings"
 	"time"
@@ -20,7 +20,8 @@ import (
 // SQLStateManager uses postgresql to manage state
 //
 type SQLStateManager struct {
-	db *sqlx.DB
+	db          *sqlx.DB
+	clusterName string
 }
 
 //
@@ -32,6 +33,7 @@ func (sm *SQLStateManager) Name() string {
 
 //
 // Initialize creates tables if they do not exist
+// cloud agnostic function
 //
 func (sm *SQLStateManager) Initialize(conf config.Config) error {
 	dburl := conf.GetString("database_url")
@@ -173,6 +175,7 @@ func (sm *SQLStateManager) GetDefinition(definitionID string) (Definition, error
 	var err error
 	var definition Definition
 	err = sm.db.Get(&definition, GetDefinitionSQL, definitionID)
+	// fmt.Printf("%+v\n", definition)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return definition, exceptions.MissingResource{
@@ -226,7 +229,8 @@ func (sm *SQLStateManager) UpdateDefinition(definitionID string, updates Definit
       arn = $2, image = $3,
       container_name = $4, "user" = $5,
       alias = $6, memory = $7,
-      command = $8, env = $9
+      command = $8, env = $9,
+      template = $10
     WHERE definition_id = $1;
     `
 
@@ -267,7 +271,7 @@ func (sm *SQLStateManager) UpdateDefinition(definitionID string, updates Definit
 		update, definitionID,
 		existing.Arn, existing.Image, existing.ContainerName,
 		existing.User, existing.Alias, existing.Memory,
-		existing.Command, existing.Env); err != nil {
+		existing.Command, existing.Env, existing.Template); err != nil {
 		return existing, errors.Wrapf(err, "issue updating definition [%s]", definitionID)
 	}
 
@@ -307,10 +311,10 @@ func (sm *SQLStateManager) CreateDefinition(d Definition) error {
 	var err error
 	insert := `
     INSERT INTO task_def(
-      arn, definition_id, image, group_name,
-      container_name, "user", alias, memory, command, env
+      arn, definition_id, image, group_name, container_name,
+      "user", alias, memory, command, env, template
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
     `
 
 	insertPorts := `
@@ -320,14 +324,14 @@ func (sm *SQLStateManager) CreateDefinition(d Definition) error {
     `
 
 	insertDefTags := `
-	INSERT INTO task_def_tags(
-	  task_def_id, tag_id
-	) VALUES ($1, $2);
-	`
+    INSERT INTO task_def_tags(
+      task_def_id, tag_id
+    ) VALUES ($1, $2);
+    `
 
 	insertTags := `
-	INSERT INTO tags(text) SELECT $1 WHERE NOT EXISTS (SELECT text from tags where text = $2)
-	`
+    INSERT INTO tags(text) SELECT $1 WHERE NOT EXISTS (SELECT text from tags where text = $2)
+    `
 
 	tx, err := sm.db.Begin()
 	if err != nil {
@@ -336,7 +340,7 @@ func (sm *SQLStateManager) CreateDefinition(d Definition) error {
 
 	if _, err = tx.Exec(insert,
 		d.Arn, d.DefinitionID, d.Image, d.GroupName, d.ContainerName,
-		d.User, d.Alias, d.Memory, d.Command, d.Env); err != nil {
+		d.User, d.Alias, d.Memory, d.Command, d.Env, d.Template); err != nil {
 		tx.Rollback()
 		return errors.Wrapf(
 			err, "issue creating new task definition with alias [%s] and id [%s]", d.DefinitionID, d.Alias)
@@ -486,7 +490,7 @@ func (sm *SQLStateManager) UpdateRun(runID string, updates Run) (Run, error) {
 			&existing.TaskArn, &existing.RunID, &existing.DefinitionID, &existing.Alias, &existing.Image,
 			&existing.ClusterName, &existing.ExitCode, &existing.Status, &existing.StartedAt,
 			&existing.FinishedAt, &existing.InstanceID, &existing.InstanceDNSName, &existing.GroupName,
-			&existing.User, &existing.TaskType, &existing.Env)
+			&existing.User, &existing.Env, &existing.JobName)
 	}
 	if err != nil {
 		return existing, errors.WithStack(err)
@@ -502,7 +506,8 @@ func (sm *SQLStateManager) UpdateRun(runID string, updates Run) (Run, error) {
       status = $8, started_at = $9,
       finished_at = $10, instance_id = $11,
       instance_dns_name = $12,
-      group_name = $13, env = $14
+      group_name = $13, env = $14,
+      jobname = $15
     WHERE run_id = $1;
     `
 
@@ -514,7 +519,7 @@ func (sm *SQLStateManager) UpdateRun(runID string, updates Run) (Run, error) {
 		existing.Status, existing.StartedAt,
 		existing.FinishedAt, existing.InstanceID,
 		existing.InstanceDNSName, existing.GroupName,
-		existing.Env); err != nil {
+		existing.Env, existing.JobName); err != nil {
 		tx.Rollback()
 		return existing, errors.WithStack(err)
 	}
@@ -535,9 +540,9 @@ func (sm *SQLStateManager) CreateRun(r Run) error {
 	INSERT INTO task (
       task_arn, run_id, definition_id, alias, image, cluster_name, exit_code, status,
       started_at, finished_at, instance_id, instance_dns_name, group_name,
-      env, task_type
+      env, jobname
     ) VALUES (
-      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 'task'
+      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15
     );
     `
 
@@ -551,7 +556,7 @@ func (sm *SQLStateManager) CreateRun(r Run) error {
 		r.Alias, r.Image, r.ClusterName,
 		r.ExitCode, r.Status, r.StartedAt,
 		r.FinishedAt, r.InstanceID,
-		r.InstanceDNSName, r.GroupName, r.Env); err != nil {
+		r.InstanceDNSName, r.GroupName, r.Env, r.JobName); err != nil {
 		tx.Rollback()
 		return errors.Wrapf(err, "issue creating new task run with id [%s]", r.RunID)
 	}

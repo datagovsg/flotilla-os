@@ -1,7 +1,7 @@
 package worker
 
 import (
-	"github.com/stitchfix/flotilla-os/config"
+	"github.com/datagovsg/flotilla-os/config"
 	"os"
 	"testing"
 	"time"

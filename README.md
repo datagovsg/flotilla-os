@@ -2,8 +2,8 @@
 
 # flotilla-os
 
-[![Circle CI](https://circleci.com/gh/stitchfix/flotilla-os.svg?style=shield)](https://circleci.com/gh/stitchfix/flotilla-os)
-[![Go Report Card](https://goreportcard.com/badge/github.com/stitchfix/flotilla-os)](https://goreportcard.com/report/github.com/stitchfix/flotilla-os)
+[![Circle CI](https://circleci.com/gh/datagovsg/flotilla-os.svg?style=shield)](https://circleci.com/gh/stitchfix/flotilla-os)
+[![Go Report Card](https://goreportcard.com/badge/github.com/datagovsg/flotilla-os)](https://goreportcard.com/report/github.com/stitchfix/flotilla-os)
 
 ## Introduction
 
@@ -307,7 +307,7 @@ The variables in `conf/config.yml` are sensible defaults. Most should be left al
 
 ### API Documentation
 
-See [API](https://stitchfix.github.io/flotilla-os/api.html)
+See [API](https://datagovsg.github.io/flotilla-os/api.html)
 
 ### Building
 

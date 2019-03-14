@@ -3,8 +3,8 @@ package queue
 import (
 	"fmt"
 	"github.com/pkg/errors"
-	"github.com/stitchfix/flotilla-os/config"
-	"github.com/stitchfix/flotilla-os/state"
+	"github.com/datagovsg/flotilla-os/config"
+	"github.com/datagovsg/flotilla-os/state"
 )
 
 //
@@ -12,6 +12,7 @@ import (
 //
 type Manager interface {
 	Name() string
+	// Calling QurlFor creates the status queue if it does not exist
 	QurlFor(name string, prefixed bool) (string, error)
 	Initialize(config.Config) error
 	Enqueue(qURL string, run state.Run) error

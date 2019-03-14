@@ -10,11 +10,11 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/ecs"
 	"github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/datagovsg/flotilla-os/config"
+	"github.com/datagovsg/flotilla-os/execution/adapter"
+	"github.com/datagovsg/flotilla-os/queue"
+	"github.com/datagovsg/flotilla-os/state"
 	"github.com/pkg/errors"
-	"github.com/stitchfix/flotilla-os/config"
-	"github.com/stitchfix/flotilla-os/execution/adapter"
-	"github.com/stitchfix/flotilla-os/queue"
-	"github.com/stitchfix/flotilla-os/state"
 	"strings"
 )
 
@@ -36,21 +36,6 @@ type ecsServiceClient interface {
 	DeregisterTaskDefinition(input *ecs.DeregisterTaskDefinitionInput) (*ecs.DeregisterTaskDefinitionOutput, error)
 	RegisterTaskDefinition(input *ecs.RegisterTaskDefinitionInput) (*ecs.RegisterTaskDefinitionOutput, error)
 	DescribeContainerInstances(input *ecs.DescribeContainerInstancesInput) (*ecs.DescribeContainerInstancesOutput, error)
-}
-
-type cloudwatchServiceClient interface {
-	PutRule(input *cloudwatchevents.PutRuleInput) (*cloudwatchevents.PutRuleOutput, error)
-	PutTargets(input *cloudwatchevents.PutTargetsInput) (*cloudwatchevents.PutTargetsOutput, error)
-	ListRuleNamesByTarget(input *cloudwatchevents.ListRuleNamesByTargetInput) (*cloudwatchevents.ListRuleNamesByTargetOutput, error)
-}
-
-type sqsClient interface {
-	GetQueueAttributes(input *sqs.GetQueueAttributesInput) (*sqs.GetQueueAttributesOutput, error)
-	SetQueueAttributes(input *sqs.SetQueueAttributesInput) (*sqs.SetQueueAttributesOutput, error)
-}
-
-type ecsUpdate struct {
-	Detail ecs.Task `json:"detail"`
 }
 
 //
@@ -118,11 +103,64 @@ func (ee *ECSExecutionEngine) Initialize(conf config.Config) error {
 	return ee.createOrUpdateEventRule(statusRule, statusQueue)
 }
 
+func (ee *ECSExecutionEngine) ConstructRun(
+	definition state.Definition, clusterName string, env *state.EnvList, ownerID string, reservedEnv map[string]func(run state.Run) string) (state.Run, error) {
+
+	var (
+		run state.Run
+		err error
+	)
+
+	runID, err := state.NewRunID()
+	if err != nil {
+		return run, err
+	}
+
+	run = state.Run{
+		RunID:        runID,
+		ClusterName:  clusterName,
+		GroupName:    definition.GroupName,
+		DefinitionID: definition.DefinitionID,
+		Alias:        definition.Alias,
+		Image:        definition.Image,
+		Status:       state.StatusQueued,
+		User:         ownerID,
+	}
+	runEnv := ee.constructEnviron(run, env, reservedEnv)
+	run.Env = &runEnv
+	return run, nil
+}
+
+//
+// add reserved environment variables to the run
+//
+func (ee *ECSExecutionEngine) constructEnviron(run state.Run, env *state.EnvList, reservedEnv map[string]func(run state.Run) string) state.EnvList {
+	size := len(reservedEnv)
+	if env != nil {
+		size += len(*env)
+	}
+	runEnv := make([]state.EnvVar, size)
+	i := 0
+	for k, f := range reservedEnv {
+		runEnv[i] = state.EnvVar{
+			Name:  k,
+			Value: f(run),
+		}
+		i++
+	}
+	if env != nil {
+		for j, e := range *env {
+			runEnv[i+j] = e
+		}
+	}
+	return state.EnvList(runEnv)
+}
+
 func (ee *ECSExecutionEngine) createOrUpdateEventRule(statusRule string, statusQueue string) error {
 	createUpdate, err := ee.cwClient.PutRule(&cloudwatchevents.PutRuleInput{
 		Description:  aws.String("Routes ecs task status events to flotilla status queues"),
 		Name:         &statusRule,
-		EventPattern: aws.String(`{"source":["aws.ecs"],"detail-type":["ECS Task State Change"]}`),
+		EventPattern: aws.String(`{"source":["nomad.script"],"detail-type":["Nomad Job State Change"]}`),
 	})
 
 	if err != nil {
@@ -262,6 +300,7 @@ func (ee *ECSExecutionEngine) PollStatus() (RunReceipt, error) {
 
 //
 // PollRuns receives -at most- one run per queue that is pending execution
+// Called by submit_worker.go
 //
 func (ee *ECSExecutionEngine) PollRuns() ([]RunReceipt, error) {
 	queues, err := ee.qm.List()

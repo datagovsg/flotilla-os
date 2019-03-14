@@ -1,13 +1,13 @@
 package state
 
 import (
+	"github.com/datagovsg/flotilla-os/config"
 	"github.com/pkg/errors"
-	"github.com/stitchfix/flotilla-os/config"
 )
 
 //
-// Manager interface for CRUD operations on
-// on definitions and runs
+// Manager interface for CRUD operations on definitions and runs
+// Has a dependency on ClusterClient component
 //
 type Manager interface {
 	Name() string
@@ -39,7 +39,7 @@ type Manager interface {
 // NewStateManager sets up and configures a new statemanager
 // - if no `state_manager` is configured, will use postgres
 //
-func NewStateManager(conf config.Config) (Manager, error) {
+func NewStateManager(conf config.Config, clusterName string) (Manager, error) {
 	name := "postgres"
 	if conf.IsSet("state_manager") {
 		name = conf.GetString("state_manager")
@@ -47,7 +47,7 @@ func NewStateManager(conf config.Config) (Manager, error) {
 
 	switch name {
 	case "postgres":
-		pgm := &SQLStateManager{}
+		pgm := &SQLStateManager{clusterName: clusterName}
 		err := pgm.Initialize(conf)
 		if err != nil {
 			return nil, errors.Wrap(err, "problem initializing SQLStateManager")

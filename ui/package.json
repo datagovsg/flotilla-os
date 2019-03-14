@@ -5,14 +5,14 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com:stitchfix/flotilla-os.git"
+    "url": "git+ssh://git@github.com:datagovsg/flotilla-os.git"
   },
   "author": "Patrick Sun",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/stitchfix/flotilla-os/issues"
+    "url": "https://github.com/datagovsg/flotilla-os/issues"
   },
-  "homepage": "https://github.com/stitchfix/flotilla-os",
+  "homepage": "https://github.com/datagovsg/flotilla-os",
   "dependencies": {
     "ansi-to-react": "^1.6.0",
     "axios": "0.17.1",
@@ -91,10 +91,10 @@
     "lint": "eslint **/*.js src/**/*.js src/**/__tests__/*.js",
     "babel": "./node_modules/.bin/babel-node --presets latest,stage-0",
     "webpack": "NODE_ENV=production npm run babel -- ./node_modules/.bin/webpack --progress --optimize-minimize",
-    "dev": "NODE_ENV=dev npm run babel -- ./node_modules/.bin/webpack-dev-server --progress --hot",
+    "dev": "NODE_ENV=dev npm run babel -- ./node_modules/.bin/webpack-dev-server --progress --hot --port 5000",
     "watch": "npm run webpack -- --watch",
     "build": "rimraf build/ && npm run webpack",
-    "start": "npm run dev",
+    "start": "npm run dev -- --port 5000",
     "test": "NODE_ENV=test jest",
     "test:watch": "npm test -- --watch",
     "precommit": "lint-staged"

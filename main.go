@@ -2,17 +2,17 @@ package main
 
 import (
 	"fmt"
+	"github.com/datagovsg/flotilla-os/clients/cluster"
+	"github.com/datagovsg/flotilla-os/clients/logs"
+	"github.com/datagovsg/flotilla-os/clients/registry"
+	"github.com/datagovsg/flotilla-os/config"
+	"github.com/datagovsg/flotilla-os/execution/engine"
+	"github.com/datagovsg/flotilla-os/flotilla"
+	flotillaLog "github.com/datagovsg/flotilla-os/log"
+	"github.com/datagovsg/flotilla-os/queue"
+	"github.com/datagovsg/flotilla-os/state"
 	gklog "github.com/go-kit/kit/log"
 	"github.com/pkg/errors"
-	"github.com/stitchfix/flotilla-os/clients/cluster"
-	"github.com/stitchfix/flotilla-os/clients/logs"
-	"github.com/stitchfix/flotilla-os/clients/registry"
-	"github.com/stitchfix/flotilla-os/config"
-	"github.com/stitchfix/flotilla-os/execution/engine"
-	"github.com/stitchfix/flotilla-os/flotilla"
-	flotillaLog "github.com/stitchfix/flotilla-os/log"
-	"github.com/stitchfix/flotilla-os/queue"
-	"github.com/stitchfix/flotilla-os/state"
 	"log"
 	"os"
 )
@@ -43,16 +43,6 @@ func main() {
 	}
 
 	//
-	// Get state manager for reading and writing
-	// state about definitions and runs
-	//
-	sm, err := state.NewStateManager(c)
-	if err != nil {
-		fmt.Printf("%+v\n", errors.Wrap(err, "unable to initialize state manager"))
-		os.Exit(1)
-	}
-
-	//
 	// Get registry client for validating images
 	//
 	rc, err := registry.NewRegistryClient(c)
@@ -68,6 +58,16 @@ func main() {
 	cc, err := cluster.NewClusterClient(c)
 	if err != nil {
 		fmt.Printf("%+v\n", errors.Wrap(err, "unable to initialize cluster client"))
+		os.Exit(1)
+	}
+
+	//
+	// Get state manager for reading and writing
+	// state about definitions and runs
+	//
+	sm, err := state.NewStateManager(c, cc.Name())
+	if err != nil {
+		fmt.Printf("%+v\n", errors.Wrap(err, "unable to initialize state manager"))
 		os.Exit(1)
 	}
 

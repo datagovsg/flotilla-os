@@ -2,10 +2,14 @@ package engine
 
 import (
 	"fmt"
+	"github.com/aws/aws-sdk-go/service/cloudwatchevents"
+	"github.com/aws/aws-sdk-go/service/ecs"
+	"github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/datagovsg/flotilla-os/config"
+	"github.com/datagovsg/flotilla-os/queue"
+	"github.com/datagovsg/flotilla-os/state"
+	nomad "github.com/hashicorp/nomad/api"
 	"github.com/pkg/errors"
-	"github.com/stitchfix/flotilla-os/config"
-	"github.com/stitchfix/flotilla-os/queue"
-	"github.com/stitchfix/flotilla-os/state"
 )
 
 //
@@ -30,6 +34,27 @@ type Engine interface {
 	PollRuns() ([]RunReceipt, error)
 
 	PollStatus() (RunReceipt, error)
+
+	ConstructRun(definition state.Definition, clusterName string, env *state.EnvList, ownerID string, reservedEnv map[string]func(run state.Run) string) (state.Run, error)
+}
+
+type sqsClient interface {
+	GetQueueAttributes(input *sqs.GetQueueAttributesInput) (*sqs.GetQueueAttributesOutput, error)
+	SetQueueAttributes(input *sqs.SetQueueAttributesInput) (*sqs.SetQueueAttributesOutput, error)
+}
+
+type cloudwatchServiceClient interface {
+	PutRule(input *cloudwatchevents.PutRuleInput) (*cloudwatchevents.PutRuleOutput, error)
+	PutTargets(input *cloudwatchevents.PutTargetsInput) (*cloudwatchevents.PutTargetsOutput, error)
+	ListRuleNamesByTarget(input *cloudwatchevents.ListRuleNamesByTargetInput) (*cloudwatchevents.ListRuleNamesByTargetOutput, error)
+}
+
+type nomadUpdate struct {
+	Detail nomad.Job `json:"detail"`
+}
+
+type ecsUpdate struct {
+	Detail ecs.Task `json:"detail"`
 }
 
 type RunReceipt struct {
@@ -40,7 +65,7 @@ type RunReceipt struct {
 // NewExecutionEngine initializes and returns a new Engine
 //
 func NewExecutionEngine(conf config.Config, qm queue.Manager) (Engine, error) {
-	name := "ecs"
+	name := "nomad"
 	if conf.IsSet("execution_engine") {
 		name = conf.GetString("execution_engine")
 	}
@@ -50,6 +75,12 @@ func NewExecutionEngine(conf config.Config, qm queue.Manager) (Engine, error) {
 		eng := &ECSExecutionEngine{qm: qm}
 		if err := eng.Initialize(conf); err != nil {
 			return nil, errors.Wrap(err, "problem initializing ECSExecutionEngine")
+		}
+		return eng, nil
+	case "nomad":
+		eng := &NomadExecutionEngine{qm: qm}
+		if err := eng.Initialize(conf); err != nil {
+			return nil, errors.Wrap(err, "problem initializing NomadExecutionEngine")
 		}
 		return eng, nil
 	default:

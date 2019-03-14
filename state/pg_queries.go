@@ -17,11 +17,11 @@ CREATE TABLE IF NOT EXISTS task_def (
   memory integer,
   command text,
   env jsonb,
+  template character varying,
   -- Refactor these
   "user" character varying,
   arn character varying,
   container_name character varying NOT NULL,
-  task_type character varying,
   -- Refactor these
   CONSTRAINT task_def_alias UNIQUE(alias)
 );
@@ -54,11 +54,11 @@ CREATE TABLE IF NOT EXISTS task (
   instance_dns_name character varying,
   group_name character varying,
   env jsonb,
+  jobname character varying,
   -- Refactor these --
   task_arn character varying,
   docker_id character varying,
-  "user" character varying,
-  task_type character varying
+  "user" character varying
   -- Refactor these --
 );
 
@@ -119,10 +119,10 @@ select
   td.alias                  as alias,
   td.memory                 as memory,
   coalesce(td.command,'')   as command,
-  coalesce(td.task_type,'') as tasktype,
   env::TEXT                 as env,
   ports                     as ports,
-  tags                      as tags
+  tags                      as tags,
+  td.template               as template
   from (select * from task_def) td left outer join
     (select task_def_id,
       array_to_json(array_agg(port))::TEXT as ports
@@ -170,8 +170,8 @@ select
   coalesce(t.instance_dns_name,'')           as instancednsname,
   coalesce(t.group_name,'')                  as groupname,
   coalesce(t.user,'')                        as "user",
-  coalesce(t.task_type,'')                   as tasktype,
-  env::TEXT                                  as env
+  env::TEXT                                  as env,
+  coalesce(t.jobname,'')                     as jobname
 from task t
 `
 

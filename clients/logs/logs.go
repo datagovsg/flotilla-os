@@ -3,9 +3,9 @@ package logs
 import (
 	"fmt"
 	"github.com/pkg/errors"
-	"github.com/stitchfix/flotilla-os/config"
-	flotillaLog "github.com/stitchfix/flotilla-os/log"
-	"github.com/stitchfix/flotilla-os/state"
+	"github.com/datagovsg/flotilla-os/config"
+	flotillaLog "github.com/datagovsg/flotilla-os/log"
+	"github.com/datagovsg/flotilla-os/state"
 )
 
 //

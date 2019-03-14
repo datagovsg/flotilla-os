@@ -2,10 +2,10 @@ package worker
 
 import (
 	"fmt"
-	"github.com/stitchfix/flotilla-os/config"
-	"github.com/stitchfix/flotilla-os/execution/engine"
-	flotillaLog "github.com/stitchfix/flotilla-os/log"
-	"github.com/stitchfix/flotilla-os/state"
+	"github.com/datagovsg/flotilla-os/config"
+	"github.com/datagovsg/flotilla-os/execution/engine"
+	flotillaLog "github.com/datagovsg/flotilla-os/log"
+	"github.com/datagovsg/flotilla-os/state"
 	"time"
 )
 

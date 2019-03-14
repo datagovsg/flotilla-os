@@ -10,20 +10,47 @@ import (
 	"time"
 )
 
-// StatusRunning indicates the run is running
-var StatusRunning = "RUNNING"
+const (
+	// For ECS, StatusRunning indicates the run is running
+	// For Nomad, StatusRunning indicates the job has non-terminal allocations
+	StatusRunning = "RUNNING"
 
-// StatusQueued indicates the run is queued
-var StatusQueued = "QUEUED"
+	// For ECS, StatusQueued indicates the run is queued
+	StatusQueued = "QUEUED"
 
-// StatusNeedsRetry indicates the run failed for infra reasons and needs retried
-var StatusNeedsRetry = "NEEDS_RETRY"
+	// For ECS, StatusNeedsRetry indicates the run failed for infra reasons and needs to be retried
+	// For Nomad, StatusNeedsRetry indicates the _evaluation_ of the job failed and needs to be retried
+	StatusNeedsRetry = "NEEDS_RETRY"
 
-// StatusPending indicates the run has been allocated to a host and is in the process of launching
-var StatusPending = "PENDING"
+	// For ECS, StatusPending indicates the run has been allocated to a host and is in the process of launching
+	// For Nomad, StatusPending the job is waiting on scheduling
+	StatusPending = "PENDING"
 
-// StatusStopped means the run is finished
-var StatusStopped = "STOPPED"
+	// For ECS, StatusStopped means the run is finished
+	// For Nomad, StatusStopped means all evaluation's and allocations are terminal
+	StatusStopped = "STOPPED"
+)
+
+// Refer to github.com/hashicorp/nomad/api/allocations for the updated list of status
+// const (
+// 	AllocDesiredStatusRun   = "run"   // Allocation should run
+// 	AllocDesiredStatusStop  = "stop"  // Allocation should stop
+// 	AllocDesiredStatusEvict = "evict" // Allocation should stop, and was evicted
+// )
+// const (
+// 	AllocClientStatusPending  = "pending"
+// 	AllocClientStatusRunning  = "running"
+// 	AllocClientStatusComplete = "complete"
+// 	AllocClientStatusFailed   = "failed"
+// 	AllocClientStatusLost     = "lost"
+// )
+
+// Refer to github.com/hashicorp/nomad/nomad/structs/structs.go for the updated list of status
+const (
+	JobStatusPending = "pending" // Pending means the job is waiting on scheduling
+	JobStatusRunning = "running" // Running means the job has non-terminal allocations
+	JobStatusDead    = "dead"    // Dead means all evaluation's and allocations are terminal
+)
 
 //
 // IsValidStatus checks that the given status
@@ -76,6 +103,7 @@ type PortsList []int
 //
 // EnvVar represents a single environment variable
 // for either a definition or a run
+// https://www.nomadproject.io/docs/job-specification/env.html
 //
 type EnvVar struct {
 	Name  string `json:"name"`
@@ -93,19 +121,24 @@ type Tags []string
 // - roughly 1-1 with an AWS ECS task definition
 //
 type Definition struct {
-	Arn           string     `json:"arn"`
-	DefinitionID  string     `json:"definition_id"`
-	Image         string     `json:"image"`
-	GroupName     string     `json:"group_name"`
-	ContainerName string     `json:"container_name"`
-	User          string     `json:"user,omitempty"`
-	Alias         string     `json:"alias"`
-	Memory        *int64     `json:"memory"`
-	Command       string     `json:"command,omitempty"`
-	TaskType      string     `json:"-"`
-	Env           *EnvList   `json:"env"`
-	Ports         *PortsList `json:"ports,omitempty"`
-	Tags          *Tags      `json:"tags,omitempty"`
+	// common keys
+	Alias         string   `json:"alias"`          // User given name when defining task in Flotilla
+	Memory        *int64   `json:"memory"`         // Memory of the Docker image
+	User          string   `json:"user,omitempty"` // Name of the user running in Docker image
+	DefinitionID  string   `json:"definition_id"`  // DefinitionID == ecs family == ContainerName
+	Image         string   `json:"image"`          // Docker image name
+	ContainerName string   `json:"container_name"` // DefinitionID for ECS
+	Env           *EnvList `json:"env"`            // environment variables
+	GroupName     string   `json:"group_name"`     // used in ECS `container.dockerLabels` (not sure for now)
+
+	// ECS specific
+	Ports   *PortsList `json:"ports,omitempty"`   // (not sure for now)
+	Tags    *Tags      `json:"tags,omitempty"`    // (not sure for now)
+	Command string     `json:"command,omitempty"` // shell script to run
+	Arn     string     `json:"arn,omitempty"`     //
+
+	// Nomad specific
+	Template string `json:"template,omitempty"` // filename of jobspec template
 }
 
 var commandWrapper = `
@@ -147,7 +180,7 @@ func (d *Definition) IsValid() (bool, []string) {
 		{len(d.GroupName) > 255, "Group name must be 255 characters or less"},
 		{len(d.Alias) == 0, "string [alias] must be specified"},
 		{d.Memory == nil, "int [memory] must be specified"},
-		{len(d.Command) == 0, "string [command] must be specified"},
+		// {len(d.Command) == 0, "string [command] must be specified"},
 	}
 
 	valid := true
@@ -192,9 +225,6 @@ func (d *Definition) UpdateWith(other Definition) {
 	if len(other.Command) > 0 {
 		d.Command = other.Command
 	}
-	if len(other.TaskType) > 0 {
-		d.TaskType = other.TaskType
-	}
 	if other.Env != nil {
 		d.Env = other.Env
 	}
@@ -204,24 +234,9 @@ func (d *Definition) UpdateWith(other Definition) {
 	if other.Tags != nil {
 		d.Tags = other.Tags
 	}
-
-}
-
-func (d Definition) MarshalJSON() ([]byte, error) {
-	type Alias Definition
-
-	env := d.Env
-	if env == nil {
-		env = &EnvList{}
+	if len(other.Template) > 0 {
+		d.Template = other.Template
 	}
-
-	return json.Marshal(&struct {
-		Env *EnvList `json:"env"`
-		Alias
-	}{
-		Env:   env,
-		Alias: (Alias)(d),
-	})
 }
 
 //
@@ -230,21 +245,6 @@ func (d Definition) MarshalJSON() ([]byte, error) {
 type DefinitionList struct {
 	Total       int          `json:"total"`
 	Definitions []Definition `json:"definitions"`
-}
-
-func (dl *DefinitionList) MarshalJSON() ([]byte, error) {
-	type Alias DefinitionList
-	l := dl.Definitions
-	if l == nil {
-		l = []Definition{}
-	}
-	return json.Marshal(&struct {
-		Definitions []Definition `json:"definitions"`
-		*Alias
-	}{
-		Definitions: l,
-		Alias:       (*Alias)(dl),
-	})
 }
 
 //
@@ -259,22 +259,27 @@ func (dl *DefinitionList) MarshalJSON() ([]byte, error) {
 //   on information that is no longer accessible.
 //
 type Run struct {
-	TaskArn         string     `json:"task_arn"`
-	RunID           string     `json:"run_id"`
-	DefinitionID    string     `json:"definition_id"`
-	Alias           string     `json:"alias"`
-	Image           string     `json:"image"`
-	ClusterName     string     `json:"cluster"`
-	ExitCode        *int64     `json:"exit_code,omitempty"`
-	Status          string     `json:"status"`
-	StartedAt       *time.Time `json:"started_at,omitempty"`
-	FinishedAt      *time.Time `json:"finished_at,omitempty"`
-	InstanceID      string     `json:"-"`
-	InstanceDNSName string     `json:"-"`
-	GroupName       string     `json:"group_name"`
-	User            string     `json:"user,omitempty"`
-	TaskType        string     `json:"-"`
-	Env             *EnvList   `json:"env,omitempty"`
+	// Common keys
+	RunID        string     `json:"run_id"`
+	DefinitionID string     `json:"definition_id"`
+	Alias        string     `json:"alias"`
+	Image        string     `json:"image"`
+	ExitCode     *int64     `json:"exit_code,omitempty"`
+	Status       string     `json:"status"`
+	StartedAt    *time.Time `json:"started_at,omitempty"`
+	FinishedAt   *time.Time `json:"finished_at,omitempty"`
+	GroupName    string     `json:"group_name"`
+	User         string     `json:"user,omitempty"`
+	Env          *EnvList   `json:"env,omitempty"`
+
+	// ECS specific
+	TaskArn         string `json:"task_arn,omitempty"`
+	ClusterName     string `json:"cluster,omitempty"`
+	InstanceID      string `json:"-"`
+	InstanceDNSName string `json:"-"`
+
+	// Nomad specific
+	JobName string `json:"jobname,omitempty"`
 }
 
 //
@@ -321,11 +326,11 @@ func (d *Run) UpdateWith(other Run) {
 	if len(other.User) > 0 {
 		d.User = other.User
 	}
-	if len(other.TaskType) > 0 {
-		d.TaskType = other.TaskType
-	}
 	if other.Env != nil {
 		d.Env = other.Env
+	}
+	if len(other.JobName) > 0 {
+		d.JobName = other.JobName
 	}
 
 	//

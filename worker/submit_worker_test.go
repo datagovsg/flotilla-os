@@ -3,9 +3,9 @@ package worker
 import (
 	"errors"
 	gklog "github.com/go-kit/kit/log"
-	flotillaLog "github.com/stitchfix/flotilla-os/log"
-	"github.com/stitchfix/flotilla-os/state"
-	"github.com/stitchfix/flotilla-os/testutils"
+	flotillaLog "github.com/datagovsg/flotilla-os/log"
+	"github.com/datagovsg/flotilla-os/state"
+	"github.com/datagovsg/flotilla-os/testutils"
 	"os"
 	"testing"
 )
