@@ -32,13 +32,11 @@ const (
 )
 
 // Refer to github.com/hashicorp/nomad/api/allocations for the updated list of status
-
 // const (
 // 	AllocDesiredStatusRun   = "run"   // Allocation should run
 // 	AllocDesiredStatusStop  = "stop"  // Allocation should stop
 // 	AllocDesiredStatusEvict = "evict" // Allocation should stop, and was evicted
 // )
-
 // const (
 // 	AllocClientStatusPending  = "pending"
 // 	AllocClientStatusRunning  = "running"
@@ -46,6 +44,13 @@ const (
 // 	AllocClientStatusFailed   = "failed"
 // 	AllocClientStatusLost     = "lost"
 // )
+
+// Refer to github.com/hashicorp/nomad/nomad/structs/structs.go for the updated list of status
+const (
+	JobStatusPending = "pending" // Pending means the job is waiting on scheduling
+	JobStatusRunning = "running" // Running means the job has non-terminal allocations
+	JobStatusDead    = "dead"    // Dead means all evaluation's and allocations are terminal
+)
 
 //
 // IsValidStatus checks that the given status
@@ -274,7 +279,7 @@ type Run struct {
 	InstanceDNSName string `json:"-"`
 
 	// Nomad specific
-	Template string `json:"template,omitempty"` // filename of jobspec template
+	JobName string `json:"jobname,omitempty"`
 }
 
 //
@@ -323,6 +328,9 @@ func (d *Run) UpdateWith(other Run) {
 	}
 	if other.Env != nil {
 		d.Env = other.Env
+	}
+	if len(other.JobName) > 0 {
+		d.JobName = other.JobName
 	}
 
 	//

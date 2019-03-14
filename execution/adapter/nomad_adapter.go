@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"time"
 
 	"github.com/datagovsg/flotilla-os/config"
 	"github.com/datagovsg/flotilla-os/state"
@@ -26,7 +27,7 @@ type NomadAdapter interface {
 	// AdaptTaskDef converts from an nomad jobspec to a Definition
 	// AdaptTaskDef(task api.Job) state.Definition
 	// AdaptDefinition translates from Definition to a nomad Job struct
-	// AdaptDefinition(definition state.Definition) api.Job
+	AdaptDefinition(definition state.Definition) nomad.Job
 }
 
 // type NomadClient interface {
@@ -71,23 +72,34 @@ func NewNomadAdapter(conf config.Config, nc nomad.Client) (NomadAdapter, error) 
 //
 func (a *nomadAdapter) AdaptTask(job nomad.Job) state.Run {
 	val, _ := json.Marshal(job)
-	submitTime := gjson.GetBytes(val, "SubmitTime").Time()
-	exitCode := gjson.GetBytes(val, "TaskGroups.0.Tasks.0.KillSignal").Int()
-	status := gjson.GetBytes(val, "Status").Str
-
+	timeInt := job.SubmitTime
 	jobID := job.ID
+	submitTime := time.Unix(0, *timeInt)
+	exitCode := gjson.GetBytes(val, "TaskGroups.0.Tasks.0.KillSignal").Int()
+	status := a.mapJobStatus(*job.Status)
+
 	// should deal with error fetching allocations here
 	resp, _, _ := a.nc.Jobs().Allocations(*jobID, true, nil)
 	allocation := resp[0]
 	desiredStatus := allocation.DesiredStatus
-	// env := gjson.GetBytes(val, "TaskGroups.0.tasks.0.Env")
 
+	rawEnvList := gjson.GetBytes(val, "TaskGroups.0.Tasks.0.Env").Map()
+	envList := state.EnvList{} // []state.EnvVar{}
+	for k, v := range rawEnvList {
+		envList = append(envList, state.EnvVar{
+			Name:  k,
+			Value: v.Str,
+		})
+	}
+
+	// only updating the following fields
 	run := state.Run{
+		Env:       &envList,
 		Status:    status,
 		StartedAt: &submitTime,
 		ExitCode:  &exitCode,
-		// use allocation of job as a proxy for DesiredStatus
-		// Env:       &env,
+		// for the logs
+		JobName: *jobID,
 	}
 
 	if desiredStatus != "" && desiredStatus != nomad.AllocDesiredStatusRun {
@@ -99,6 +111,20 @@ func (a *nomadAdapter) AdaptTask(job nomad.Job) state.Run {
 	}
 
 	return run
+}
+
+func (a *nomadAdapter) mapJobStatus(status string) string {
+	switch status {
+	case state.JobStatusPending:
+		return state.StatusPending
+	case state.JobStatusRunning:
+		return state.StatusRunning
+	case state.JobStatusDead:
+		return state.StatusRunning
+	default:
+		fmt.Println(fmt.Sprintf("Error unsupported status: %s", status))
+		return status
+	}
 }
 
 func (a *nomadAdapter) needsRetried(run state.Run, job nomad.Job) bool {
@@ -135,34 +161,8 @@ func (a *nomadAdapter) AdaptRun(definition state.Definition, run state.Run) Noma
 	// 	opts.PolicyOverride = true
 	// }
 
-	jpath := definition.Template
-	var jobfile io.Reader
-
-	// Get the pwd and open the jobfile
-	pwd, err := os.Getwd()
-	if err != nil {
-		fmt.Println("Nooo 1")
-		fmt.Println(err)
-		return NomadRunInput{}
-	}
-	file, err := os.Open(pwd + "/jobspecs/" + jpath)
-	defer file.Close()
-	if err != nil {
-		fmt.Println("Nooo 2")
-		fmt.Println(err)
-		return NomadRunInput{}
-	}
-	jobfile = file
-
-	// parse the jobfile from HCL to a nomad.Job struct
-	job, err := jobspec.Parse(jobfile)
-	if err != nil {
-		fmt.Println("Nooo 3")
-		fmt.Println(err)
-		return NomadRunInput{}
-	}
-
-	// TODO inject the image from definition into thee job
+	job := a.parseNomadJobspec(definition.Template)
+	// TODO inject the image from definition into the job
 
 	// inject the envvar from definition into the job
 	task := job.TaskGroups[0].Tasks[0]
@@ -174,10 +174,39 @@ func (a *nomadAdapter) AdaptRun(definition state.Definition, run state.Run) Noma
 	task.Env = taskMap
 
 	rtn := NomadRunInput{
-		Job: job,
+		Job: &job,
 	}
 
 	return rtn
+}
+
+func (a *nomadAdapter) parseNomadJobspec(jpath string) nomad.Job {
+	var jobfile io.Reader
+
+	// Get the pwd and open the jobfile
+	pwd, err := os.Getwd()
+	if err != nil {
+		fmt.Println("Nooo 1")
+		fmt.Println(err)
+		return nomad.Job{}
+	}
+	file, err := os.Open(pwd + "/jobspecs/" + jpath)
+	defer file.Close()
+	if err != nil {
+		fmt.Println("Nooo 2")
+		fmt.Println(err)
+		return nomad.Job{}
+	}
+	jobfile = file
+
+	// parse the jobfile from HCL to a nomad.Job struct
+	job, err := jobspec.Parse(jobfile)
+	if err != nil {
+		fmt.Println("Nooo 3")
+		fmt.Println(err)
+		return nomad.Job{}
+	}
+	return *job
 }
 
 //
@@ -206,15 +235,16 @@ func (a *nomadAdapter) AdaptRun(definition state.Definition, run state.Run) Noma
 // }
 
 //
-// AdaptDefinition translates from definition to the ecs arguments for registering a nomad job
+// AdaptDefinition translates from definition into a nomad job
+// in this instance it's just a wrapper over parseNomadJobspec to keep in line with the interface
 //
-// func (a *nomadAdapter) AdaptDefinition(definition state.Definition) api.Job {
-// 	job := api.Job{}
+func (a *nomadAdapter) AdaptDefinition(definition state.Definition) nomad.Job {
+	job := a.parseNomadJobspec(definition.Template)
 
-// 	// Author the job file according to the job specification
-// 	// Plan and review the changes with a Nomad server
-// 	// Submit the job file to a Nomad server
-// 	// (Optional) Review job status and logs
+	// Author the job file according to the job specification
+	// Plan and review the changes with a Nomad server
+	// Submit the job file to a Nomad server
+	// (Optional) Review job status and logs
 
-// 	return job
-// }
+	return job
+}

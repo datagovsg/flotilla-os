@@ -240,7 +240,6 @@ func (ne *NomadExecutionEngine) PollStatus() (RunReceipt, error) {
 		adapted := ne.adapter.AdaptTask(update.Detail)
 		receipt.Run = &adapted
 	}
-	fmt.Printf("%+v\n", receipt.Run)
 
 	receipt.Done = rawReceipt.Done
 	return receipt, nil
@@ -327,7 +326,7 @@ func (ne *NomadExecutionEngine) Execute(definition state.Definition, run state.R
 		return executed, retryable, errors.Wrapf(err, "problem executing run [%s]", run.RunID)
 	}
 
-	fmt.Println(resp)
+	fmt.Println("--- SUBMITTED JOB ---")
 
 	// Print any warnings if there are any
 	if resp.Warnings != "" {
@@ -351,33 +350,39 @@ func (ne *NomadExecutionEngine) Execute(definition state.Definition, run state.R
 // called by /services/execution.go
 //
 func (ne *NomadExecutionEngine) Terminate(run state.Run) error {
-	// // Check if the job exists
-	// jobs, _, err := client.Jobs().PrefixList(jobID)
-	// if err != nil {
-	// 	fmt.Println(fmt.Sprintf("Error deregistering job: %s", err))
-	// 	return 1
-	// }
-	// if len(jobs) == 0 {
-	// 	fmt.Println(fmt.Sprintf("No job(s) with prefix or id %q found", jobID))
-	// 	return 1
-	// }
-	// if len(jobs) > 1 && strings.TrimSpace(jobID) != jobs[0].ID {
-	// 	fmt.Println(fmt.Sprintf("Prefix matched multiple jobs\n\n%s", createStatusListOutput(jobs)))
-	// 	return 1
-	// }
-	// // Prefix lookup matched a single job
-	// job, _, err := client.Jobs().Info(jobs[0].ID, nil)
-	// if err != nil {
-	// 	fmt.Println(fmt.Sprintf("Error deregistering job: %s", err))
-	// 	return 1
-	// }
-
-	// // Invoke the stop
-	// evalID, _, err := client.Jobs().Deregister(*job.ID, purge, nil)
-	// if err != nil {
-	// 	fmt.Println(fmt.Sprintf("Error deregistering job: %s", err))
-	// 	return 1
-	// }
+	// Check if the job exists
+	jobID := run.JobName
+	fmt.Println(jobID)
+	jobs, _, err := ne.nomadClient.Jobs().PrefixList(jobID)
+	if err != nil {
+		fmt.Println("--- 1 ---")
+		return errors.Wrapf(err, "Error deregistering Nomad job: [%s]", run.RunID)
+	}
+	if len(jobs) == 0 {
+		fmt.Println("--- 2 ---")
+		return errors.Wrapf(err, "No job(s) with prefix or id %q found", jobID)
+	}
+	if len(jobs) > 1 && strings.TrimSpace(jobID) != jobs[0].ID {
+		fmt.Println(jobs)
+		fmt.Println("--- 3 ---")
+		return errors.Wrapf(err, "Prefix matched multiple jobs\n\n%s", jobs)
+	}
+	// Prefix lookup matched a single job
+	job, _, err := ne.nomadClient.Jobs().Info(jobs[0].ID, nil)
+	if err != nil {
+		fmt.Println("--- 4 ---")
+		return errors.Wrapf(err, "Error deregistering Nomad job: [%s]", run.RunID)
+	}
+	// Invoke the stop
+	// https://www.nomadproject.io/docs/commands/job/stop.html#stop-options
+	purge := false
+	evalID, _, err := ne.nomadClient.Jobs().Deregister(*job.ID, purge, nil)
+	fmt.Println("--- evalID start ---")
+	fmt.Println(evalID)
+	fmt.Println("---  evalID end  ---")
+	if err != nil {
+		return errors.Wrapf(err, "Error deregistering Nomad job: [%s]", run.RunID)
+	}
 
 	return nil
 
@@ -396,13 +401,14 @@ func (ne *NomadExecutionEngine) ConstructRun(
 		return run, err
 	}
 
+	job := ne.adapter.AdaptDefinition(definition)
+
 	run = state.Run{
 		RunID:        runID,
-		ClusterName:  clusterName,
 		GroupName:    definition.GroupName,
 		DefinitionID: definition.DefinitionID,
 		Alias:        definition.Alias,
-		Image:        definition.Image,
+		JobName:      *job.ID,
 		Status:       state.StatusQueued,
 		User:         ownerID,
 	}
@@ -418,9 +424,6 @@ func (ne *NomadExecutionEngine) constructEnviron(run state.Run, env *state.EnvLi
 	var runEnv []state.EnvVar
 	var envVarNames []string
 	i := 0
-	fmt.Println("--- view env start ---")
-	fmt.Printf("%+v\n", env)
-	fmt.Println("---  end  ---")
 	if env != nil {
 		for _, e := range *env {
 			runEnv = append(runEnv, e)
@@ -428,9 +431,6 @@ func (ne *NomadExecutionEngine) constructEnviron(run state.Run, env *state.EnvLi
 			i++
 		}
 	}
-	fmt.Println("--- view reservedEnv start ---")
-	fmt.Printf("%+v\n", reservedEnv)
-	fmt.Println("---  end  ---")
 	for k, f := range reservedEnv {
 		if !stringInSlice(k, envVarNames) {
 			envVar := state.EnvVar{
@@ -442,9 +442,6 @@ func (ne *NomadExecutionEngine) constructEnviron(run state.Run, env *state.EnvLi
 			i++
 		}
 	}
-	fmt.Println("--- view runEnv start ---")
-	fmt.Printf("%+v\n", runEnv)
-	fmt.Println("---  end  ---")
 	return state.EnvList(runEnv)
 }
 
@@ -466,6 +463,9 @@ func (ne *NomadExecutionEngine) Define(definition state.Definition) (state.Defin
 	// TODO set this to be editable in UI rather than being hardcoded here
 	jpath := "test.nomad"
 	definition.Template = jpath
+	// TODO set the envlist to non-nil in UI so it doesn't error out
+	emptyEnvList := state.EnvList{}
+	definition.Env = &emptyEnvList
 	return definition, nil
 }
 
