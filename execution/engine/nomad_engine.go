@@ -355,22 +355,17 @@ func (ne *NomadExecutionEngine) Terminate(run state.Run) error {
 	fmt.Println(jobID)
 	jobs, _, err := ne.nomadClient.Jobs().PrefixList(jobID)
 	if err != nil {
-		fmt.Println("--- 1 ---")
 		return errors.Wrapf(err, "Error deregistering Nomad job: [%s]", run.RunID)
 	}
 	if len(jobs) == 0 {
-		fmt.Println("--- 2 ---")
 		return errors.Wrapf(err, "No job(s) with prefix or id %q found", jobID)
 	}
 	if len(jobs) > 1 && strings.TrimSpace(jobID) != jobs[0].ID {
-		fmt.Println(jobs)
-		fmt.Println("--- 3 ---")
 		return errors.Wrapf(err, "Prefix matched multiple jobs\n\n%s", jobs)
 	}
 	// Prefix lookup matched a single job
 	job, _, err := ne.nomadClient.Jobs().Info(jobs[0].ID, nil)
 	if err != nil {
-		fmt.Println("--- 4 ---")
 		return errors.Wrapf(err, "Error deregistering Nomad job: [%s]", run.RunID)
 	}
 	// Invoke the stop
