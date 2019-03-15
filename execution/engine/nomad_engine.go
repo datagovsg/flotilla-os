@@ -456,7 +456,7 @@ func stringInSlice(a string, list []string) bool {
 func (ne *NomadExecutionEngine) Define(definition state.Definition) (state.Definition, error) {
 
 	// TODO set this to be editable in UI rather than being hardcoded here
-	jpath := "test.nomad"
+	jpath := "zeppelin.nomad"
 	definition.Template = jpath
 	// TODO set the envlist to non-nil in UI so it doesn't error out
 	emptyEnvList := state.EnvList{}

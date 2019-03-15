@@ -79,6 +79,9 @@ func (a *nomadAdapter) AdaptTask(job nomad.Job) state.Run {
 
 	// should deal with error fetching allocations here
 	resp, _, _ := a.nc.Jobs().Allocations(*jobID, true, nil)
+	if len(resp) == 0 {
+		return state.Run{}
+	}
 	allocation := resp[0]
 	desiredStatus := allocation.DesiredStatus
 
