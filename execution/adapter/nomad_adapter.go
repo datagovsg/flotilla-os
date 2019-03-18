@@ -173,11 +173,9 @@ func (a *nomadAdapter) AdaptRun(definition state.Definition, run state.Run) Noma
 
 	// inject the envvar from definition into the job
 	envList := run.Env
-	taskMap := map[string]string{}
 	for _, envVar := range *envList {
-		taskMap[envVar.Name] = envVar.Value
+		task.Env[envVar.Name] = envVar.Value
 	}
-	task.Env = taskMap
 
 	rtn := NomadRunInput{
 		Job: &job,

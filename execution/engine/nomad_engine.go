@@ -3,6 +3,7 @@ package engine
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"regexp"
 	"strings"
 
@@ -307,6 +308,13 @@ func (ne *NomadExecutionEngine) Execute(definition state.Definition, run state.R
 
 	// enforceIndexRegex is a regular expression which extracts the enforcement error
 	var enforceIndexRegex = regexp.MustCompile(`\((Enforcing job modify index.*)\)`)
+
+	// we may want to put this at the config level
+	vaultToken := os.Getenv("VAULT_TOKEN")
+
+	if vaultToken != "" {
+		job.VaultToken = &vaultToken
+	}
 
 	// Submit the job
 	resp, _, err := ne.nomadClient.Jobs().RegisterOpts(job, opts, nil)
