@@ -6,7 +6,7 @@ func NewRouter(ep endpoints) *mux.Router {
 	r := mux.NewRouter()
 	v1 := r.PathPrefix("/api/v1").Subrouter()
 
-	v1.HandleFunc("/task", ep.ListDefinitions).Methods("GET")
+	v1.HandleFunc("/ping", ep.HealthCheckPing).Methods("GET")
 	v1.HandleFunc("/task", ep.CreateDefinition).Methods("POST")
 	v1.HandleFunc("/task/{definition_id}", ep.GetDefinition).Methods("GET")
 	v1.HandleFunc("/task/{definition_id}", ep.UpdateDefinition).Methods("PUT")

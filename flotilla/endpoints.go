@@ -437,3 +437,9 @@ func (ep *endpoints) ListClusters(w http.ResponseWriter, r *http.Request) {
 		ep.encodeResponse(w, response)
 	}
 }
+
+func (ep *endpoints) HealthCheckPing(w http.ResponseWriter, r *http.Request) {
+	response := make(map[string]interface{})
+	response["message"] = "pong"
+	ep.encodeResponse(w, response)
+}
