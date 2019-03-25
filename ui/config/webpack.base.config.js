@@ -16,6 +16,7 @@ module.exports = opts => {
       publicPath: "/",
     },
     devServer: {
+      port: 5000,
       historyApiFallback: true,
     },
     module: {
