@@ -20,7 +20,7 @@
     "flex-utils": "0.1.0",
     "hsluv": "0.0.3",
     "immutability-helper": "2.6.1",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.21",
     "moment": "^2.19.2",
     "prop-types": "^15.6.0",
     "qs": "6.5.2",
